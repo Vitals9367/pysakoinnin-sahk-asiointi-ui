@@ -131,6 +131,7 @@ export type FetchStatus =
   | 'error'
   | 'loaded'
   | 'waiting';
+
 export type ApiAccessTokenActions = {
   fetch: (options: FetchApiTokenOptions) => Promise<JWTPayload | FetchError>;
   getStatus: () => FetchStatus;
@@ -159,9 +160,26 @@ export function useApiAccessTokens(): ApiAccessTokenActions {
     return 'ready';
   };
 
-  const [status, setStatus] = useState<FetchStatus>(resolveStatus());
+  const resolveCurrentStatus = (
+    baseStatus: FetchStatus,
+    stateStatus: FetchStatus
+  ): FetchStatus => {
+    if (stateStatus === 'unauthorized') {
+      return baseStatus;
+    }
+    if (baseStatus === 'unauthorized') {
+      return 'unauthorized';
+    }
+    return stateStatus;
+  };
 
-  const currentStatus = status === 'unauthorized' ? resolveStatus() : status;
+  const resolvedStatus = resolveStatus();
+  const [status, setStatus] = useState<FetchStatus>(resolvedStatus);
+  const currentStatus = resolveCurrentStatus(resolvedStatus, status);
+  if (resolvedStatus === 'unauthorized' && apiTokens) {
+    setApiTokens(undefined);
+    setStatus('unauthorized');
+  }
 
   const fetchTokens: ApiAccessTokenActions['fetch'] = useCallback(
     async options => {
@@ -183,7 +201,6 @@ export function useApiAccessTokens(): ApiAccessTokenActions {
       if (currentStatus !== 'ready') {
         return;
       }
-      setStatus('loading');
       fetchTokens({
         audience: String(process.env.REACT_APP_API_BACKEND_AUDIENCE),
         permission: String(process.env.REACT_APP_API_BACKEND_PERMISSION),
@@ -192,7 +209,7 @@ export function useApiAccessTokens(): ApiAccessTokenActions {
     };
 
     autoFetch();
-  }, [fetchTokens, currentStatus, status]);
+  }, [fetchTokens, currentStatus]);
 
   return {
     getStatus: () => status,

@@ -105,7 +105,7 @@ describe('Keycloak client ', () => {
     afterEach(() => {
       clearTests();
     });
-    it('stored after login and user is found in local storage and getUserProfile() and getUserTokens', async () => {
+    it('stored after login and user is found in local storage and getUserProfile(). getUserTokens() returns tokens.', async () => {
       const email = 'authorized@bar.com';
       const keycloakTokens = {
         token: 'accessToken',
@@ -113,8 +113,8 @@ describe('Keycloak client ', () => {
         refreshToken: 'refreshToken'
       };
       mockMutator.setUser(mockMutator.createValidUserData({ email }));
-      await to(client.init());
       mockMutator.setTokens(keycloakTokens);
+      await to(client.init());
       const token = mockMutator.getTokenParsed();
       const storageUser = getUserFromLocalStorage(token);
       expect(storageUser && storageUser.email).toBe(email);

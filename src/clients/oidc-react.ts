@@ -145,7 +145,7 @@ export function createOidcClient(): Client {
       initializer
         .call(manager)
         .then((loadedUser: User | null) => {
-          if (loadedUser && !loadedUser.expired) {
+          if (loadedUser && loadedUser.expired === false) {
             const oidcUserAsClientUser = oidcUserToClientUser(loadedUser);
             setStoredUser(oidcUserAsClientUser);
             onAuthChange(true);

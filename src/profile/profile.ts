@@ -16,8 +16,7 @@ import { ApiAccessTokenContext } from '../components/ApiAccessTokenProvider';
 
 let profileGqlClient: GraphQLClient;
 
-export type ProfileDataType = string | boolean | null | number | undefined | {};
-
+export type ProfileDataType = {} | undefined;
 export type ProfileData = Record<string, ProfileDataType>;
 export type ProfileQueryResult = {
   data: {
@@ -45,7 +44,7 @@ export function getProfileApiToken(): string | undefined {
 export function getProfileGqlClient(): GraphQLClient | undefined {
   if (!profileGqlClient) {
     const token = getProfileApiToken();
-    const uri = String(process.env.REACT_APP_PROFILE_BACKEND_URL);
+    const uri = process.env.REACT_APP_PROFILE_BACKEND_URL;
     if (!token || !uri) {
       return undefined;
     }
@@ -133,9 +132,33 @@ export function useProfile(): ProfileActions {
     return 'waiting';
   };
 
-  const [status, setStatus] = useState<FetchStatus>(resolveStatus());
+  const resolveCurrentStatus = (
+    baseStatus: FetchStatus,
+    stateStatus: FetchStatus
+  ): FetchStatus => {
+    if (stateStatus === 'loading' || stateStatus === 'loaded') {
+      return stateStatus;
+    }
+    if (profileData) {
+      return 'loaded';
+    }
+    if (stateStatus === 'waiting') {
+      return baseStatus;
+    }
+    if (baseStatus === 'unauthorized') {
+      return 'unauthorized';
+    }
+    return stateStatus;
+  };
 
-  const currentStatus = status === 'waiting' ? resolveStatus() : status;
+  const resolvedStatus = resolveStatus();
+  const [status, setStatus] = useState<FetchStatus>(resolvedStatus);
+  if (status === 'unauthorized') {
+    throw new Error(
+      'useProfile hook should not be rendered if client is not authorized.'
+    );
+  }
+  const currentStatus = resolveCurrentStatus(resolvedStatus, status);
 
   const fetchProfile: ProfileActions['fetch'] = useCallback(async () => {
     setStatus('loading');
@@ -159,7 +182,7 @@ export function useProfile(): ProfileActions {
     };
 
     autoFetch();
-  }, [apiAccessTokenStatus, currentStatus, fetchProfile, status]);
+  }, [fetchProfile, currentStatus]);
 
   return {
     getStatus: () => status,
@@ -172,6 +195,7 @@ export function useProfile(): ProfileActions {
       }
       if (profileData) {
         setProfileData(undefined);
+        setStatus(resolveStatus());
       }
     }
   } as ProfileActions;

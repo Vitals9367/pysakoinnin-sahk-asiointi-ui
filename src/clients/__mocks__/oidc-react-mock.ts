@@ -84,14 +84,19 @@ export const mockOidcUserManager = (
     const clientInitRejectPayload = mockMutator.getClientInitRejectPayload();
     return new Promise((resolve: Function, reject: Function) => {
       setTimeout((): void => {
-        const profile = mockMutator.getTokenParsed();
+        const tokenParsed = mockMutator.getTokenParsed();
+        const sessionState = tokenParsed.session_state;
+        const user = sessionState
+          ? {
+              profile: mockMutator.getTokenParsed(),
+              session_state: sessionState,
+              expired: false
+            }
+          : undefined;
         // eslint-disable-next-line no-unused-expressions
         clientInitRejectPayload
           ? reject(clientInitRejectPayload)
-          : resolve({
-              profile,
-              session_state: mockMutator.getTokenParsed().session_state
-            });
+          : resolve(user);
       }, mockMutator.promiseTimeout);
     }) as Promise<any>;
   };
@@ -123,7 +128,7 @@ export const mockOidcUserManager = (
           // eslint-disable-next-line no-unused-expressions
           loadProfileRejectPayload
             ? reject(loadProfileRejectPayload)
-            : resolve(loadProfileResolvePayload);
+            : resolve({ ...loadProfileResolvePayload, expired: false });
         }, mockMutator.promiseTimeout);
       }) as Promise<any>;
     },
