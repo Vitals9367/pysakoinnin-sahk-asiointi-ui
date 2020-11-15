@@ -41,6 +41,7 @@ const Header = (): React.ReactElement => {
             setActive('frontpage');
             history.push('/');
           }}
+          data-test-id="header-link-frontpage"
         />
         <Navigation.Item
           active={active === 'apiAccessTokens'}
@@ -51,6 +52,7 @@ const Header = (): React.ReactElement => {
             setActive('apiAccessTokens');
             history.push('/apiAccessTokens');
           }}
+          data-test-id="header-link-apiAccessTokens"
         />
         <Navigation.Item
           active={active === 'userTokens'}
@@ -71,6 +73,7 @@ const Header = (): React.ReactElement => {
             setActive('profile');
             history.push('/profile');
           }}
+          data-test-id="header-link-profile"
         />
       </Navigation.Row>
       <Navigation.Actions>
