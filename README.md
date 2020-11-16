@@ -66,6 +66,19 @@ Tunnistamo does not support silent login checks (it uses only localstorage) so R
 
 REACT_APP_OIDC_CLIENT_TYPE can only be "oidc"
 
+### Config for getting Profile data 
+Use same config as above with Tunnistamo and add
+```yml
+REACT_APP_OIDC_CLIENT_ID="exampleapp-ui"
+REACT_APP_OIDC_SCOPE="openid profile email https://api.hel.fi/auth/helsinkiprofile"
+```
+
+Profile BE url and audience are configured in main .env and there is no need to change them
+```yml
+REACT_APP_PROFILE_BACKEND_URL="https://profiili-api.test.kuva.hel.ninja/graphql/"
+REACT_APP_PROFILE_AUDIENCE="https://api.hel.fi/auth/helsinkiprofile"
+```
+
 ## Docker
 
 Run `docker-compose up`
