@@ -14,13 +14,13 @@ Clients dispatch events and trigger changes which then trigger re-rendering of t
 ## using oidc-client
 Used client type is defined in .env.
 Settings for keycloak
-```yml
+```bash
 REACT_APP_OIDC_CLIENT_TYPE="keycloak"
 REACT_APP_OIDC_SILENT_AUTH_PATH="/silent-check-sso.html"
 REACT_APP_OIDC_CALLBACK_PATH="/"
 ```
 Settings for oidc-react
-```yml
+```bash
 REACT_APP_OIDC_CLIENT_TYPE="oidc"
 REACT_APP_OIDC_SILENT_AUTH_PATH="/silent_renew.html"
 REACT_APP_OIDC_CALLBACK_PATH="/callback"
@@ -39,7 +39,7 @@ ERROR event with type AUTH_ERROR:
 
 ## Config
 use .env -files. Some values are client specific. Default client is keycloak and relevant settings are:
-```yml
+```bash
 REACT_APP_OIDC_URL="https://tunnistus.hel.ninja/auth"
 REACT_APP_OIDC_REALM="helsinki-tunnistus"
 REACT_APP_OIDC_CLIENT_ID="https://api.hel.fi/auth/example-ui-profile"
@@ -51,7 +51,7 @@ Config can also be overridden for command line:
 REACT_APP_OIDC_URL=https://foo.bar yarn start
 ```
 ### Config for Tunnistamo
-```yml
+```bash
 REACT_APP_OIDC_URL="https://api.hel.fi/sso-test"
 REACT_APP_OIDC_CLIENT_ID="https://api.hel.fi/auth/helsinkiprofile-ui-dev"
 REACT_APP_OIDC_SILENT_AUTH_PATH="/callback"
@@ -68,13 +68,13 @@ REACT_APP_OIDC_CLIENT_TYPE can only be "oidc"
 
 ### Config for getting Profile data 
 Use same config as above with Tunnistamo and add
-```yml
+```bash
 REACT_APP_OIDC_CLIENT_ID="exampleapp-ui"
 REACT_APP_OIDC_SCOPE="openid profile email https://api.hel.fi/auth/helsinkiprofile"
 ```
 
 Profile BE url and audience are configured in main .env and there is no need to change them
-```yml
+```bash
 REACT_APP_PROFILE_BACKEND_URL="https://profiili-api.test.kuva.hel.ninja/graphql/"
 REACT_APP_PROFILE_AUDIENCE="https://api.hel.fi/auth/helsinkiprofile"
 ```

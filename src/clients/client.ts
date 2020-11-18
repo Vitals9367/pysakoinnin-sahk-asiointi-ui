@@ -164,11 +164,8 @@ export function useApiAccessTokens(): ApiAccessTokenActions {
     baseStatus: FetchStatus,
     stateStatus: FetchStatus
   ): FetchStatus => {
-    if (stateStatus === 'unauthorized') {
+    if (stateStatus === 'unauthorized' || baseStatus === 'unauthorized') {
       return baseStatus;
-    }
-    if (baseStatus === 'unauthorized') {
-      return 'unauthorized';
     }
     return stateStatus;
   };

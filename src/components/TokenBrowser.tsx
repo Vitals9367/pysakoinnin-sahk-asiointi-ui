@@ -11,10 +11,15 @@ const TokenBrowser = (): React.ReactElement => {
   const apiTokens = client.getApiTokens();
   const userTokens = client.getUserTokens();
   const config = getClientConfig();
+  // Keycloak server returns object with also other data than tokens.
+  // 20 is a (pretty) safe length of non-token property value.
+  // Later on tokens may be filted with prop names and config.audience.
+  // At the moment keycloak server seems to change quite often, so this simple solution is used
+  const minimunActualTokenLength = 20;
   const isToken =
     selectedId &&
     selectedToken &&
-    selectedToken.length > 20 &&
+    selectedToken.length >= minimunActualTokenLength &&
     selectedToken.indexOf('.') > -1;
   const decodedPayload: JWTPayload | undefined = isToken
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
