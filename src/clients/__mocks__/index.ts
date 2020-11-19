@@ -120,7 +120,9 @@ export const matchClientDataWithComponent = (
   return values;
 };
 
-export const configureClient = (overrides?: ClientProps): ClientProps => {
+export const configureClient = (
+  overrides?: Partial<ClientProps>
+): ClientProps => {
   return setClientConfig({ ...config.client, ...overrides });
 };
 
