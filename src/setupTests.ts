@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/camelcase */
 import Adapter from 'enzyme-adapter-react-16';
 import { configure } from 'enzyme';
+import Keycloak from 'keycloak-js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { GlobalWithFetchMock } from 'jest-fetch-mock';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -15,6 +14,7 @@ import {
   mockMutatorGetterOidc,
   mockOidcUserManager
 } from './clients/__mocks__/oidc-react-mock';
+import { AnyObject, AnyFunction } from './common';
 
 const customGlobal: GlobalWithFetchMock = global as GlobalWithFetchMock;
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -25,8 +25,8 @@ customGlobal.fetchMock = customGlobal.fetch;
 configure({ adapter: new Adapter() });
 
 jest.mock('react-router', () => ({
-  ...(jest.requireActual('react-router') as {}),
-  useHistory: (): Record<string, Function> => ({
+  ...(jest.requireActual('react-router') as AnyObject),
+  useHistory: (): Record<string, AnyFunction> => ({
     push: jest.fn()
   })
 }));
@@ -53,7 +53,7 @@ jest.mock('oidc-client', () => {
     }
   }
   return {
-    ...(jest.requireActual('oidc-client') as {}),
+    ...(jest.requireActual('oidc-client') as AnyObject),
     UserManager: MockUserManagerClass
   };
 });

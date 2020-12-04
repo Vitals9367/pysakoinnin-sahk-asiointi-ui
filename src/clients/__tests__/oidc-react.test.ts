@@ -1,29 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/camelcase */
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import to from 'await-handler';
 import { UserManager } from 'oidc-client';
 import {
   EventListeners,
   configureClient,
-  createEventListeners
+  createEventListeners,
+  ListenerSetter
 } from '../__mocks__';
 import {
   ClientStatus,
   Client,
   ClientEvent,
   ClientError,
+  ClientErrorObject,
   setClientConfig
 } from '../index';
 import { createOidcClient } from '../oidc-react';
 import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
 import config from '../../config';
-
-type UserManagerEvent = {
-  raise: (payload?: any) => void;
-};
 
 describe('Oidc client ', () => {
   let client: Client;
@@ -44,7 +41,9 @@ describe('Oidc client ', () => {
   function initTests(): void {
     mockMutator.resetMock();
     client = createNewClient();
-    eventListeners = createEventListeners(client.addListener);
+    eventListeners = createEventListeners(
+      (client.addListener as unknown) as ListenerSetter
+    );
     instance = mockMutator.getInstance() as UserManager;
   }
 
@@ -165,9 +164,9 @@ describe('Oidc client ', () => {
       await to(client.handleCallback());
       expect(client.getStatus()).toBe(ClientStatus.UNAUTHORIZED);
       expect(eventListeners.getCallCount(ClientEvent.ERROR)).toBe(1);
-      const error: ClientError = (eventListeners.getLastCallPayload(
+      const error: ClientErrorObject = (eventListeners.getLastCallPayload(
         ClientEvent.ERROR
-      ) as unknown) as ClientError;
+      ) as unknown) as ClientErrorObject;
       expect(error).toBeDefined();
       if (error) {
         expect(error.type).toBe(ClientError.AUTH_ERROR);

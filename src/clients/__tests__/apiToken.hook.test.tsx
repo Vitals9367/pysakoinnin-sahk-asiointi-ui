@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
@@ -20,6 +19,7 @@ import {
   createApiTokenFetchPayload,
   setEnv
 } from './common';
+import { AnyFunction, AnyObject } from '../../common';
 
 describe('Client.ts useApiAccessTokens hook ', () => {
   configureClient({ type: 'oidc', tokenExchangePath: '/token-exchange/' });
@@ -29,19 +29,19 @@ describe('Client.ts useApiAccessTokens hook ', () => {
   const testAudience = 'test-audience';
   let apiTokenActions: ApiAccessTokenActions;
   let dom: ReactWrapper;
-  let restoreEnv: Function;
+  let restoreEnv: AnyFunction;
 
   const HookTester = (): React.ReactElement => {
     apiTokenActions = useApiAccessTokens();
     return <div id="api-token-status">{apiTokenActions.getStatus()}</div>;
   };
 
-  const setUser = async (user: {}): Promise<void> => {
+  const setUser = async (user: AnyObject): Promise<void> => {
     return setUpUser(user, mockMutator, client);
   };
 
   const setUpTest = async (props?: {
-    user?: {} | undefined;
+    user?: AnyObject | undefined;
     apiToken?: string | undefined;
   }): Promise<void> => {
     const { user } = props || {};

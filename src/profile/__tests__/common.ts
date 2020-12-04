@@ -1,17 +1,18 @@
 import { FetchMock } from 'jest-fetch-mock';
+import { AnyFunction, AnyObject } from '../../common';
 import { ProfileData } from '../profile';
 
 export const createValidProfileResponseData = (
-  userData: Record<string, {}>
+  userData: AnyObject
 ): ProfileData => {
   return { data: { myProfile: { ...userData } } };
 };
 
 export const mockProfileResponse = (options: {
-  response: Record<string, {}>;
+  response: AnyObject;
   profileBackendUrl: string;
   delay?: number;
-  requestCallback?: Function;
+  requestCallback?: AnyFunction;
 }): void => {
   const fetchMock: FetchMock = global.fetch;
   const { response, delay, requestCallback, profileBackendUrl } = options;

@@ -15,7 +15,10 @@ const AuthenticatedContent = (): React.ReactElement => {
   const isLoading = status === 'loading';
   const canLoad = status === 'loaded' || status === 'ready';
   const tokens = status === 'loaded' ? getTokens() : undefined;
-  const [options, setOptions]: [FetchApiTokenOptions, Function] = useState({
+  const [options, setOptions]: [
+    FetchApiTokenOptions,
+    (newOptions: FetchApiTokenOptions) => void
+  ] = useState({
     audience: process.env.REACT_APP_API_BACKEND_AUDIENCE || '',
     permission: process.env.REACT_APP_API_BACKEND_PERMISSION || '',
     grantType: process.env.REACT_APP_API_BACKEND_GRANT_TYPE || ''

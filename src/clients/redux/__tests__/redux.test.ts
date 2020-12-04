@@ -1,6 +1,12 @@
 import { StoreState } from '..';
 import { createKeycloakClient } from '../../keycloak';
-import { Client, ClientError, ClientStatus, User } from '../../index';
+import {
+  Client,
+  ClientError,
+  ClientErrorObject,
+  ClientStatus,
+  User
+} from '../../index';
 import { configureClient } from '../../__mocks__';
 import { store, connectClient } from '../store';
 import reducer from '../reducers';
@@ -26,7 +32,10 @@ describe('Redux store ', () => {
       expect(reducer(state, { type: 'FOO' })).toEqual(state);
     });
     it('should reset the store values to client values with CONNECTED_ACTION', () => {
-      client.setError({ type: ClientError.AUTH_REFRESH_ERROR, message: 'foo' });
+      client.setError({
+        type: ClientError.AUTH_REFRESH_ERROR,
+        message: 'foo'
+      });
       client.setStatus(ClientStatus.AUTHORIZED);
       const expectedState = {
         ...state,
@@ -39,7 +48,7 @@ describe('Redux store ', () => {
       ).toEqual(expectedState);
     });
     it('Error action sets error', () => {
-      const error: ClientError = {
+      const error: ClientErrorObject = {
         type: ClientError.AUTH_REFRESH_ERROR,
         message: 'foo'
       };

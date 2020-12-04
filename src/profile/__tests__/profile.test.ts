@@ -23,18 +23,19 @@ import {
 } from './common';
 import { configureClient } from '../../clients/__mocks__';
 import { FetchError } from '../../clients';
+import { AnyObject, AnyFunction } from '../../common';
 
 describe('Profile.ts', () => {
   configureClient({ type: 'oidc' });
   const fetchMock: FetchMock = global.fetch;
   const mockMutator = mockMutatorGetterOidc();
   const client = getClient();
-  let restoreEnv: Function;
+  let restoreEnv: AnyFunction;
   const testAudience = 'api-audience';
   const profileBackendUrl = 'https://localhost/profileGraphql/';
   let lastRequest: Request;
 
-  const setUser = async (user: {}): Promise<void> => {
+  const setUser = async (user: AnyObject): Promise<void> => {
     return setUpUser(user, mockMutator, client);
   };
 
@@ -117,14 +118,14 @@ describe('Profile.ts', () => {
     expect(serverErrorResponse.error).toBeDefined();
     fetchMock.resetMocks(); // must reset before new call to same url
     mockProfileResponse({
-      requestCallback: (req: Request): void => {
-        lastRequest = req;
+      requestCallback: (req: unknown): void => {
+        lastRequest = req as Request;
       },
       response: createValidProfileResponse(),
       profileBackendUrl
     });
-    const data: ProfileData = await getProfileData();
-    expect(data.firstName).toBe('firstName');
+    const data: ProfileData = (await getProfileData()) as ProfileData;
+    expect(data.firstName as ProfileData).toBe('firstName');
     expect(isApiTokenInRequest(lastRequest)).toBe(true);
   });
 });

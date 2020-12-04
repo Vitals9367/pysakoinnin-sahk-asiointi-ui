@@ -1,9 +1,9 @@
-import { ClientError, ClientStatusId, User } from '..';
+import { ClientErrorObject, ClientStatusId, User } from '..';
 
 export type StoreState = {
   user: User | undefined;
   status: ClientStatusId;
   authenticated: boolean;
   initialized: boolean;
-  error: ClientError | undefined;
+  error: ClientErrorObject | undefined;
 };

@@ -1,5 +1,6 @@
 import Keycloak from 'keycloak-js';
 import { mockMutatorCreator, MockMutator } from './index';
+import { AnyFunction } from '../../common';
 
 let keyCloakMutator: MockMutator;
 
@@ -26,7 +27,7 @@ export const mockKeycloak = (
         mockMutator.initCalled();
         const clientInitRejectPayload = mockMutator.getClientInitRejectPayload();
         const clientInitResolvePayload = mockMutator.getClientInitResolvePayload();
-        return new Promise((resolve: Function, reject: Function) => {
+        return new Promise((resolve: AnyFunction, reject: AnyFunction) => {
           setTimeout((): void => {
             // eslint-disable-next-line no-unused-expressions
             clientInitRejectPayload
@@ -54,7 +55,7 @@ export const mockKeycloak = (
       > {
         const loadProfileRejectPayload = mockMutator.getLoadProfileRejectPayload();
         const loadProfileResolvePayload = mockMutator.getLoadProfileResolvePayload();
-        return new Promise((resolve: Function, reject: Function) => {
+        return new Promise((resolve: AnyFunction, reject: AnyFunction) => {
           setTimeout((): void => {
             // eslint-disable-next-line no-unused-expressions
             loadProfileRejectPayload

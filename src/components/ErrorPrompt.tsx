@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Notification } from 'hds-react';
 
 import { useClientErrorDetection } from '../clients/client';
-import { ClientError } from '../clients';
+import { ClientErrorObject, ClientError } from '../clients';
 import styles from './styles.module.css';
 
 const ErrorPrompt = (
-  props: React.PropsWithChildren<{}>
+  props: React.PropsWithChildren<unknown>
 ): React.ReactElement | null => {
-  const [dismissedError, setDismissedError] = useState<ClientError>(undefined);
+  const [dismissedError, setDismissedError] = useState<ClientErrorObject>(
+    undefined
+  );
   const newError = useClientErrorDetection();
   const lastErrorType = dismissedError && dismissedError.type;
   const newErrorType = newError && newError.type;

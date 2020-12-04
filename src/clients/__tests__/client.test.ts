@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/camelcase */
 
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import to from 'await-handler';
 import {
   configureClient,
   EventListeners,
-  createEventListeners
+  createEventListeners,
+  ListenerSetter
 } from '../__mocks__';
 import {
   ClientStatus,
   Client,
   ClientEvent,
+  ClientErrorObject,
   ClientError,
   ClientType
 } from '../index';
@@ -45,7 +46,9 @@ describe('Client ', () => {
         beforeEach(() => {
           mockMutator.resetMock();
           client = createNewClient();
-          eventListeners = createEventListeners(client.addListener);
+          eventListeners = createEventListeners(
+            (client.addListener as unknown) as ListenerSetter
+          );
         });
         afterEach(() => {
           eventListeners.dispose();
@@ -78,9 +81,9 @@ describe('Client ', () => {
           expect(client.getStatus()).toBe(ClientStatus.UNAUTHORIZED);
           if (clientType === 'oidc') {
             expect(eventListeners.getCallCount(ClientEvent.ERROR)).toBe(1);
-            const error: ClientError = (eventListeners.getLastCallPayload(
+            const error: ClientErrorObject = (eventListeners.getLastCallPayload(
               ClientEvent.ERROR
-            ) as unknown) as ClientError;
+            ) as unknown) as ClientErrorObject;
             expect(error).toBeDefined();
             if (error) {
               expect(error.type).toBe(ClientError.AUTH_ERROR);
@@ -97,7 +100,9 @@ describe('Client ', () => {
         beforeEach(() => {
           mockMutator.resetMock();
           client = createNewClient();
-          eventListeners = createEventListeners(client.addListener);
+          eventListeners = createEventListeners(
+            (client.addListener as unknown) as ListenerSetter
+          );
         });
         afterEach(() => {
           eventListeners.dispose();
@@ -157,7 +162,9 @@ describe('Client ', () => {
       describe('calling login/logout', () => {
         beforeEach(() => {
           client = createNewClient();
-          eventListeners = createEventListeners(client.addListener);
+          eventListeners = createEventListeners(
+            (client.addListener as unknown) as ListenerSetter
+          );
         });
         afterEach(() => {
           eventListeners.dispose();
@@ -187,7 +194,9 @@ describe('Client ', () => {
         beforeEach(() => {
           mockMutator.resetMock();
           client = createNewClient();
-          eventListeners = createEventListeners(client.addListener);
+          eventListeners = createEventListeners(
+            (client.addListener as unknown) as ListenerSetter
+          );
         });
         afterEach(() => {
           eventListeners.dispose();
@@ -225,7 +234,9 @@ describe('Client ', () => {
         beforeEach(() => {
           mockMutator.resetMock();
           client = createNewClient();
-          eventListeners = createEventListeners(client.addListener);
+          eventListeners = createEventListeners(
+            (client.addListener as unknown) as ListenerSetter
+          );
         });
         afterEach(() => {
           eventListeners.dispose();

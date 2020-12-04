@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/camelcase */
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import to from 'await-handler';
+import Keycloak from 'keycloak-js';
 import {
   EventListeners,
   configureClient,
-  createEventListeners
+  createEventListeners,
+  ListenerSetter
 } from '../__mocks__';
 import { ClientStatus, Client, ClientEvent, ClientError } from '../index';
 import { createKeycloakClient, getUserFromLocalStorage } from '../keycloak';
@@ -28,7 +29,9 @@ describe('Keycloak client ', () => {
   function initTests(): void {
     mockMutator.resetMock();
     client = createNewClient();
-    eventListeners = createEventListeners(client.addListener);
+    eventListeners = createEventListeners(
+      (client.addListener as unknown) as ListenerSetter
+    );
     instance = mockMutator.getInstance() as Keycloak.KeycloakInstance;
   }
 

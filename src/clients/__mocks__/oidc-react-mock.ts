@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   UserManager,
@@ -7,6 +6,7 @@ import {
   UserManagerEvents
 } from 'oidc-client';
 import { mockMutatorCreator, MockMutator } from './index';
+import { AnyFunction } from '../../common';
 
 let oidcReactMutator: MockMutator;
 
@@ -19,8 +19,19 @@ export const mockMutatorGetterOidc = (): MockMutator => {
 };
 
 const mockUserManagerEvents = (): UserManagerEvents => {
-  const listeners: Map<string, Function[]> = new Map();
-  const addListener = (type: string, callback: Function): void => {
+  const listeners: Map<
+    string,
+    (
+      | UserManagerEvents.UserLoadedCallback
+      | UserManagerEvents.SilentRenewErrorCallback
+    )[]
+  > = new Map();
+  const addListener = (
+    type: string,
+    callback:
+      | UserManagerEvents.UserLoadedCallback
+      | UserManagerEvents.SilentRenewErrorCallback
+  ): void => {
     if (!listeners.has(type)) {
       listeners.set(type, []);
     }
@@ -41,25 +52,35 @@ const mockUserManagerEvents = (): UserManagerEvents => {
   return {
     load: (): any => true,
     unload: (): any => true,
-    addUserUnloaded: (callback: Function): void => {
+    addUserUnloaded: (callback: UserManagerEvents.UserLoadedCallback): void => {
       addListener('userUnloaded', callback);
     },
-    addUserSignedOut: (callback: Function): void => {
+    addUserSignedOut: (
+      callback: UserManagerEvents.UserLoadedCallback
+    ): void => {
       addListener('userSignedOut', callback);
     },
-    addUserSessionChanged: (callback: Function): void => {
+    addUserSessionChanged: (
+      callback: UserManagerEvents.UserLoadedCallback
+    ): void => {
       addListener('userSessionChanged', callback);
     },
-    addSilentRenewError: (callback: Function): void => {
+    addSilentRenewError: (
+      callback: UserManagerEvents.SilentRenewErrorCallback
+    ): void => {
       addListener('silentRenewError', callback);
     },
-    addAccessTokenExpired: (callback: Function): void => {
+    addAccessTokenExpired: (
+      callback: UserManagerEvents.UserLoadedCallback
+    ): void => {
       addListener('accessTokenExpired', callback);
     },
-    addUserLoaded: (callback: Function): void => {
+    addUserLoaded: (callback: UserManagerEvents.UserLoadedCallback): void => {
       addListener('userLoaded', callback);
     },
-    addAccessTokenExpiring: (callback: Function): void => {
+    addAccessTokenExpiring: (
+      callback: UserManagerEvents.UserLoadedCallback
+    ): void => {
       addListener('accessTokenExpiring', callback);
     },
     removeUserLoaded: (): any => true,
@@ -82,23 +103,28 @@ export const mockOidcUserManager = (
   const initPromiseF = (): Promise<User> => {
     mockMutator.initCalled();
     const clientInitRejectPayload = mockMutator.getClientInitRejectPayload();
-    return new Promise((resolve: Function, reject: Function) => {
-      setTimeout((): void => {
-        const tokenParsed = mockMutator.getTokenParsed();
-        const sessionState = tokenParsed.session_state;
-        const user = sessionState
-          ? {
-              profile: mockMutator.getTokenParsed(),
-              session_state: sessionState,
-              expired: false
-            }
-          : undefined;
-        // eslint-disable-next-line no-unused-expressions
-        clientInitRejectPayload
-          ? reject(clientInitRejectPayload)
-          : resolve(user);
-      }, mockMutator.promiseTimeout);
-    }) as Promise<any>;
+    return new Promise(
+      (
+        resolve: (props?: unknown) => unknown,
+        reject: (props?: unknown) => unknown
+      ) => {
+        setTimeout((): void => {
+          const tokenParsed = mockMutator.getTokenParsed();
+          const sessionState = tokenParsed.session_state;
+          const user = sessionState
+            ? {
+                profile: mockMutator.getTokenParsed(),
+                session_state: sessionState,
+                expired: false
+              }
+            : undefined;
+          // eslint-disable-next-line no-unused-expressions
+          clientInitRejectPayload
+            ? reject(clientInitRejectPayload)
+            : resolve(user);
+        }, mockMutator.promiseTimeout);
+      }
+    ) as Promise<User>;
   };
   return {
     signinSilent(
@@ -123,7 +149,7 @@ export const mockOidcUserManager = (
     getUser: (): Promise<User> => {
       const loadProfileRejectPayload = mockMutator.getLoadProfileRejectPayload();
       const loadProfileResolvePayload = mockMutator.getLoadProfileResolvePayload();
-      return new Promise((resolve: Function, reject: Function) => {
+      return new Promise((resolve: AnyFunction, reject: AnyFunction) => {
         setTimeout((): void => {
           // eslint-disable-next-line no-unused-expressions
           loadProfileRejectPayload

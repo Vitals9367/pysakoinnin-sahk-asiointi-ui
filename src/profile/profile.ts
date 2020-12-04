@@ -1,5 +1,5 @@
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import to from 'await-handler';
 import { ApolloError } from '@apollo/client';
@@ -13,10 +13,11 @@ import {
   resetClient
 } from '../graphql/graphqlClient';
 import { ApiAccessTokenContext } from '../components/ApiAccessTokenProvider';
+import { AnyObject } from '../common';
 
 let profileGqlClient: GraphQLClient;
 
-export type ProfileDataType = {} | undefined;
+export type ProfileDataType = string | AnyObject | undefined;
 export type ProfileData = Record<string, ProfileDataType>;
 export type ProfileQueryResult = {
   data: {

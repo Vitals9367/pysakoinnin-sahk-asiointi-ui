@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Oidc, {
   UserManager,
   UserManagerSettings,
@@ -12,6 +12,7 @@ import {
   ClientStatusId,
   User as ClientUser,
   ClientEvent,
+  ClientErrorObject,
   ClientError,
   createClient,
   ClientFactory,
@@ -44,10 +45,8 @@ function bindEvents(
     return onAuthChange(false);
   });
   manager.events.addUserSessionChanged((): boolean => onAuthChange(false));
-  manager.events.addSilentRenewError((renewError?: {}): void => {
-    const errorObj = renewError
-      ? ((renewError as unknown) as Error)
-      : undefined;
+  manager.events.addSilentRenewError((renewError?: Error): void => {
+    const errorObj = renewError || undefined;
     const message = errorObj ? errorObj.message : '';
     setError({
       type: ClientError.AUTH_REFRESH_ERROR,
@@ -70,7 +69,6 @@ export function createOidcClient(): Client {
     throw new Error(errorMessage);
   }
   const clientConfig = getClientConfig();
-  /* eslint-disable @typescript-eslint/camelcase */
   const oidcConfig: UserManagerSettings = {
     userStore: new WebStorageStateStore({ store: window.localStorage }),
     authority: clientConfig.authority,
@@ -82,7 +80,6 @@ export function createOidcClient(): Client {
     silent_redirect_uri: getLocationBasedUri(clientConfig.silentAuthPath),
     post_logout_redirect_uri: getLocationBasedUri(clientConfig.logoutPath)
   };
-  /* eslint-enable @typescript-eslint/camelcase */
   const manager = new UserManager(oidcConfig);
   const {
     eventTrigger,
@@ -335,10 +332,10 @@ export function useOidc(): Client {
   return clientFromRef;
 }
 
-export function useOidcErrorDetection(): ClientError {
+export function useOidcErrorDetection(): ClientErrorObject {
   const clientRef: React.Ref<Client> = useRef(getClient());
   const clientFromRef: Client = clientRef.current as Client;
-  const [error, setError] = useState<ClientError>(undefined);
+  const [error, setError] = useState<ClientErrorObject>(undefined);
   useEffect(() => {
     let isAuthorized = false;
     const statusListenerDisposer = clientFromRef.addListener(
@@ -357,7 +354,7 @@ export function useOidcErrorDetection(): ClientError {
     const errorListenerDisposer = clientFromRef.addListener(
       ClientEvent.ERROR,
       newError => {
-        setError(newError as ClientError);
+        setError(newError as ClientErrorObject);
       }
     );
 
