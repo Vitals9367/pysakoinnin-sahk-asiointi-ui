@@ -13,7 +13,7 @@ const LogoutInfoComponent = (): React.ReactElement => {
         Olet kirjautunut, <span data-test-id="logout-user-name">{name}</span>
       </h3>
       <div>
-        <Button translate="" onClick={logout} data-test-id="logout-info">
+        <Button translate="" onClick={logout}>
           Kirjaudu ulos
         </Button>
       </div>
