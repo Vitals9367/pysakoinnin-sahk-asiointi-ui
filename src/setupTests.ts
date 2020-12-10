@@ -3,8 +3,6 @@ import { configure } from 'enzyme';
 import Keycloak from 'keycloak-js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { GlobalWithFetchMock } from 'jest-fetch-mock';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import 'jest-localstorage-mock';
 import { UserManager, UserManagerSettings } from 'oidc-client';
 import {
   mockMutatorGetter,
