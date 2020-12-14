@@ -8,6 +8,7 @@
     "browser": true,
     "jest": true
   },
+  "plugins": ["sonarjs"],
   "rules": {
     "react/prop-types": 0,
     "react/destructuring-assignment": 0,
@@ -17,7 +18,8 @@
     "no-unused-vars": 0,
     "arrow-body-style": ["error", "as-needed"],
     "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "error"
+    "@typescript-eslint/no-explicit-any": "error",
+    "sonarjs/prefer-immediate-return": "error"
   },
   "globals": {
     "cy": true

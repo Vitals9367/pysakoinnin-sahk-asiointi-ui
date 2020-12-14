@@ -72,11 +72,9 @@ export const mockKeycloak = (
       configurable: false,
       enumerable: true,
       get() {
-        const value =
-          name === 'tokenParsed'
-            ? mockMutator.getTokenParsed()
-            : Reflect.get(mockMutator.getTokens(), name);
-        return value;
+        return name === 'tokenParsed'
+          ? mockMutator.getTokenParsed()
+          : Reflect.get(mockMutator.getTokens(), name);
       },
       set(value) {
         // eslint-disable-next-line no-unused-expressions

@@ -293,14 +293,12 @@ export function createKeycloakClient(): Client {
 
   const getApiAccessToken: Client['getApiAccessToken'] = async (
     options: FetchApiTokenOptions
-  ) => {
-    const tokenResponse = await fetchApiToken({
+  ) =>
+    fetchApiToken({
       uri: getTokenUri(getClientConfig()),
       accessToken: keycloak.token as string,
       ...options
     });
-    return tokenResponse;
-  };
 
   const getUserTokens: Client['getUserTokens'] = () => {
     if (!isAuthenticated()) {

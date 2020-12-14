@@ -231,7 +231,7 @@ export function createOidcClient(): Client {
             ? oidcUserToClientUser(loadedUser)
             : undefined;
           setStoredUser(oidcUserAsClientUser);
-          resolve(oidcUserAsClientUser);
+          resolve(oidcUserAsClientUser as ClientUser);
         })
         .catch(e => {
           setStoredUser(undefined);
@@ -250,12 +250,11 @@ export function createOidcClient(): Client {
     if (!user) {
       throw new Error('getApiAccessToken: no user with access token');
     }
-    const tokenResponse = await fetchApiToken({
+    return fetchApiToken({
       uri: getTokenUri(getClientConfig()),
       accessToken: user.access_token as string,
       ...options
     });
-    return tokenResponse;
   };
 
   const getUserTokens: Client['getUserTokens'] = () => {
