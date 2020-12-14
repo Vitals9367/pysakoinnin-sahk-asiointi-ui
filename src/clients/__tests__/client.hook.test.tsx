@@ -88,6 +88,9 @@ describe('Keycloak consumers ', () => {
   configureClient();
   const nonHookClient = getClient();
   const mockMutator = mockMutatorGetter();
+  const instance1Selector = '#instance_1';
+  const instance2Selector = '#instance_2';
+  const instance3Selector = '#instance_3';
 
   const getComponentValues = (selector: string): ClientValues | undefined =>
     getClientDataFromComponent(dom, selector);
@@ -179,9 +182,9 @@ describe('Keycloak consumers ', () => {
   });
   describe('Components and consumers using useKeycloak ', () => {
     it('are rendered and updated', async () => {
-      matchComponentWithClient('#instance_1', instances.get('3') as Client);
-      matchComponentWithClient('#instance_2', instances.get('1') as Client);
-      matchComponentWithClient('#instance_3', instances.get('2') as Client);
+      matchComponentWithClient(instance1Selector, instances.get('3') as Client);
+      matchComponentWithClient(instance2Selector, instances.get('1') as Client);
+      matchComponentWithClient(instance3Selector, instances.get('2') as Client);
       matchComponentWithClient('#consumer', nonHookClient);
       const user = mockMutator.createValidUserData({
         email: 'yougot@email.com'
@@ -192,14 +195,14 @@ describe('Keycloak consumers ', () => {
       });
 
       dom.update();
-      const values = getComponentValues('#instance_1') as ClientValues;
+      const values = getComponentValues(instance1Selector) as ClientValues;
       expect(values && values.email).toBe(user.email);
       expect((instances.get('3') as Client).getStatus()).toBe(
         ClientStatus.AUTHORIZED
       );
-      matchComponentWithClient('#instance_1', instances.get('3') as Client);
-      matchComponentWithClient('#instance_2', instances.get('1') as Client);
-      matchComponentWithClient('#instance_3', instances.get('2') as Client);
+      matchComponentWithClient(instance1Selector, instances.get('3') as Client);
+      matchComponentWithClient(instance2Selector, instances.get('1') as Client);
+      matchComponentWithClient(instance3Selector, instances.get('2') as Client);
       matchComponentWithClient('#consumer', nonHookClient);
     });
 
