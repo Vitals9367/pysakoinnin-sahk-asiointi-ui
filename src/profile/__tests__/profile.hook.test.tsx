@@ -105,7 +105,7 @@ describe('Profile.ts useProfile hook ', () => {
     returnApiTokenError
   }: {
     response: AnyObject;
-    audience?: string | undefined;
+    audience?: string;
     returnApiTokenError?: boolean;
     returnError?: boolean;
   }): Promise<void> => {

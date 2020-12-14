@@ -40,8 +40,8 @@ describe('Client.ts useApiAccessTokens hook ', () => {
     setUpUser(user, mockMutator, client);
 
   const setUpTest = async (props?: {
-    user?: AnyObject | undefined;
-    apiToken?: string | undefined;
+    user?: AnyObject;
+    apiToken?: string;
   }): Promise<void> => {
     const { user } = props || {};
     if (user) {
