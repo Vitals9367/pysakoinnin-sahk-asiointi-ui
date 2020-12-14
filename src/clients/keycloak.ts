@@ -148,13 +148,10 @@ export function createKeycloakClient(): Client {
     setStoredUser(user);
   };
 
-  const getUserData = (): User | undefined => {
-    return (
-      getStoredUser() ||
-      getUserFromLocalStorage(keycloak.tokenParsed as KeycloakTokenParsed) ||
-      undefined
-    );
-  };
+  const getUserData = (): User | undefined =>
+    getStoredUser() ||
+    getUserFromLocalStorage(keycloak.tokenParsed as KeycloakTokenParsed) ||
+    undefined;
 
   const getUser: Client['getUser'] = () => {
     if (!isAuthenticated()) {
@@ -219,17 +216,16 @@ export function createKeycloakClient(): Client {
     });
   };
 
-  const handleCallback: Client['handleCallback'] = () => {
-    return Promise.reject(new Error('not supported with keycloak'));
-  };
+  const handleCallback: Client['handleCallback'] = () =>
+    Promise.reject(new Error('not supported with keycloak'));
 
-  const loadUserProfile: Client['loadUserProfile'] = () => {
-    return new Promise((resolve, reject) => {
+  const loadUserProfile: Client['loadUserProfile'] = () =>
+    new Promise((resolve, reject) => {
       keycloak
         .loadUserProfile()
         .then(data => {
           setStoredUser(data as User);
-          resolve(getStoredUser());
+          resolve(getStoredUser() as User);
         })
         .catch(e => {
           setStoredUser(undefined);
@@ -240,11 +236,8 @@ export function createKeycloakClient(): Client {
           reject(e);
         });
     });
-  };
 
-  const getUserProfile: Client['getUserProfile'] = () => {
-    return getStoredUser();
-  };
+  const getUserProfile: Client['getUserProfile'] = () => getStoredUser();
 
   let initPromise: Promise<User | undefined> | undefined;
   const init: Client['init'] = () => {

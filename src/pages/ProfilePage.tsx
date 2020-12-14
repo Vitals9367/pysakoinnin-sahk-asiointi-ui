@@ -6,14 +6,12 @@ import AuthenticatingInfo from '../components/AuthenticatingInfo';
 import { ApiAccessTokenProvider } from '../components/ApiAccessTokenProvider';
 import WithAuth from '../clients/WithAuth';
 
-const Tokens = (): React.ReactElement => {
-  return (
-    <PageContent>
-      <ApiAccessTokenProvider>
-        {WithAuth(Profile, LoginInfo, AuthenticatingInfo)}
-      </ApiAccessTokenProvider>
-    </PageContent>
-  );
-};
+const Tokens = (): React.ReactElement => (
+  <PageContent>
+    <ApiAccessTokenProvider>
+      {WithAuth(Profile, LoginInfo, AuthenticatingInfo)}
+    </ApiAccessTokenProvider>
+  </PageContent>
+);
 
 export default Tokens;

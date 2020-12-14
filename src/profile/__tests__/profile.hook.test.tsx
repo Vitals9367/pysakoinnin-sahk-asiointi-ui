@@ -97,9 +97,8 @@ describe('Profile.ts useProfile hook ', () => {
     }
   }
 
-  const setUser = async (user: AnyObject): Promise<void> => {
-    return setUpUser(user, mockMutator, client);
-  };
+  const setUser = async (user: AnyObject): Promise<void> =>
+    setUpUser(user, mockMutator, client);
 
   const setUpTest = async ({
     response,

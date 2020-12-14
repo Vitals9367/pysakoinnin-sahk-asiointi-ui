@@ -36,9 +36,8 @@ describe('Client.ts useApiAccessTokens hook ', () => {
     return <div id="api-token-status">{apiTokenActions.getStatus()}</div>;
   };
 
-  const setUser = async (user: AnyObject): Promise<void> => {
-    return setUpUser(user, mockMutator, client);
-  };
+  const setUser = async (user: AnyObject): Promise<void> =>
+    setUpUser(user, mockMutator, client);
 
   const setUpTest = async (props?: {
     user?: AnyObject | undefined;

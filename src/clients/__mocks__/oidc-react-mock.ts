@@ -142,9 +142,7 @@ export const mockOidcUserManager = (
       return Promise.resolve();
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    signinRedirectCallback: (url?: string): Promise<User> => {
-      return initPromiseF();
-    },
+    signinRedirectCallback: (url?: string): Promise<User> => initPromiseF(),
     getUser: (): Promise<User> => {
       const loadProfileRejectPayload = mockMutator.getLoadProfileRejectPayload();
       const loadProfileResolvePayload = mockMutator.getLoadProfileResolvePayload();

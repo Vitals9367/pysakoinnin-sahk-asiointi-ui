@@ -52,20 +52,13 @@ const AuthenticatedContent = (): React.ReactElement => {
   );
 };
 
-const UnauthenticatedContent = (): React.ReactElement => {
-  return (
-    <PageContent>
-      <LoginInfo />
-    </PageContent>
-  );
-};
+const UnauthenticatedContent = (): React.ReactElement => (
+  <PageContent>
+    <LoginInfo />
+  </PageContent>
+);
 
-const AccessTokens = (): React.ReactElement => {
-  return WithAuth(
-    AuthenticatedContent,
-    UnauthenticatedContent,
-    AuthenticatingInfo
-  );
-};
+const AccessTokens = (): React.ReactElement =>
+  WithAuth(AuthenticatedContent, UnauthenticatedContent, AuthenticatingInfo);
 
 export default AccessTokens;

@@ -29,16 +29,14 @@ jest.mock('react-router', () => ({
   })
 }));
 
-jest.mock('keycloak-js', () => {
-  return (): Keycloak.KeycloakInstance => {
-    const mockMutator = mockMutatorGetter();
-    const clientInstance = mockKeycloak(
-      jest.requireActual('keycloak-js')() as Keycloak.KeycloakInstance,
-      mockMutator
-    );
-    mockMutator.setInstance(clientInstance);
-    return clientInstance;
-  };
+jest.mock('keycloak-js', () => (): Keycloak.KeycloakInstance => {
+  const mockMutator = mockMutatorGetter();
+  const clientInstance = mockKeycloak(
+    jest.requireActual('keycloak-js')() as Keycloak.KeycloakInstance,
+    mockMutator
+  );
+  mockMutator.setInstance(clientInstance);
+  return clientInstance;
 });
 
 jest.mock('oidc-client', () => {

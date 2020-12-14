@@ -35,9 +35,8 @@ describe('Profile.ts', () => {
   const profileBackendUrl = 'https://localhost/profileGraphql/';
   let lastRequest: Request;
 
-  const setUser = async (user: AnyObject): Promise<void> => {
-    return setUpUser(user, mockMutator, client);
-  };
+  const setUser = async (user: AnyObject): Promise<void> =>
+    setUpUser(user, mockMutator, client);
 
   const setValidApiToken = (): string => {
     const value = 'valid-api-token';

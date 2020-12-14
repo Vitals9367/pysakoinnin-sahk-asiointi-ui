@@ -4,9 +4,7 @@ import { ProfileData } from '../profile';
 
 export const createValidProfileResponseData = (
   userData: AnyObject
-): ProfileData => {
-  return { data: { myProfile: { ...userData } } };
-};
+): ProfileData => ({ data: { myProfile: { ...userData } } });
 
 export const mockProfileResponse = (options: {
   response: AnyObject;

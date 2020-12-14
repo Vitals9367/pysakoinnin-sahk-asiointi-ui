@@ -49,17 +49,15 @@ const KeyCloakHookRenderer = ({
 const KeycloakConsumer = ({
   callback,
   id
-}: InstanceIdentifier): React.ReactElement | null => {
-  return (
-    <ClientContext.Consumer>
-      {(value): React.ReactElement | null => {
-        const client: Client = (value && value.client) as Client;
-        callback({ id, client });
-        return <ClientDataRenderer id={id} client={client} />;
-      }}
-    </ClientContext.Consumer>
-  );
-};
+}: InstanceIdentifier): React.ReactElement | null => (
+  <ClientContext.Consumer>
+    {(value): React.ReactElement | null => {
+      const client: Client = (value && value.client) as Client;
+      callback({ id, client });
+      return <ClientDataRenderer id={id} client={client} />;
+    }}
+  </ClientContext.Consumer>
+);
 
 const KeycloakReduxConsumer = ({ id }: { id: string }): React.ReactElement => {
   const state: StoreState = useSelector((storeState: StoreState) => storeState);
@@ -100,13 +98,12 @@ describe('Keycloak consumers ', () => {
   ): ClientValues | undefined =>
     matchClientDataWithComponent(dom, selector, client);
 
-  const getErrorText = (): string => {
-    return dom
+  const getErrorText = (): string =>
+    dom
       .find('#errorRenderer')
       .at(0)
       .find('.error')
       .text();
-  };
 
   const compareComponentWithRedux = (): void => {
     const values = getComponentValues('#redux');

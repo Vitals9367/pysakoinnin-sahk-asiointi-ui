@@ -5,12 +5,10 @@ import LogoutInfo from './LogoutInfo';
 import AuthenticatingInfo from './AuthenticatingInfo';
 import WithAuth from '../clients/WithAuth';
 
-const LoginComponent = (): React.ReactElement => {
-  return (
-    <DemoWrapper title="Keycloak-kuuntelija">
-      {WithAuth(LogoutInfo, LoginInfo, AuthenticatingInfo)}
-    </DemoWrapper>
-  );
-};
+const LoginComponent = (): React.ReactElement => (
+  <DemoWrapper title="Keycloak-kuuntelija">
+    {WithAuth(LogoutInfo, LoginInfo, AuthenticatingInfo)}
+  </DemoWrapper>
+);
 
 export default LoginComponent;

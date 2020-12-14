@@ -234,21 +234,15 @@ export function createClient(): ClientFactory {
   const tokenStorage: JWTPayload = {};
   const { addListener, eventTrigger } = createEventHandling();
 
-  const getStoredUser = (): User | undefined => {
-    return user;
-  };
+  const getStoredUser = (): User | undefined => user;
 
   const setStoredUser = (newUser: User | undefined): void => {
     user = newUser;
   };
 
-  const getStatus: Client['getStatus'] = () => {
-    return status;
-  };
+  const getStatus: Client['getStatus'] = () => status;
 
-  const getError: Client['getError'] = () => {
-    return error;
-  };
+  const getError: Client['getError'] = () => error;
 
   const isAuthenticated: Client['isAuthenticated'] = () =>
     status === ClientStatus.AUTHORIZED;

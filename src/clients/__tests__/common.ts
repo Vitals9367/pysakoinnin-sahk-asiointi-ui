@@ -74,18 +74,15 @@ export const setUpUser = async (
 
 export const createApiTokenFetchPayload = (
   overrides?: FetchApiTokenOptions
-): FetchApiTokenOptions => {
-  return {
-    audience: 'audience',
-    grantType: 'grantType',
-    permission: 'permission',
-    ...overrides
-  };
-};
+): FetchApiTokenOptions => ({
+  audience: 'audience',
+  grantType: 'grantType',
+  permission: 'permission',
+  ...overrides
+});
 
-export const setEnv = (overrides: Partial<NodeJS.ProcessEnv>): RestoreFn => {
-  return mockedEnv(overrides, { restore: true });
-};
+export const setEnv = (overrides: Partial<NodeJS.ProcessEnv>): RestoreFn =>
+  mockedEnv(overrides, { restore: true });
 
 describe('createApiTokenFetchPayload', () => {
   it('returns an object', () => {

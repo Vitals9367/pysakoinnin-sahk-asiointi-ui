@@ -15,6 +15,7 @@
     "jsx-a11y/alt-text": 0,
     "react/jsx-props-no-spreading": 0,
     "no-unused-vars": 0,
+    "arrow-body-style": ["error", "as-needed"],
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "error"
   },

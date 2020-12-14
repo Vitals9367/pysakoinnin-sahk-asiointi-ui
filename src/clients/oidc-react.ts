@@ -41,9 +41,7 @@ function bindEvents(
     eventTrigger(ClientEvent.CLIENT_AUTH_SUCCESS)
   );
   manager.events.addUserUnloaded((): boolean => onAuthChange(false));
-  manager.events.addUserSignedOut((): boolean => {
-    return onAuthChange(false);
-  });
+  manager.events.addUserSignedOut((): boolean => onAuthChange(false));
   manager.events.addUserSessionChanged((): boolean => onAuthChange(false));
   manager.events.addSilentRenewError((renewError?: Error): void => {
     const errorObj = renewError || undefined;
@@ -224,8 +222,8 @@ export function createOidcClient(): Client {
     return initPromise;
   };
 
-  const loadUserProfile: Client['loadUserProfile'] = () => {
-    return new Promise((resolve, reject) => {
+  const loadUserProfile: Client['loadUserProfile'] = () =>
+    new Promise((resolve, reject) => {
       manager
         .getUser()
         .then(loadedUser => {
@@ -244,11 +242,8 @@ export function createOidcClient(): Client {
           reject(e);
         });
     });
-  };
 
-  const getUserProfile: Client['getUserProfile'] = () => {
-    return getStoredUser();
-  };
+  const getUserProfile: Client['getUserProfile'] = () => getStoredUser();
 
   const getApiAccessToken: Client['getApiAccessToken'] = async options => {
     const user = getStoredUser();
