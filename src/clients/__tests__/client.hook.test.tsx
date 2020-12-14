@@ -113,13 +113,12 @@ describe('Keycloak consumers ', () => {
     const user = nonHookClient.getUser();
     const clientEmail = user ? user.email : undefined;
     const errorObj = nonHookClient.getError();
-    const error = errorObj ? errorObj.message : undefined;
 
     expect(values).toEqual({
       status: nonHookClient.getStatus(),
       authenticated: nonHookClient.isAuthenticated(),
       initialized: nonHookClient.isInitialized(),
-      error,
+      error: errorObj ? errorObj.message : undefined,
       email: clientEmail
     });
   };
