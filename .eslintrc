@@ -16,6 +16,10 @@
     "jsx-a11y/alt-text": 0,
     "react/jsx-props-no-spreading": 0,
     "no-unused-vars": 0,
+    "no-magic-numbers": [
+      "error",
+      { "ignoreArrayIndexes": true, "ignore": [1000, -1, 0, 1, 2, 3, 4, 5] }
+    ],
     "arrow-body-style": ["error", "as-needed"],
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "error",

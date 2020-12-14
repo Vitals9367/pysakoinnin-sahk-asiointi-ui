@@ -1,7 +1,7 @@
 import { FetchMock } from 'jest-fetch-mock';
 import mockedEnv, { RestoreFn } from 'mocked-env';
 import { Client, FetchApiTokenOptions, getClientConfig, getTokenUri } from '..';
-import { MockMutator } from '../__mocks__';
+import { MockMutator, promiseDefaultTimeout } from '../__mocks__/index';
 import { AnyFunction, AnyObject } from '../../common';
 
 type NodeJS = AnyObject;
@@ -38,7 +38,7 @@ export const mockApiTokenResponse = (
     return new Promise(resolve =>
       setTimeout(() => {
         resolve(responseData);
-      }, delay || 20)
+      }, delay || promiseDefaultTimeout)
     );
   });
   return tokens;

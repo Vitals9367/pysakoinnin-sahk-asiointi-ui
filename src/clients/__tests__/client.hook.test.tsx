@@ -122,6 +122,7 @@ describe('Keycloak consumers ', () => {
   };
 
   const instances: Map<string, Client> = new Map();
+  const instanceCount = 4;
   const callback: AnyFunction = props => {
     const { id, client } = props as InstanceIdentifier;
     if (!instances.has(id)) {
@@ -166,7 +167,7 @@ describe('Keycloak consumers ', () => {
   describe('have same instance ', () => {
     it('with same values', async () => {
       dom.update();
-      expect(instances.size).toBe(4);
+      expect(instances.size).toBe(instanceCount);
       expect((instances.get('1') as Client).getStatus()).toBe(
         ClientStatus.UNAUTHORIZED
       );

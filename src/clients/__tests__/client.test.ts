@@ -108,11 +108,13 @@ describe('Client ', () => {
         });
         it('changes status and triggers events when changed statusChange', async () => {
           const email = 'authorized@bar.com';
+          const statusChangeCountAfterAuthorized = 2; //  = INITIALIZED + AUTHORIZED
+          const statusChangeCountAfterUnAuthorized = 3; // previous + UNAUTHORIZED
           mockMutator.setUser(mockMutator.createValidUserData({ email }));
           await to(client.init());
           expect(client.getStatus()).toBe(ClientStatus.AUTHORIZED);
           expect(eventListeners.getCallCount(ClientEvent.STATUS_CHANGE)).toBe(
-            2
+            statusChangeCountAfterAuthorized
           ); // 2 = INITIALIZED + AUTHORIZED
           expect(eventListeners.getCallCount(ClientEvent.AUTHORIZED)).toBe(1);
           expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(0);
@@ -121,7 +123,7 @@ describe('Client ', () => {
           expect(eventListeners.getCallCount(ClientEvent.AUTHORIZED)).toBe(1);
           expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(1);
           expect(eventListeners.getCallCount(ClientEvent.STATUS_CHANGE)).toBe(
-            3
+            statusChangeCountAfterUnAuthorized
           );
           // user data is event payload in ClientEvent.AUTHORIZED
           const userData = eventListeners.getLastCallPayload(

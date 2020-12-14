@@ -87,6 +87,8 @@ type Tokens = {
   refreshToken: Token;
 };
 
+export const promiseDefaultTimeout = 20;
+
 export const getClientDataFromComponent = (
   dom: ReactWrapper,
   selector: string
@@ -291,7 +293,7 @@ export const mockMutatorCreator = (): MockMutator => {
     tokenParsed.session_state = `session_state-${Date.now()}`;
   };
   return {
-    promiseTimeout: 20,
+    promiseTimeout: promiseDefaultTimeout,
     setClientInitPayload,
     getTokenParsed,
     setTokenParsed,
