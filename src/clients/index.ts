@@ -1,5 +1,5 @@
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import to from 'await-handler';
 
@@ -12,7 +12,7 @@ export type EventPayload =
   | undefined
   | Client
   | ClientStatusId
-  | ClientError;
+  | ClientErrorObject;
 export type EventListener = (payload?: EventPayload) => void;
 export type Client = {
   init: () => Promise<User | undefined | null>;
@@ -27,10 +27,13 @@ export type Client = {
   loadUserProfile: () => Promise<User>;
   getStatus: () => ClientStatusId;
   setStatus: (newStatus: ClientStatusId) => boolean;
-  getError: () => ClientError;
-  setError: (newError?: ClientError) => boolean;
+  getError: () => ClientErrorObject;
+  setError: (newError?: ClientErrorObject) => boolean;
   getUserProfile: () => User | undefined;
-  addListener: (eventType: ClientEventId, listener: EventListener) => Function;
+  addListener: (
+    eventType: ClientEventId,
+    listener: EventListener
+  ) => () => void;
   onAuthChange: (authenticated: boolean) => boolean;
   getApiAccessToken: (
     options: FetchApiTokenOptions
@@ -90,7 +93,7 @@ export const ClientError = {
   USER_DATA_ERROR: 'USER_DATA_ERROR'
 } as const;
 
-export type ClientError = { type: string; message: string } | undefined;
+export type ClientErrorObject = { type: string; message: string } | undefined;
 
 export interface ClientProps {
   /**
@@ -226,7 +229,7 @@ export function createEventHandling(): EventHandlers {
 
 export function createClient(): ClientFactory {
   let status: ClientStatusId = ClientStatus.NONE;
-  let error: ClientError;
+  let error: ClientErrorObject;
   let user: User | undefined;
   const tokenStorage: JWTPayload = {};
   const { addListener, eventTrigger } = createEventHandling();

@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { FetchMock } from 'jest-fetch-mock';
 
 import {
-  ClientError,
+  ClientErrorObject,
   ClientEvent,
   ClientEventId,
   ClientFactory,
@@ -15,6 +14,7 @@ import {
   FetchError
 } from '../index';
 import { configureClient } from '../__mocks__';
+import { AnyFunction, AnyObject } from '../../common';
 
 describe('Client factory ', () => {
   let client: ClientFactory;
@@ -33,9 +33,9 @@ describe('Client factory ', () => {
       expect(client.setStatus(ClientStatus.AUTHORIZED)).toBe(true);
     });
     it('getError returns current error. setError changes error and returns boolean indicating did error type change', () => {
-      const firstError: ClientError = { type: 'foo1', message: 'bar1' };
-      const secondError: ClientError = { type: 'foo2', message: 'bar2' };
-      const thirdError: ClientError = { type: 'foo3', message: 'bar3' };
+      const firstError: ClientErrorObject = { type: 'foo1', message: 'bar1' };
+      const secondError: ClientErrorObject = { type: 'foo2', message: 'bar2' };
+      const thirdError: ClientErrorObject = { type: 'foo3', message: 'bar3' };
       expect(client.getError()).toBe(undefined);
       expect(client.setError(firstError)).toBe(true);
       expect(client.setError(secondError)).toBe(true);
@@ -93,9 +93,9 @@ describe('Client factory ', () => {
   });
   describe('event handling can ', () => {
     type MockFunctions = {
-      getLastCallPayload: Function;
-      getCallCount: Function;
-      disposer: Function;
+      getLastCallPayload: AnyFunction;
+      getCallCount: AnyFunction;
+      disposer: AnyFunction;
     };
 
     function addListenerMock(eventType: ClientEventId): MockFunctions {
@@ -104,7 +104,7 @@ describe('Client factory ', () => {
         listenerMock(payload);
       };
       const disposer = client.addListener(eventType, listenerFunc);
-      const getLastCallPayload = (): {} => {
+      const getLastCallPayload = (): AnyObject => {
         const { calls } = listenerMock.mock;
         const payloads = calls[calls.length - 1];
         return payloads ? payloads[0] : undefined;
@@ -171,8 +171,8 @@ describe('Client factory ', () => {
     it('setError triggers event', () => {
       const [, , errorListenerMock] = createMocks();
       const { getCallCount, getLastCallPayload } = errorListenerMock;
-      const firstError: ClientError = { type: 'foo1', message: 'bar1' };
-      const secondError: ClientError = { type: 'foo2', message: 'bar2' };
+      const firstError: ClientErrorObject = { type: 'foo1', message: 'bar1' };
+      const secondError: ClientErrorObject = { type: 'foo2', message: 'bar2' };
       expect(client.setError(firstError)).toBe(true);
       expect(getCallCount()).toBe(1);
       expect(getLastCallPayload()).toEqual(firstError);

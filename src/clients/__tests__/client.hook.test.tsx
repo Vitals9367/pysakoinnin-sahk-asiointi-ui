@@ -15,6 +15,7 @@ import { ClientProvider, ClientContext } from '../ClientProvider';
 import StoreProvider from '../redux/StoreProvider';
 import { StoreState } from '../redux';
 import { mockMutatorGetter } from '../__mocks__/keycloak-mock';
+import { AnyFunction } from '../../common';
 
 const ClientDataRenderer = ({
   client,
@@ -124,8 +125,8 @@ describe('Keycloak consumers ', () => {
   };
 
   const instances: Map<string, Client> = new Map();
-  const callback = (iid: InstanceIdentifier): void => {
-    const { id, client } = iid;
+  const callback: AnyFunction = props => {
+    const { id, client } = props as InstanceIdentifier;
     if (!instances.has(id)) {
       instances.set(id, client as Client);
     }

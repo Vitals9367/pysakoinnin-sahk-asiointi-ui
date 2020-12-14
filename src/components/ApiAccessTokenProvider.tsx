@@ -10,7 +10,7 @@ export const ApiAccessTokenContext = React.createContext<ApiAccessTokenActions |
   null
 );
 
-export const ApiAccessTokenProvider: FC<{}> = ({ children }) => {
+export const ApiAccessTokenProvider: FC<unknown> = ({ children }) => {
   const actions = useApiAccessTokens();
   return (
     <ApiAccessTokenContext.Provider value={actions}>

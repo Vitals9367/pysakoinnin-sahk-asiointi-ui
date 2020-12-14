@@ -1,4 +1,10 @@
-import { User, ClientEvent, Client, ClientError, EventPayload } from '../index';
+import {
+  User,
+  ClientEvent,
+  Client,
+  ClientErrorObject,
+  EventPayload
+} from '../index';
 
 type Action = { type: string; payload?: EventPayload };
 export const CONNECTED_ACTION = 'CONNECTED_ACTION';
@@ -23,7 +29,7 @@ export const unauthorized = (): Action => {
   };
 };
 
-export const errorThrown = (error: ClientError): Action => {
+export const errorThrown = (error: ClientErrorObject): Action => {
   return {
     type: ClientEvent.ERROR,
     payload: error

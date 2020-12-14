@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import React, { useContext } from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
@@ -30,6 +29,7 @@ import {
   createInvalidProfileResponse,
   mockProfileResponse
 } from './common';
+import { AnyObject, AnyFunction } from '../../common';
 
 describe('Profile.ts useProfile hook ', () => {
   configureClient({ type: 'oidc', tokenExchangePath: '/token-exchange/' });
@@ -41,7 +41,7 @@ describe('Profile.ts useProfile hook ', () => {
   let profileActions: ProfileActions;
   let apiTokenActions: ApiAccessTokenActions;
   let dom: ReactWrapper;
-  let restoreEnv: Function;
+  let restoreEnv: AnyFunction;
 
   const ProfileHookTester = (): React.ReactElement => {
     profileActions = useProfile();
@@ -65,7 +65,9 @@ describe('Profile.ts useProfile hook ', () => {
     );
   };
 
-  type ErrorCatcherProps = React.PropsWithChildren<{ callback: Function }>;
+  type ErrorCatcherProps = React.PropsWithChildren<{
+    callback: (err: Error) => void;
+  }>;
   class ErrorCatcher extends React.Component<
     ErrorCatcherProps,
     { error?: Error }
@@ -95,7 +97,7 @@ describe('Profile.ts useProfile hook ', () => {
     }
   }
 
-  const setUser = async (user: {}): Promise<void> => {
+  const setUser = async (user: AnyObject): Promise<void> => {
     return setUpUser(user, mockMutator, client);
   };
 
@@ -103,7 +105,7 @@ describe('Profile.ts useProfile hook ', () => {
     response,
     returnApiTokenError
   }: {
-    response: Record<string, {}>;
+    response: AnyObject;
     audience?: string | undefined;
     returnApiTokenError?: boolean;
     returnError?: boolean;

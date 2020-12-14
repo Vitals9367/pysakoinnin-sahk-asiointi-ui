@@ -1,11 +1,18 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState, useRef, useCallback, createContext } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  createContext
+} from 'react';
 import {
   Client,
-  ClientError,
+  ClientErrorObject,
   ClientEvent,
   ClientStatus,
   ClientStatusId,
+  ClientError,
   ClientType,
   FetchApiTokenOptions,
   FetchError,
@@ -50,10 +57,12 @@ export function useClient(clientType?: ClientType): Client {
   return clientFromRef;
 }
 
-export function useClientErrorDetection(clientType?: ClientType): ClientError {
+export function useClientErrorDetection(
+  clientType?: ClientType
+): ClientErrorObject {
   const clientRef: React.Ref<Client> = useRef(getClient(clientType));
   const clientFromRef: Client = clientRef.current as Client;
-  const [error, setError] = useState<ClientError>(undefined);
+  const [error, setError] = useState<ClientErrorObject>(undefined);
   useEffect(() => {
     let isAuthorized = false;
     const statusListenerDisposer = clientFromRef.addListener(
@@ -72,7 +81,7 @@ export function useClientErrorDetection(clientType?: ClientType): ClientError {
     const errorListenerDisposer = clientFromRef.addListener(
       ClientEvent.ERROR,
       newError => {
-        setError(newError as ClientError);
+        setError(newError as ClientErrorObject);
       }
     );
     const logoutListenerDisposer = clientFromRef.addListener(

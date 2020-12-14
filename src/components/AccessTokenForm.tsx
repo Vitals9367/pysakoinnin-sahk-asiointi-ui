@@ -5,7 +5,7 @@ import styles from './styles.module.css';
 
 const AccessTokenForm = (props: {
   options: FetchApiTokenOptions;
-  onOptionChange: Function;
+  onOptionChange: (newOptions: FetchApiTokenOptions) => void;
 }): React.ReactElement => {
   const { options } = props;
   const onChange = (

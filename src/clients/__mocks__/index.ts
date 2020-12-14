@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactWrapper } from 'enzyme';
 import { UserManager } from 'oidc-client';
+import Keycloak from 'keycloak-js';
 import {
   Client,
   ClientEvent,
@@ -11,22 +12,25 @@ import {
   Token
 } from '..';
 import config from '../../config';
+import {
+  AnyObject,
+  AnyFunction,
+  AnyNonNullishValue,
+  AnyValue
+} from '../../common';
 
 type ClientInstance = Keycloak.KeycloakInstance | UserManager;
 
 export type MockMutator = {
-  setClientInitPayload: (
-    resolve: {} | undefined,
-    reject: {} | undefined
-  ) => void;
+  setClientInitPayload: (resolve: AnyValue, reject: AnyValue) => void;
   getClientInitResolvePayload: () => Payload;
   getClientInitRejectPayload: () => Payload;
   getLoadProfileResolvePayload: () => Payload;
   getLoadProfileRejectPayload: () => Payload;
-  getTokenParsed: () => Record<string, unknown>;
-  setTokenParsed: (props: {}) => void;
-  setUser: (props?: {}) => void;
-  getUser: () => {} | undefined;
+  getTokenParsed: () => AnyObject;
+  setTokenParsed: (props: AnyNonNullishValue) => void;
+  setUser: (props?: AnyNonNullishValue) => void;
+  getUser: () => AnyNonNullishValue | undefined;
   getTokens: () => Tokens;
   getInitCallCount: () => number;
   initCalled: () => void;
@@ -35,16 +39,15 @@ export type MockMutator = {
   loginCalled: (props?: any) => void;
   logoutCalled: (props?: any) => void;
   resetMock: () => void;
-  setLoadProfilePayload: (
-    resolve: {} | undefined,
-    reject: {} | undefined
-  ) => void;
+  setLoadProfilePayload: (resolve: AnyValue, reject: AnyValue) => void;
   getLoginCallCount: () => number;
   getLogoutCallCount: () => number;
-  setTokens: (newTokens: {}) => {};
+  setTokens: (newTokens: AnyNonNullishValue) => AnyNonNullishValue;
   getInstance: () => ClientInstance;
   setInstance: (instance: ClientInstance) => void;
-  createValidUserData: (props?: {}) => {
+  createValidUserData: (
+    props?: AnyNonNullishValue
+  ) => {
     email: string;
     name: string;
     given_name: string;
@@ -54,7 +57,7 @@ export type MockMutator = {
 };
 
 export type InstanceIdentifier = {
-  callback: Function;
+  callback: AnyFunction;
   client?: Client;
   id: string;
 };
@@ -69,11 +72,16 @@ export type ClientValues = {
 
 export type EventListeners = Record<ClientEventId, jest.Mock> & {
   dispose: () => void;
-  getLastCallPayload: (eventType: ClientEventId) => {} | undefined;
+  getLastCallPayload: (eventType: ClientEventId) => Payload;
   getCallCount: (eventType: ClientEventId) => number;
 };
 
-type Payload = {} | undefined;
+export type ListenerSetter = (
+  eventType: string,
+  listener: AnyFunction
+) => AnyFunction;
+
+type Payload = AnyValue;
 type Tokens = {
   token: Token;
   idToken: Token;
@@ -127,16 +135,16 @@ export const configureClient = (
 };
 
 export const createEventListeners = (
-  addEventListener: Function
+  addEventListener: ListenerSetter
 ): EventListeners => {
   const listeners: Partial<EventListeners> = {};
-  const disposers: Function[] = [];
+  const disposers: AnyFunction[] = [];
   Object.keys(ClientEvent).forEach((eventType: string): void => {
     const listener = jest.fn();
     listeners[eventType as ClientEventId] = listener;
     disposers.push(addEventListener(eventType, listener));
   });
-  const getLastCallPayload = (eventType: ClientEventId): {} | undefined => {
+  const getLastCallPayload = (eventType: ClientEventId): Payload => {
     const listenerMock = listeners[eventType];
     if (!listenerMock || !listenerMock.mock) {
       return undefined;
@@ -169,8 +177,8 @@ export const mockMutatorCreator = (): MockMutator => {
   let clientInitRejectPayload: Payload;
   let loadProfileResolvePayload: Payload;
   let loadProfileRejectPayload: Payload;
-  let user: {} = {};
-  let tokenParsed: Record<string, unknown> = {};
+  let user: AnyObject = {};
+  let tokenParsed: AnyObject = {};
   let initCallCount = 0;
   let creationCount = 0;
   let loginMock: jest.Mock;
@@ -207,7 +215,9 @@ export const mockMutatorCreator = (): MockMutator => {
   const getLoadProfileRejectPayload: MockMutator['getLoadProfileRejectPayload'] = () =>
     loadProfileRejectPayload;
 
-  const setTokenParsed: MockMutator['setTokenParsed'] = (props: {}): void => {
+  const setTokenParsed: MockMutator['setTokenParsed'] = (
+    props: AnyObject
+  ): void => {
     tokenParsed = Object.assign(tokenParsed, {
       ...user,
       ...props
@@ -219,7 +229,7 @@ export const mockMutatorCreator = (): MockMutator => {
   > => {
     return tokenParsed;
   };
-  const createEmptyUser = (): {} => {
+  const createEmptyUser = (): AnyObject => {
     return {
       name: undefined,
       given_name: undefined,

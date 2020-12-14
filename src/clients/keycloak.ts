@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Keycloak, { KeycloakTokenParsed } from 'keycloak-js';
 
 import {
@@ -7,6 +7,7 @@ import {
   ClientStatusId,
   User,
   ClientEvent,
+  ClientErrorObject,
   ClientError,
   createClient,
   ClientFactory,
@@ -32,14 +33,12 @@ export function getUserFromToken(
   if (!userData.name) {
     return undefined;
   }
-  /* eslint-disable @typescript-eslint/camelcase */
   return {
     name: userData.name,
     given_name: userData.given_name,
     family_name: userData.family_name,
     email: userData.email
   };
-  /* eslint-enable @typescript-eslint/camelcase */
 }
 
 export function saveUserToLocalStorage(
@@ -275,7 +274,7 @@ export function createKeycloakClient(): Client {
           clearSession();
           resolve(undefined);
         })
-        .catch((e?: {}) => {
+        .catch((e?: unknown) => {
           clearSession();
           onAuthChange(false);
           reject(e);
@@ -378,10 +377,10 @@ export function useKeycloak(): Client {
   return clientFromRef;
 }
 
-export function useKeycloakErrorDetection(): ClientError {
+export function useKeycloakErrorDetection(): ClientErrorObject {
   const clientRef: React.Ref<Client> = useRef(getClient());
   const clientFromRef: Client = clientRef.current as Client;
-  const [error, setError] = useState<ClientError>(undefined);
+  const [error, setError] = useState<ClientErrorObject>(undefined);
   useEffect(() => {
     let isAuthorized = false;
     const statusListenerDisposer = clientFromRef.addListener(
@@ -400,7 +399,7 @@ export function useKeycloakErrorDetection(): ClientError {
     const errorListenerDisposer = clientFromRef.addListener(
       ClientEvent.ERROR,
       newError => {
-        setError(newError as ClientError);
+        setError(newError as ClientErrorObject);
       }
     );
     const logoutListenerDisposer = clientFromRef.addListener(

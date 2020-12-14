@@ -2,16 +2,19 @@ import { FetchMock } from 'jest-fetch-mock';
 import mockedEnv, { RestoreFn } from 'mocked-env';
 import { Client, FetchApiTokenOptions, getClientConfig, getTokenUri } from '..';
 import { MockMutator } from '../__mocks__';
+import { AnyFunction, AnyObject } from '../../common';
+
+type NodeJS = AnyObject;
 
 export const mockApiTokenResponse = (
   options: {
     audience?: string;
     uri?: string;
     delay?: number;
-    requestCallback?: Function;
+    requestCallback?: AnyFunction;
     returnError?: boolean;
   } = {}
-): {} => {
+): AnyObject => {
   const { audience, uri, delay, requestCallback, returnError } = options;
   const fetchMock: FetchMock = global.fetch;
   const tokenKey =
@@ -57,7 +60,7 @@ export const logoutUser = (client: Client): void => {
 };
 
 export const setUpUser = async (
-  user: {},
+  user: AnyObject,
   mockMutator: MockMutator,
   client: Client
 ): Promise<void> => {
