@@ -6,10 +6,10 @@ import { useClient } from '../clients/client';
 const LoginInfoComponent = (): React.ReactElement => {
   const { login } = useClient();
   return (
-    <div className={styles['content-element']}>
+    <div className={styles['content-element']} data-test-id="login-info">
       <h3>Et ole kirjautunut</h3>
       <div>
-        <Button translate="" onClick={login}>
+        <Button translate="" onClick={login} data-test-id="login-button">
           Kirjaudu sisään
         </Button>
       </div>

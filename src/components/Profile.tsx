@@ -11,7 +11,8 @@ const PropToComponent = ([prop, value]: [
 ]): React.ReactElement => {
   return (
     <li key={prop}>
-      <strong>{prop}</strong>: {value}
+      <strong>{prop}</strong>:{' '}
+      <span data-test-id={`profile-data-${prop}`}>{value}</span>
     </li>
   );
 };
