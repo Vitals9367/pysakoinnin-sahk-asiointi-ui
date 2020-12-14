@@ -21,6 +21,7 @@
       { "ignoreArrayIndexes": true, "ignore": [1000, -1, 0, 1, 2, 3, 4, 5] }
     ],
     "arrow-body-style": ["error", "as-needed"],
+    "line-comment-position": ["error", { "position": "above" }],
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",

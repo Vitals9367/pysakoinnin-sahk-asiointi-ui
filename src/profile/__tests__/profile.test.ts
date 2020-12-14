@@ -115,7 +115,8 @@ describe('Profile.ts', () => {
     });
     const serverErrorResponse: FetchError = await getProfileData();
     expect(serverErrorResponse.error).toBeDefined();
-    fetchMock.resetMocks(); // must reset before new call to same url
+    // must reset before new call to same url
+    fetchMock.resetMocks();
     mockProfileResponse({
       requestCallback: (req: unknown): void => {
         lastRequest = req as Request;

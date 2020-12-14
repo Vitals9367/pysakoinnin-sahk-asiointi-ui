@@ -190,7 +190,8 @@ describe('Profile.ts useProfile hook ', () => {
       });
       await waitFor(() => expect(apiTokenActions.getStatus()).toBe('loaded'));
       await waitFor(() => expect(getProfileStatus()).toBe('loaded'));
-      fetchMock.resetMocks(); // must reset before new call to same url
+      // must reset before new call to same url
+      fetchMock.resetMocks();
       mockProfileResponse({
         ...validProfileResponseSettings,
         requestCallback: () => {
@@ -229,8 +230,9 @@ describe('Profile.ts useProfile hook ', () => {
 
   it('throws an error when rendered without apiToken context', async () => {
     let errorCatched: Error | undefined;
+    // notify console viewer that error is ok
     // eslint-disable-next-line no-console
-    console.log('Note: Error will be thrown...'); // notify console viewer that error is ok
+    console.log('Note: Error will be thrown...');
     dom = mount(
       <ErrorCatcher
         callback={(err: Error): void => {

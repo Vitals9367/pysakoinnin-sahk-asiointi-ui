@@ -60,7 +60,8 @@ describe('Client ', () => {
             1
           );
           const promise2 = client.init();
-          await client.init(); // third call for testing only
+          // third call for testing only
+          await client.init();
           await to(promise1);
           await to(promise2);
           expect(promise1 === promise2).toBe(true);
@@ -108,14 +109,16 @@ describe('Client ', () => {
         });
         it('changes status and triggers events when changed statusChange', async () => {
           const email = 'authorized@bar.com';
-          const statusChangeCountAfterAuthorized = 2; //  = INITIALIZED + AUTHORIZED
-          const statusChangeCountAfterUnAuthorized = 3; // previous + UNAUTHORIZED
+          // 2 = INITIALIZED + AUTHORIZED
+          const statusChangeCountAfterAuthorized = 2;
+          // 3 = previous + UNAUTHORIZED
+          const statusChangeCountAfterUnAuthorized = 3;
           mockMutator.setUser(mockMutator.createValidUserData({ email }));
           await to(client.init());
           expect(client.getStatus()).toBe(ClientStatus.AUTHORIZED);
           expect(eventListeners.getCallCount(ClientEvent.STATUS_CHANGE)).toBe(
             statusChangeCountAfterAuthorized
-          ); // 2 = INITIALIZED + AUTHORIZED
+          );
           expect(eventListeners.getCallCount(ClientEvent.AUTHORIZED)).toBe(1);
           expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(0);
           expect(client.onAuthChange(false)).toBe(true);
