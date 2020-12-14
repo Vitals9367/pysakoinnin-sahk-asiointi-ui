@@ -6,7 +6,7 @@ import AuthenticatingInfo from '../components/AuthenticatingInfo';
 import { ApiAccessTokenProvider } from '../components/ApiAccessTokenProvider';
 import WithAuth from '../clients/WithAuth';
 
-const Tokens = (): React.ReactElement => (
+const ProfilePage = (): React.ReactElement => (
   <PageContent>
     <ApiAccessTokenProvider>
       {WithAuth(Profile, LoginInfo, AuthenticatingInfo)}
@@ -14,4 +14,4 @@ const Tokens = (): React.ReactElement => (
   </PageContent>
 );
 
-export default Tokens;
+export default ProfilePage;

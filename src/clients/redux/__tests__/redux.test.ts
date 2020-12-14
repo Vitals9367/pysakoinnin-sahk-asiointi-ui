@@ -9,7 +9,7 @@ import {
 } from '../../index';
 import { configureClient } from '../../__mocks__';
 import { store, connectClient } from '../store';
-import reducer from '../reducers';
+import reducer from '../reducer';
 import {
   CONNECTED_ACTION,
   errorThrown,

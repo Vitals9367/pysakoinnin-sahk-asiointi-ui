@@ -7,7 +7,7 @@ import {
   ClientStatus,
   User
 } from '../index';
-import reducer from './reducers';
+import reducer from './reducer';
 import { authorized, unauthorized, errorThrown } from './actions';
 
 export const store = createStore(reducer, {

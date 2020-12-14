@@ -58,7 +58,7 @@ const UnauthenticatedContent = (): React.ReactElement => (
   </PageContent>
 );
 
-const AccessTokens = (): React.ReactElement =>
+const ApiAccessTokens = (): React.ReactElement =>
   WithAuth(AuthenticatedContent, UnauthenticatedContent, AuthenticatingInfo);
 
-export default AccessTokens;
+export default ApiAccessTokens;
