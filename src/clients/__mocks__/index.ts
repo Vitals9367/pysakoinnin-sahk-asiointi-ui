@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactWrapper } from 'enzyme';
 import { UserManager } from 'oidc-client';
 import Keycloak from 'keycloak-js';
@@ -36,8 +35,8 @@ export type MockMutator = {
   initCalled: () => void;
   getCreationCount: () => number;
   clientCreated: () => void;
-  loginCalled: (props?: any) => void;
-  logoutCalled: (props?: any) => void;
+  loginCalled: (props?: unknown) => void;
+  logoutCalled: (props?: unknown) => void;
   resetMock: () => void;
   setLoadProfilePayload: (resolve: AnyValue, reject: AnyValue) => void;
   getLoginCallCount: () => number;

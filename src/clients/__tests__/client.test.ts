@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -22,6 +20,7 @@ import { createKeycloakClient } from '../keycloak';
 import { mockMutatorGetter } from '../__mocks__/keycloak-mock';
 import { createOidcClient } from '../oidc-react';
 import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
+import { AnyObject } from '../../common';
 
 describe('Client ', () => {
   const clientTypes: ClientType[] = ['keycloak', 'oidc'];
@@ -128,7 +127,7 @@ describe('Client ', () => {
           const userData = eventListeners.getLastCallPayload(
             ClientEvent.AUTHORIZED
           );
-          expect(userData && (userData as any).email).toBe(email);
+          expect(userData && (userData as AnyObject).email).toBe(email);
         });
         it('trying to set authentication status same as it is, does nothing', async () => {
           mockMutator.setClientInitPayload(undefined, { error: 1 });
@@ -209,7 +208,7 @@ describe('Client ', () => {
           );
           const [error, user] = await to(client.loadUserProfile());
           expect(error).toBe(null);
-          expect(user && (user as any).email).toBe(email);
+          expect(user && (user as AnyObject).email).toBe(email);
           const userProfile = client.getUserProfile();
           expect(userProfile).toEqual(user);
           expect(client.getUser()).toBe(undefined);
@@ -248,11 +247,11 @@ describe('Client ', () => {
           expect(error).toBe(null);
           expect(mockMutator.getInitCallCount()).toBe(1);
           expect(client.getStatus()).toBe(ClientStatus.AUTHORIZED);
-          expect(user && (user as any).email).toBe(email);
+          expect(user && (user as AnyObject).email).toBe(email);
 
           const [, user2] = await to(client.getOrLoadUser());
           expect(mockMutator.getInitCallCount()).toBe(1);
-          expect(user2 && (user2 as any).email).toBe(email);
+          expect(user2 && (user2 as AnyObject).email).toBe(email);
         });
         it('calls init() if not initialized and returns undefined if not authorized. Init is not called again', async () => {
           const initError = { error: true };

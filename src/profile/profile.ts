@@ -21,10 +21,13 @@ export type ProfileDataType = string | AnyObject | undefined;
 export type ProfileData = Record<string, ProfileDataType>;
 export type ProfileQueryResult = {
   data: {
-    myProfile: ProfileData;
+    myProfile: GraphQLProfile;
   };
 };
-
+// todo: this should be replaced when apollo is set to create generatedTypes
+export type GraphQLProfile =
+  | Record<string, { edges: { node: { email: string } }[] }>
+  | undefined;
 export type ProfileActions = {
   getProfile: () => ProfileData | GraphQLClientError;
   fetch: () => Promise<ProfileData | GraphQLClientError>;
@@ -62,8 +65,7 @@ export function convertQueryToData(
     return undefined;
   }
   const { id, firstName, lastName, nickname, language } = profile;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getEmail = (data: any): string | undefined => {
+  const getEmail = (data: GraphQLProfile): string | undefined => {
     const list = data?.emails?.edges;
     return list && list[0] && list[0].node?.email;
   };
