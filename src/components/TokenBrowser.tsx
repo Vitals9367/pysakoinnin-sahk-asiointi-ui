@@ -21,14 +21,12 @@ const TokenBrowser = (): React.ReactElement => {
     selectedToken &&
     selectedToken.length >= minimunActualTokenLength &&
     selectedToken.indexOf('.') > -1;
-  const decodedPayload: JWTPayload | undefined = isToken
-    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      jwtDecode(selectedToken!)
-    : undefined;
-  const decodedHeader: JWTPayload | undefined = decodedPayload
-    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      jwtDecode(selectedToken!, { header: true })
-    : undefined;
+  const decodedPayload: JWTPayload | undefined =
+    isToken && selectedToken ? jwtDecode(selectedToken) : undefined;
+  const decodedHeader: JWTPayload | undefined =
+    decodedPayload && selectedToken
+      ? jwtDecode(selectedToken, { header: true })
+      : undefined;
   const onTokenSelectionChange = (
     newToken: string | undefined,
     id: string

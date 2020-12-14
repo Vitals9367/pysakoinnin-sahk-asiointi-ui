@@ -23,6 +23,7 @@ customGlobal.fetchMock = customGlobal.fetch;
 configure({ adapter: new Adapter() });
 
 jest.mock('react-router', () => ({
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   ...(jest.requireActual('react-router') as AnyObject),
   useHistory: (): Record<string, AnyFunction> => ({
     push: jest.fn()
@@ -49,6 +50,7 @@ jest.mock('oidc-client', () => {
     }
   }
   return {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     ...(jest.requireActual('oidc-client') as AnyObject),
     UserManager: MockUserManagerClass
   };

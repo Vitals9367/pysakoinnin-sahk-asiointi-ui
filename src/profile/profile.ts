@@ -108,7 +108,7 @@ export async function getProfileData(): Promise<
       error: new Error('query result is missing data.myProfile')
     };
   }
-  return data as ProfileData;
+  return data;
 }
 
 export function useProfile(): ProfileActions {

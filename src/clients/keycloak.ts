@@ -24,7 +24,7 @@ function getLocalStorageId(config: ClientProps, useType: string): string {
 }
 
 export function getUserFromToken(
-  tokenParsed: KeycloakTokenParsed
+  tokenParsed?: KeycloakTokenParsed
 ): User | undefined {
   if (!tokenParsed || !tokenParsed.session_state) {
     return undefined;
@@ -55,7 +55,7 @@ export function saveUserToLocalStorage(
 }
 
 export function getUserFromLocalStorage(
-  token: KeycloakTokenParsed
+  token?: KeycloakTokenParsed
 ): User | undefined {
   const storageId = getLocalStorageId(getClientConfig(), 'userData');
   const identifier = (token && token.session_state) || '';
@@ -150,7 +150,7 @@ export function createKeycloakClient(): Client {
 
   const getUserData = (): User | undefined =>
     getStoredUser() ||
-    getUserFromLocalStorage(keycloak.tokenParsed as KeycloakTokenParsed) ||
+    getUserFromLocalStorage(keycloak.tokenParsed) ||
     undefined;
 
   const getUser: Client['getUser'] = () => {
@@ -165,9 +165,7 @@ export function createKeycloakClient(): Client {
   };
 
   const storeUserDataFromToken = (): User | undefined => {
-    const userInToken = getUserFromToken(
-      keycloak.tokenParsed as KeycloakTokenParsed
-    );
+    const userInToken = getUserFromToken(keycloak.tokenParsed);
     if (userInToken) {
       saveUserData(userInToken);
       return userInToken;
