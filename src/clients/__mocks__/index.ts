@@ -233,7 +233,7 @@ export const mockMutatorCreator = (): MockMutator => {
     email: undefined
   });
 
-  const setUser: MockMutator['setUser'] = (props?) => {
+  const setUser: MockMutator['setUser'] = props => {
     user = props || createEmptyUser();
     setTokenParsed(user);
   };
