@@ -24,7 +24,6 @@ export type ProfileQueryResult = {
     myProfile: GraphQLProfile;
   };
 };
-// todo: this should be replaced when apollo is set to create generatedTypes
 export type GraphQLProfile =
   | Record<string, { edges: { node: { email: string } }[] }>
   | undefined;

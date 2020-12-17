@@ -199,7 +199,6 @@ export function createKeycloakClient(): Client {
 
   const login: Client['login'] = () => {
     keycloak.login({
-      // todo when relevant: redirect back to page login was initiated.
       redirectUri: getLocationBasedUri('/'),
       scope: clientConfig.scope
     });
