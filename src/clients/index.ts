@@ -373,3 +373,26 @@ export function getTokenUri(clientProps: ClientProps): string {
   }
   return `${clientProps.url}/realms/${clientProps.realm}/protocol/openid-connect/token`;
 }
+
+export function createClientGetOrLoadUserFunction({
+  getUser,
+  isInitialized,
+  init
+}: Pick<Client, 'getUser' | 'isInitialized' | 'init'>): () => Promise<
+  User | undefined | null
+> {
+  return () => {
+    const currentUser = getUser();
+    if (currentUser) {
+      return Promise.resolve(currentUser);
+    }
+    if (isInitialized()) {
+      return Promise.resolve(undefined);
+    }
+    return new Promise((resolve, reject) => {
+      init()
+        .then(() => resolve(getUser()))
+        .catch(e => reject(e));
+    });
+  };
+}

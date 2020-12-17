@@ -2,7 +2,8 @@ import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { useSelector } from 'react-redux';
-import { useKeycloak, useKeycloakErrorDetection, getClient } from '../keycloak';
+import { getClient } from '../keycloak';
+import { useKeycloak, useKeycloakErrorDetection } from '../client';
 import { Client, ClientError, ClientStatus } from '..';
 import {
   InstanceIdentifier,

@@ -57,6 +57,14 @@ export function useClient(clientType?: ClientType): Client {
   return clientFromRef;
 }
 
+export function useKeycloak(): Client {
+  return useClient('keycloak');
+}
+
+export function useOidc(): Client {
+  return useClient('oidc');
+}
+
 export function useClientErrorDetection(
   clientType?: ClientType
 ): ClientErrorObject {
@@ -98,6 +106,14 @@ export function useClientErrorDetection(
     };
   }, [clientFromRef]);
   return error;
+}
+
+export function useKeycloakErrorDetection(): ClientErrorObject {
+  return useClientErrorDetection('keycloak');
+}
+
+export function useOidcErrorDetection(): ClientErrorObject {
+  return useClientErrorDetection('oidc');
 }
 
 export function useClientCallback(clientType?: ClientType): Client {

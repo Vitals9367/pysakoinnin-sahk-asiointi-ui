@@ -80,27 +80,6 @@ describe('Oidc client ', () => {
         }
       );
     });
-    it('UserUnloaded, UserSignedOut and UserSessionChanged trigger onAuthChange and result in UNAUTHORIZED status ', async () => {
-      mockMutator.setUser(mockMutator.createValidUserData());
-      await to(client.init());
-      ['userUnloaded', 'userSignedOut', 'userSessionChanged'].forEach(
-        (eventType: string, index: number) => {
-          client.onAuthChange(true);
-          expect(client.getStatus()).toBe(ClientStatus.AUTHORIZED);
-          expect(eventListeners.getCallCount(ClientEvent.AUTHORIZED)).toBe(
-            index + 1
-          );
-          expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(
-            index
-          );
-          triggerEvent(eventType);
-          expect(client.getStatus()).toBe(ClientStatus.UNAUTHORIZED);
-          expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(
-            index + 1
-          );
-        }
-      );
-    });
     it('SilentRenewError triggers an error of type AUTH_REFRESH_ERROR', async () => {
       const error = new Error('silentRenewError');
       expect(eventListeners.getCallCount(ClientEvent.ERROR)).toBe(0);
