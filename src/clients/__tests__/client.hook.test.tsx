@@ -2,7 +2,8 @@ import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { useSelector } from 'react-redux';
-import { useKeycloak, useKeycloakErrorDetection, getClient } from '../keycloak';
+import { getClient } from '../keycloak';
+import { useKeycloak, useKeycloakErrorDetection } from '../client';
 import { Client, ClientError, ClientStatus } from '..';
 import {
   InstanceIdentifier,
@@ -49,17 +50,15 @@ const KeyCloakHookRenderer = ({
 const KeycloakConsumer = ({
   callback,
   id
-}: InstanceIdentifier): React.ReactElement | null => {
-  return (
-    <ClientContext.Consumer>
-      {(value): React.ReactElement | null => {
-        const client: Client = (value && value.client) as Client;
-        callback({ id, client });
-        return <ClientDataRenderer id={id} client={client} />;
-      }}
-    </ClientContext.Consumer>
-  );
-};
+}: InstanceIdentifier): React.ReactElement | null => (
+  <ClientContext.Consumer>
+    {(value): React.ReactElement | null => {
+      const client: Client = (value && value.client) as Client;
+      callback({ id, client });
+      return <ClientDataRenderer id={id} client={client} />;
+    }}
+  </ClientContext.Consumer>
+);
 
 const KeycloakReduxConsumer = ({ id }: { id: string }): React.ReactElement => {
   const state: StoreState = useSelector((storeState: StoreState) => storeState);
@@ -90,6 +89,9 @@ describe('Keycloak consumers ', () => {
   configureClient();
   const nonHookClient = getClient();
   const mockMutator = mockMutatorGetter();
+  const instance1Selector = '#instance_1';
+  const instance2Selector = '#instance_2';
+  const instance3Selector = '#instance_3';
 
   const getComponentValues = (selector: string): ClientValues | undefined =>
     getClientDataFromComponent(dom, selector);
@@ -100,31 +102,30 @@ describe('Keycloak consumers ', () => {
   ): ClientValues | undefined =>
     matchClientDataWithComponent(dom, selector, client);
 
-  const getErrorText = (): string => {
-    return dom
+  const getErrorText = (): string =>
+    dom
       .find('#errorRenderer')
       .at(0)
       .find('.error')
       .text();
-  };
 
   const compareComponentWithRedux = (): void => {
     const values = getComponentValues('#redux');
     const user = nonHookClient.getUser();
     const clientEmail = user ? user.email : undefined;
     const errorObj = nonHookClient.getError();
-    const error = errorObj ? errorObj.message : undefined;
 
     expect(values).toEqual({
       status: nonHookClient.getStatus(),
       authenticated: nonHookClient.isAuthenticated(),
       initialized: nonHookClient.isInitialized(),
-      error,
+      error: errorObj ? errorObj.message : undefined,
       email: clientEmail
     });
   };
 
   const instances: Map<string, Client> = new Map();
+  const instanceCount = 4;
   const callback: AnyFunction = props => {
     const { id, client } = props as InstanceIdentifier;
     if (!instances.has(id)) {
@@ -169,7 +170,7 @@ describe('Keycloak consumers ', () => {
   describe('have same instance ', () => {
     it('with same values', async () => {
       dom.update();
-      expect(instances.size).toBe(4);
+      expect(instances.size).toBe(instanceCount);
       expect((instances.get('1') as Client).getStatus()).toBe(
         ClientStatus.UNAUTHORIZED
       );
@@ -181,9 +182,9 @@ describe('Keycloak consumers ', () => {
   });
   describe('Components and consumers using useKeycloak ', () => {
     it('are rendered and updated', async () => {
-      matchComponentWithClient('#instance_1', instances.get('3') as Client);
-      matchComponentWithClient('#instance_2', instances.get('1') as Client);
-      matchComponentWithClient('#instance_3', instances.get('2') as Client);
+      matchComponentWithClient(instance1Selector, instances.get('3') as Client);
+      matchComponentWithClient(instance2Selector, instances.get('1') as Client);
+      matchComponentWithClient(instance3Selector, instances.get('2') as Client);
       matchComponentWithClient('#consumer', nonHookClient);
       const user = mockMutator.createValidUserData({
         email: 'yougot@email.com'
@@ -194,14 +195,14 @@ describe('Keycloak consumers ', () => {
       });
 
       dom.update();
-      const values = getComponentValues('#instance_1') as ClientValues;
+      const values = getComponentValues(instance1Selector) as ClientValues;
       expect(values && values.email).toBe(user.email);
       expect((instances.get('3') as Client).getStatus()).toBe(
         ClientStatus.AUTHORIZED
       );
-      matchComponentWithClient('#instance_1', instances.get('3') as Client);
-      matchComponentWithClient('#instance_2', instances.get('1') as Client);
-      matchComponentWithClient('#instance_3', instances.get('2') as Client);
+      matchComponentWithClient(instance1Selector, instances.get('3') as Client);
+      matchComponentWithClient(instance2Selector, instances.get('1') as Client);
+      matchComponentWithClient(instance3Selector, instances.get('2') as Client);
       matchComponentWithClient('#consumer', nonHookClient);
     });
 

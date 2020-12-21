@@ -3,7 +3,7 @@ import { Button } from 'hds-react';
 import styles from './styles.module.css';
 import { useClient } from '../clients/client';
 
-const LoginInfoComponent = (): React.ReactElement => {
+const LoginInfo = (): React.ReactElement => {
   const { login } = useClient();
   return (
     <div className={styles['content-element']} data-test-id="login-info">
@@ -17,4 +17,4 @@ const LoginInfoComponent = (): React.ReactElement => {
   );
 };
 
-export default LoginInfoComponent;
+export default LoginInfo;

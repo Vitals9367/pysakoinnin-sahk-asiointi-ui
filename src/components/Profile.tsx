@@ -8,14 +8,12 @@ import styles from './styles.module.css';
 const PropToComponent = ([prop, value]: [
   string,
   ProfileDataType
-]): React.ReactElement => {
-  return (
-    <li key={prop}>
-      <strong>{prop}</strong>:{' '}
-      <span data-test-id={`profile-data-${prop}`}>{value}</span>
-    </li>
-  );
-};
+]): React.ReactElement => (
+  <li key={prop}>
+    <strong>{prop}</strong>:{' '}
+    <span data-test-id={`profile-data-${prop}`}>{value}</span>
+  </li>
+);
 
 const Profile = (): React.ReactElement => {
   const actions = useContext(ApiAccessTokenContext) as ApiAccessTokenActions;

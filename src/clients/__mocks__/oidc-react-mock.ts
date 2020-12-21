@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   UserManager,
   UserManagerSettings,
@@ -40,7 +39,7 @@ const mockUserManagerEvents = (): UserManagerEvents => {
       list.push(callback);
     }
   };
-  const trigger = (type: string, payload?: any): void => {
+  const trigger = (type: string, payload: User & Error): void => {
     if (!listeners.has(type)) {
       return;
     }
@@ -50,8 +49,8 @@ const mockUserManagerEvents = (): UserManagerEvents => {
     }
   };
   return {
-    load: (): any => true,
-    unload: (): any => true,
+    load: (): boolean => true,
+    unload: (): boolean => true,
     addUserUnloaded: (callback: UserManagerEvents.UserLoadedCallback): void => {
       addListener('userUnloaded', callback);
     },
@@ -83,13 +82,13 @@ const mockUserManagerEvents = (): UserManagerEvents => {
     ): void => {
       addListener('accessTokenExpiring', callback);
     },
-    removeUserLoaded: (): any => true,
-    removeUserUnloaded: (): any => true,
-    removeSilentRenewError: (): any => true,
-    removeUserSignedOut: (): any => true,
-    removeAccessTokenExpired: (): any => true,
-    removeAccessTokenExpiring: (): any => true,
-    removeUserSessionChanged: (): any => true,
+    removeUserLoaded: (): unknown => true,
+    removeUserUnloaded: (): unknown => true,
+    removeSilentRenewError: (): unknown => true,
+    removeUserSignedOut: (): unknown => true,
+    removeAccessTokenExpired: (): unknown => true,
+    removeAccessTokenExpiring: (): unknown => true,
+    removeUserSessionChanged: (): unknown => true,
     trigger
   } as UserManagerEvents;
 };
@@ -130,22 +129,20 @@ export const mockOidcUserManager = (
     signinSilent(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       initOptions?: UserManagerSettings
-    ): Promise<any> {
+    ): Promise<User> {
       return initPromiseF();
     },
-    signinRedirect: (args?: any): Promise<void> => {
+    signinRedirect: (args?: unknown): Promise<void> => {
       mockMutator.loginCalled(args);
       return Promise.resolve();
     },
-    signoutRedirect: (args?: any): Promise<void> => {
+    signoutRedirect: (args?: unknown): Promise<void> => {
       mockMutator.logoutCalled(args);
       mockMutator.setUser();
       return Promise.resolve();
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    signinRedirectCallback: (url?: any): Promise<User> => {
-      return initPromiseF();
-    },
+    signinRedirectCallback: (url?: string): Promise<User> => initPromiseF(),
     getUser: (): Promise<User> => {
       const loadProfileRejectPayload = mockMutator.getLoadProfileRejectPayload();
       const loadProfileResolvePayload = mockMutator.getLoadProfileResolvePayload();
@@ -156,7 +153,7 @@ export const mockOidcUserManager = (
             ? reject(loadProfileRejectPayload)
             : resolve({ ...loadProfileResolvePayload, expired: false });
         }, mockMutator.promiseTimeout);
-      }) as Promise<any>;
+      }) as Promise<User>;
     },
     events: mockUserManagerEvents()
   };

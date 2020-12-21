@@ -21,14 +21,12 @@ const TokenBrowser = (): React.ReactElement => {
     selectedToken &&
     selectedToken.length >= minimunActualTokenLength &&
     selectedToken.indexOf('.') > -1;
-  const decodedPayload: JWTPayload | undefined = isToken
-    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      jwtDecode(selectedToken!)
-    : undefined;
-  const decodedHeader: JWTPayload | undefined = decodedPayload
-    ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      jwtDecode(selectedToken!, { header: true })
-    : undefined;
+  const decodedPayload: JWTPayload | undefined =
+    isToken && selectedToken ? jwtDecode(selectedToken) : undefined;
+  const decodedHeader: JWTPayload | undefined =
+    decodedPayload && selectedToken
+      ? jwtDecode(selectedToken, { header: true })
+      : undefined;
   const onTokenSelectionChange = (
     newToken: string | undefined,
     id: string
@@ -65,16 +63,14 @@ const TokenBrowser = (): React.ReactElement => {
     }
     return (
       <li>
-        {Object.keys(userTokens).map(key => {
-          return (
-            <TokenSelection
-              key={key}
-              title={`Käyttäjän ${key}`}
-              id={`user_${key}`}
-              token={userTokens[key] || 'undefined'}
-            />
-          );
-        })}
+        {Object.keys(userTokens).map(key => (
+          <TokenSelection
+            key={key}
+            title={`Käyttäjän ${key}`}
+            id={`user_${key}`}
+            token={userTokens[key] || 'undefined'}
+          />
+        ))}
       </li>
     );
   };
@@ -85,23 +81,20 @@ const TokenBrowser = (): React.ReactElement => {
     }
     return (
       <div>
-        {Object.keys(apiTokens).map(key => {
-          return (
-            <TokenSelection
-              key={key}
-              title={`Api token ${key}`}
-              id={`user_${key}`}
-              token={apiTokens[key] || 'undefined'}
-            />
-          );
-        })}
+        {Object.keys(apiTokens).map(key => (
+          <TokenSelection
+            key={key}
+            title={`Api token ${key}`}
+            id={`user_${key}`}
+            token={apiTokens[key] || 'undefined'}
+          />
+        ))}
       </div>
     );
   };
 
-  const secondsToUTCString = (seconds: number | string): string => {
-    return new Date(Number(seconds) * 1000).toUTCString();
-  };
+  const secondsToUTCString = (seconds: number | string): string =>
+    new Date(Number(seconds) * 1000).toUTCString();
 
   return (
     <div>

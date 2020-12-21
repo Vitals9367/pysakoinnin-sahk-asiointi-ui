@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+// eslint-disable-next-line import/no-namespace
 import * as Sentry from '@sentry/browser';
 
 import './index.css';
 import BrowserApp from './BrowserApp';
+// eslint-disable-next-line import/no-namespace
 import * as serviceWorker from './serviceWorker';
 
 const ENVS_WITH_SENTRY = ['staging', 'production'];

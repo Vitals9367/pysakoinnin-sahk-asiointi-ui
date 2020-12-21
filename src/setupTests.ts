@@ -12,7 +12,7 @@ import {
   mockMutatorGetterOidc,
   mockOidcUserManager
 } from './clients/__mocks__/oidc-react-mock';
-import { AnyObject, AnyFunction } from './common';
+import { AnyFunction } from './common';
 
 const customGlobal: GlobalWithFetchMock = global as GlobalWithFetchMock;
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -23,22 +23,22 @@ customGlobal.fetchMock = customGlobal.fetch;
 configure({ adapter: new Adapter() });
 
 jest.mock('react-router', () => ({
-  ...(jest.requireActual('react-router') as AnyObject),
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore: expected ts type error
+  ...jest.requireActual('react-router'),
   useHistory: (): Record<string, AnyFunction> => ({
     push: jest.fn()
   })
 }));
 
-jest.mock('keycloak-js', () => {
-  return (): Keycloak.KeycloakInstance => {
-    const mockMutator = mockMutatorGetter();
-    const clientInstance = mockKeycloak(
-      jest.requireActual('keycloak-js')() as Keycloak.KeycloakInstance,
-      mockMutator
-    );
-    mockMutator.setInstance(clientInstance);
-    return clientInstance;
-  };
+jest.mock('keycloak-js', () => (): Keycloak.KeycloakInstance => {
+  const mockMutator = mockMutatorGetter();
+  const clientInstance = mockKeycloak(
+    jest.requireActual('keycloak-js')() as Keycloak.KeycloakInstance,
+    mockMutator
+  );
+  mockMutator.setInstance(clientInstance);
+  return clientInstance;
 });
 
 jest.mock('oidc-client', () => {
@@ -51,7 +51,9 @@ jest.mock('oidc-client', () => {
     }
   }
   return {
-    ...(jest.requireActual('oidc-client') as AnyObject),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore: expected ts type error
+    ...jest.requireActual('oidc-client'),
     UserManager: MockUserManagerClass
   };
 });

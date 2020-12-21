@@ -5,12 +5,10 @@ import LoginInfo from '../components/LoginInfo';
 import AuthenticatingInfo from '../components/AuthenticatingInfo';
 import WithAuth from '../clients/WithAuth';
 
-const Tokens = (): React.ReactElement => {
-  return (
-    <PageContent>
-      {WithAuth(TokenBrowser, LoginInfo, AuthenticatingInfo)}
-    </PageContent>
-  );
-};
+const Tokens = (): React.ReactElement => (
+  <PageContent>
+    {WithAuth(TokenBrowser, LoginInfo, AuthenticatingInfo)}
+  </PageContent>
+);
 
 export default Tokens;

@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
 import Keycloak, { KeycloakTokenParsed } from 'keycloak-js';
 
 import {
   Client,
   ClientStatus,
-  ClientStatusId,
   User,
   ClientEvent,
-  ClientErrorObject,
   ClientError,
   createClient,
   ClientFactory,
@@ -16,7 +13,8 @@ import {
   getLocationBasedUri,
   ClientProps,
   getTokenUri,
-  FetchApiTokenOptions
+  FetchApiTokenOptions,
+  createClientGetOrLoadUserFunction
 } from './index';
 
 function getLocalStorageId(config: ClientProps, useType: string): string {
@@ -24,7 +22,7 @@ function getLocalStorageId(config: ClientProps, useType: string): string {
 }
 
 export function getUserFromToken(
-  tokenParsed: KeycloakTokenParsed
+  tokenParsed?: KeycloakTokenParsed
 ): User | undefined {
   if (!tokenParsed || !tokenParsed.session_state) {
     return undefined;
@@ -55,7 +53,7 @@ export function saveUserToLocalStorage(
 }
 
 export function getUserFromLocalStorage(
-  token: KeycloakTokenParsed
+  token?: KeycloakTokenParsed
 ): User | undefined {
   const storageId = getLocalStorageId(getClientConfig(), 'userData');
   const identifier = (token && token.session_state) || '';
@@ -148,13 +146,10 @@ export function createKeycloakClient(): Client {
     setStoredUser(user);
   };
 
-  const getUserData = (): User | undefined => {
-    return (
-      getStoredUser() ||
-      getUserFromLocalStorage(keycloak.tokenParsed as KeycloakTokenParsed) ||
-      undefined
-    );
-  };
+  const getUserData = (): User | undefined =>
+    getStoredUser() ||
+    getUserFromLocalStorage(keycloak.tokenParsed) ||
+    undefined;
 
   const getUser: Client['getUser'] = () => {
     if (!isAuthenticated()) {
@@ -168,9 +163,7 @@ export function createKeycloakClient(): Client {
   };
 
   const storeUserDataFromToken = (): User | undefined => {
-    const userInToken = getUserFromToken(
-      keycloak.tokenParsed as KeycloakTokenParsed
-    );
+    const userInToken = getUserFromToken(keycloak.tokenParsed);
     if (userInToken) {
       saveUserData(userInToken);
       return userInToken;
@@ -206,7 +199,7 @@ export function createKeycloakClient(): Client {
 
   const login: Client['login'] = () => {
     keycloak.login({
-      redirectUri: getLocationBasedUri('/'), // todo when relevant: redirect back to page login was initiated.
+      redirectUri: getLocationBasedUri('/'),
       scope: clientConfig.scope
     });
   };
@@ -219,17 +212,16 @@ export function createKeycloakClient(): Client {
     });
   };
 
-  const handleCallback: Client['handleCallback'] = () => {
-    return Promise.reject(new Error('not supported with keycloak'));
-  };
+  const handleCallback: Client['handleCallback'] = () =>
+    Promise.reject(new Error('not supported with keycloak'));
 
-  const loadUserProfile: Client['loadUserProfile'] = () => {
-    return new Promise((resolve, reject) => {
+  const loadUserProfile: Client['loadUserProfile'] = () =>
+    new Promise((resolve, reject) => {
       keycloak
         .loadUserProfile()
         .then(data => {
           setStoredUser(data as User);
-          resolve(getStoredUser());
+          resolve(getStoredUser() as User);
         })
         .catch(e => {
           setStoredUser(undefined);
@@ -240,11 +232,8 @@ export function createKeycloakClient(): Client {
           reject(e);
         });
     });
-  };
 
-  const getUserProfile: Client['getUserProfile'] = () => {
-    return getStoredUser();
-  };
+  const getUserProfile: Client['getUserProfile'] = () => getStoredUser();
 
   let initPromise: Promise<User | undefined> | undefined;
   const init: Client['init'] = () => {
@@ -283,31 +272,20 @@ export function createKeycloakClient(): Client {
     return initPromise;
   };
 
-  const getOrLoadUser: Client['getOrLoadUser'] = () => {
-    const currentUser = getUser();
-    if (currentUser) {
-      return Promise.resolve(currentUser);
-    }
-    if (isInitialized()) {
-      return Promise.resolve(undefined);
-    }
-    return new Promise((resolve, reject) => {
-      init()
-        .then(() => resolve(getUser()))
-        .catch(e => reject(e));
-    });
-  };
+  const getOrLoadUser = createClientGetOrLoadUserFunction({
+    getUser,
+    isInitialized,
+    init
+  });
 
   const getApiAccessToken: Client['getApiAccessToken'] = async (
     options: FetchApiTokenOptions
-  ) => {
-    const tokenResponse = await fetchApiToken({
+  ) =>
+    fetchApiToken({
       uri: getTokenUri(getClientConfig()),
       accessToken: keycloak.token as string,
       ...options
     });
-    return tokenResponse;
-  };
 
   const getUserTokens: Client['getUserTokens'] = () => {
     if (!isAuthenticated()) {
@@ -345,75 +323,4 @@ export function getClient(): Client {
   }
   client = createKeycloakClient();
   return client;
-}
-
-export function useKeycloak(): Client {
-  const clientRef: React.Ref<Client> = useRef(getClient());
-  const clientFromRef: Client = clientRef.current as Client;
-  const [, setStatus] = useState<ClientStatusId>(clientFromRef.getStatus());
-  useEffect(() => {
-    const initClient = async (): Promise<void> => {
-      if (!clientFromRef.isInitialized()) {
-        await clientFromRef.getOrLoadUser().catch(e =>
-          clientFromRef.setError({
-            type: ClientError.INIT_ERROR,
-            message: e && e.toString()
-          })
-        );
-      }
-    };
-    const statusListenerDisposer = clientFromRef.addListener(
-      ClientEvent.STATUS_CHANGE,
-      status => {
-        setStatus(status as ClientStatusId);
-      }
-    );
-
-    initClient();
-    return (): void => {
-      statusListenerDisposer();
-    };
-  }, [clientFromRef]);
-  return clientFromRef;
-}
-
-export function useKeycloakErrorDetection(): ClientErrorObject {
-  const clientRef: React.Ref<Client> = useRef(getClient());
-  const clientFromRef: Client = clientRef.current as Client;
-  const [error, setError] = useState<ClientErrorObject>(undefined);
-  useEffect(() => {
-    let isAuthorized = false;
-    const statusListenerDisposer = clientFromRef.addListener(
-      ClientEvent.STATUS_CHANGE,
-      status => {
-        if (status === ClientStatus.AUTHORIZED) {
-          isAuthorized = true;
-        }
-        if (isAuthorized && status === ClientStatus.UNAUTHORIZED) {
-          setError({ type: ClientError.UNEXPECTED_AUTH_CHANGE, message: '' });
-          isAuthorized = false;
-        }
-      }
-    );
-
-    const errorListenerDisposer = clientFromRef.addListener(
-      ClientEvent.ERROR,
-      newError => {
-        setError(newError as ClientErrorObject);
-      }
-    );
-    const logoutListenerDisposer = clientFromRef.addListener(
-      ClientEvent.LOGGING_OUT,
-      (): void => {
-        isAuthorized = false;
-      }
-    );
-
-    return (): void => {
-      errorListenerDisposer();
-      statusListenerDisposer();
-      logoutListenerDisposer();
-    };
-  }, [clientFromRef]);
-  return error;
 }

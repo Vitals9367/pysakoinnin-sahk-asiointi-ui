@@ -1,12 +1,11 @@
 import { FetchMock } from 'jest-fetch-mock';
 import { AnyFunction, AnyObject } from '../../common';
 import { ProfileData } from '../profile';
+import { promiseDefaultTimeout } from '../../clients/__mocks__';
 
 export const createValidProfileResponseData = (
   userData: AnyObject
-): ProfileData => {
-  return { data: { myProfile: { ...userData } } };
-};
+): ProfileData => ({ data: { myProfile: { ...userData } } });
 
 export const mockProfileResponse = (options: {
   response: AnyObject;
@@ -23,7 +22,7 @@ export const mockProfileResponse = (options: {
     return new Promise(resolve =>
       setTimeout(() => {
         resolve(response);
-      }, delay || 20)
+      }, delay || promiseDefaultTimeout)
     );
   });
 };

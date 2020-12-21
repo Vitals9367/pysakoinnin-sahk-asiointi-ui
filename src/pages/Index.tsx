@@ -7,7 +7,7 @@ import WithAuthDemo from '../components/WithAuthDemo';
 import KeycloakConsumer from '../components/ClientConsumer';
 import { getClientConfig } from '../clients';
 
-const IndexPage = (): React.ReactElement => {
+const Index = (): React.ReactElement => {
   const clientContext = useContext(ClientContext);
   const clientConfig = getClientConfig();
   return (
@@ -40,4 +40,4 @@ const IndexPage = (): React.ReactElement => {
   );
 };
 
-export default IndexPage;
+export default Index;

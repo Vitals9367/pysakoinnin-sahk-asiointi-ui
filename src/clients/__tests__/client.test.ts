@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -22,6 +20,7 @@ import { createKeycloakClient } from '../keycloak';
 import { mockMutatorGetter } from '../__mocks__/keycloak-mock';
 import { createOidcClient } from '../oidc-react';
 import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
+import { AnyObject } from '../../common';
 
 describe('Client ', () => {
   const clientTypes: ClientType[] = ['keycloak', 'oidc'];
@@ -61,7 +60,8 @@ describe('Client ', () => {
             1
           );
           const promise2 = client.init();
-          await client.init(); // third call for testing only
+          // third call for testing only
+          await client.init();
           await to(promise1);
           await to(promise2);
           expect(promise1 === promise2).toBe(true);
@@ -109,12 +109,16 @@ describe('Client ', () => {
         });
         it('changes status and triggers events when changed statusChange', async () => {
           const email = 'authorized@bar.com';
+          // 2 = INITIALIZED + AUTHORIZED
+          const statusChangeCountAfterAuthorized = 2;
+          // 3 = previous + UNAUTHORIZED
+          const statusChangeCountAfterUnAuthorized = 3;
           mockMutator.setUser(mockMutator.createValidUserData({ email }));
           await to(client.init());
           expect(client.getStatus()).toBe(ClientStatus.AUTHORIZED);
           expect(eventListeners.getCallCount(ClientEvent.STATUS_CHANGE)).toBe(
-            2
-          ); // 2 = INITIALIZED + AUTHORIZED
+            statusChangeCountAfterAuthorized
+          );
           expect(eventListeners.getCallCount(ClientEvent.AUTHORIZED)).toBe(1);
           expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(0);
           expect(client.onAuthChange(false)).toBe(true);
@@ -122,13 +126,13 @@ describe('Client ', () => {
           expect(eventListeners.getCallCount(ClientEvent.AUTHORIZED)).toBe(1);
           expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(1);
           expect(eventListeners.getCallCount(ClientEvent.STATUS_CHANGE)).toBe(
-            3
+            statusChangeCountAfterUnAuthorized
           );
           // user data is event payload in ClientEvent.AUTHORIZED
           const userData = eventListeners.getLastCallPayload(
             ClientEvent.AUTHORIZED
           );
-          expect(userData && (userData as any).email).toBe(email);
+          expect(userData && (userData as AnyObject).email).toBe(email);
         });
         it('trying to set authentication status same as it is, does nothing', async () => {
           mockMutator.setClientInitPayload(undefined, { error: 1 });
@@ -209,7 +213,7 @@ describe('Client ', () => {
           );
           const [error, user] = await to(client.loadUserProfile());
           expect(error).toBe(null);
-          expect(user && (user as any).email).toBe(email);
+          expect(user && (user as AnyObject).email).toBe(email);
           const userProfile = client.getUserProfile();
           expect(userProfile).toEqual(user);
           expect(client.getUser()).toBe(undefined);
@@ -248,11 +252,11 @@ describe('Client ', () => {
           expect(error).toBe(null);
           expect(mockMutator.getInitCallCount()).toBe(1);
           expect(client.getStatus()).toBe(ClientStatus.AUTHORIZED);
-          expect(user && (user as any).email).toBe(email);
+          expect(user && (user as AnyObject).email).toBe(email);
 
           const [, user2] = await to(client.getOrLoadUser());
           expect(mockMutator.getInitCallCount()).toBe(1);
-          expect(user2 && (user2 as any).email).toBe(email);
+          expect(user2 && (user2 as AnyObject).email).toBe(email);
         });
         it('calls init() if not initialized and returns undefined if not authorized. Init is not called again', async () => {
           const initError = { error: true };

@@ -35,9 +35,8 @@ describe('Profile.ts', () => {
   const profileBackendUrl = 'https://localhost/profileGraphql/';
   let lastRequest: Request;
 
-  const setUser = async (user: AnyObject): Promise<void> => {
-    return setUpUser(user, mockMutator, client);
-  };
+  const setUser = async (user: AnyObject): Promise<void> =>
+    setUpUser(user, mockMutator, client);
 
   const setValidApiToken = (): string => {
     const value = 'valid-api-token';
@@ -116,7 +115,8 @@ describe('Profile.ts', () => {
     });
     const serverErrorResponse: FetchError = await getProfileData();
     expect(serverErrorResponse.error).toBeDefined();
-    fetchMock.resetMocks(); // must reset before new call to same url
+    // must reset before new call to same url
+    fetchMock.resetMocks();
     mockProfileResponse({
       requestCallback: (req: unknown): void => {
         lastRequest = req as Request;

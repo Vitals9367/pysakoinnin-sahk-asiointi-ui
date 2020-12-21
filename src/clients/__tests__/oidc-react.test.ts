@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -21,6 +20,7 @@ import {
 import { createOidcClient } from '../oidc-react';
 import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
 import config from '../../config';
+import { AnyObject } from '../../common';
 
 describe('Oidc client ', () => {
   let client: Client;
@@ -34,8 +34,10 @@ describe('Oidc client ', () => {
     return client;
   }
 
-  function triggerEvent(type: string, payload?: any): void {
-    (instance.events as any).trigger(type, payload);
+  function triggerEvent(type: string, payload?: unknown): void {
+    ((instance.events as unknown) as {
+      trigger: (a?: unknown, b?: unknown) => void;
+    }).trigger(type, payload);
   }
 
   function initTests(): void {
@@ -80,35 +82,14 @@ describe('Oidc client ', () => {
         }
       );
     });
-    it('UserUnloaded, UserSignedOut and UserSessionChanged trigger onAuthChange and result in UNAUTHORIZED status ', async () => {
-      mockMutator.setUser(mockMutator.createValidUserData());
-      await to(client.init());
-      ['userUnloaded', 'userSignedOut', 'userSessionChanged'].forEach(
-        (eventType: string, index: number) => {
-          client.onAuthChange(true);
-          expect(client.getStatus()).toBe(ClientStatus.AUTHORIZED);
-          expect(eventListeners.getCallCount(ClientEvent.AUTHORIZED)).toBe(
-            index + 1
-          );
-          expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(
-            index
-          );
-          triggerEvent(eventType);
-          expect(client.getStatus()).toBe(ClientStatus.UNAUTHORIZED);
-          expect(eventListeners.getCallCount(ClientEvent.UNAUTHORIZED)).toBe(
-            index + 1
-          );
-        }
-      );
-    });
     it('SilentRenewError triggers an error of type AUTH_REFRESH_ERROR', async () => {
       const error = new Error('silentRenewError');
       expect(eventListeners.getCallCount(ClientEvent.ERROR)).toBe(0);
       triggerEvent('silentRenewError', error);
       expect(eventListeners.getCallCount(ClientEvent.ERROR)).toBe(1);
-      const errorPayload: any = eventListeners.getLastCallPayload(
+      const errorPayload: AnyObject = eventListeners.getLastCallPayload(
         ClientEvent.ERROR
-      );
+      ) as AnyObject;
       expect(errorPayload).toBeDefined();
       if (errorPayload) {
         expect(errorPayload.type).toBe(ClientError.AUTH_REFRESH_ERROR);

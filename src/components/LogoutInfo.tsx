@@ -3,7 +3,7 @@ import { Button } from 'hds-react';
 import styles from './styles.module.css';
 import { useClient } from '../clients/client';
 
-const LogoutInfoComponent = (): React.ReactElement => {
+const LogoutInfo = (): React.ReactElement => {
   const { logout, getUser } = useClient();
   const user = getUser();
   const name = user ? `${user.given_name} ${user.family_name}` : '';
@@ -21,4 +21,4 @@ const LogoutInfoComponent = (): React.ReactElement => {
   );
 };
 
-export default LogoutInfoComponent;
+export default LogoutInfo;

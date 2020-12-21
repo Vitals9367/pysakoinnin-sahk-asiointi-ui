@@ -8,6 +8,7 @@
     "browser": true,
     "jest": true
   },
+  "plugins": ["sonarjs", "import"],
   "rules": {
     "react/prop-types": 0,
     "react/destructuring-assignment": 0,
@@ -15,7 +16,20 @@
     "jsx-a11y/alt-text": 0,
     "react/jsx-props-no-spreading": 0,
     "no-unused-vars": 0,
-    "@typescript-eslint/no-unused-vars": "error"
+    "no-magic-numbers": [
+      "error",
+      { "ignoreArrayIndexes": true, "ignore": [1000, -1, 0, 1, 2, 3, 4, 5] }
+    ],
+    "arrow-body-style": ["error", "as-needed"],
+    "line-comment-position": ["error", { "position": "above" }],
+    "no-restricted-imports": ["error", { "patterns": [" * as"] }],
+    "arrow-parens": ["error", "as-needed"],
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    "sonarjs/prefer-immediate-return": "error",
+    "sonarjs/no-duplicate-string": "error",
+    "import/no-namespace": "error"
   },
   "globals": {
     "cy": true

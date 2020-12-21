@@ -48,8 +48,8 @@ describe('Client factory ', () => {
       const user = { name: 'user' };
       expect(client.getStoredUser()).toBe(undefined);
       client.setStoredUser(user);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(client.getStoredUser()!.name).toMatch(user.name);
+      const storedUser = client.getStoredUser() || {};
+      expect(storedUser.name).toMatch(user.name);
     });
     it('getApiTokens returns stored apiTokens. addApiTokens adds and removeApiToken removes', () => {
       let apiTokens = client.getApiTokens();

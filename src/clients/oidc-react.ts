@@ -12,14 +12,14 @@ import {
   ClientStatusId,
   User as ClientUser,
   ClientEvent,
-  ClientErrorObject,
   ClientError,
   createClient,
   ClientFactory,
   hasValidClientConfig,
   getClientConfig,
   getLocationBasedUri,
-  getTokenUri
+  getTokenUri,
+  createClientGetOrLoadUserFunction
 } from './index';
 
 let client: Client | null = null;
@@ -41,9 +41,7 @@ function bindEvents(
     eventTrigger(ClientEvent.CLIENT_AUTH_SUCCESS)
   );
   manager.events.addUserUnloaded((): boolean => onAuthChange(false));
-  manager.events.addUserSignedOut((): boolean => {
-    return onAuthChange(false);
-  });
+  manager.events.addUserSignedOut((): boolean => onAuthChange(false));
   manager.events.addUserSessionChanged((): boolean => onAuthChange(false));
   manager.events.addSilentRenewError((renewError?: Error): void => {
     const errorObj = renewError || undefined;
@@ -169,20 +167,11 @@ export function createOidcClient(): Client {
     return initPromise;
   };
 
-  const getOrLoadUser: Client['getOrLoadUser'] = () => {
-    const currentUser = getUser();
-    if (currentUser) {
-      return Promise.resolve(currentUser);
-    }
-    if (isInitialized()) {
-      return Promise.resolve(undefined);
-    }
-    return new Promise((resolve, reject) => {
-      init()
-        .then(() => resolve(getUser()))
-        .catch(e => reject(e));
-    });
-  };
+  const getOrLoadUser = createClientGetOrLoadUserFunction({
+    getUser,
+    isInitialized,
+    init
+  });
 
   const login: Client['login'] = () => {
     manager.signinRedirect();
@@ -224,8 +213,8 @@ export function createOidcClient(): Client {
     return initPromise;
   };
 
-  const loadUserProfile: Client['loadUserProfile'] = () => {
-    return new Promise((resolve, reject) => {
+  const loadUserProfile: Client['loadUserProfile'] = () =>
+    new Promise((resolve, reject) => {
       manager
         .getUser()
         .then(loadedUser => {
@@ -233,7 +222,7 @@ export function createOidcClient(): Client {
             ? oidcUserToClientUser(loadedUser)
             : undefined;
           setStoredUser(oidcUserAsClientUser);
-          resolve(oidcUserAsClientUser);
+          resolve(oidcUserAsClientUser as ClientUser);
         })
         .catch(e => {
           setStoredUser(undefined);
@@ -244,23 +233,19 @@ export function createOidcClient(): Client {
           reject(e);
         });
     });
-  };
 
-  const getUserProfile: Client['getUserProfile'] = () => {
-    return getStoredUser();
-  };
+  const getUserProfile: Client['getUserProfile'] = () => getStoredUser();
 
   const getApiAccessToken: Client['getApiAccessToken'] = async options => {
     const user = getStoredUser();
     if (!user) {
       throw new Error('getApiAccessToken: no user with access token');
     }
-    const tokenResponse = await fetchApiToken({
+    return fetchApiToken({
       uri: getTokenUri(getClientConfig()),
       accessToken: user.access_token as string,
       ...options
     });
-    return tokenResponse;
   };
 
   const getUserTokens: Client['getUserTokens'] = () => {
@@ -300,70 +285,6 @@ export function getClient(): Client {
   }
   client = createOidcClient();
   return client;
-}
-
-export function useOidc(): Client {
-  const clientRef: React.Ref<Client> = useRef(getClient());
-  const clientFromRef: Client = clientRef.current as Client;
-  const [, setStatus] = useState<ClientStatusId>(clientFromRef.getStatus());
-  useEffect(() => {
-    const initClient = async (): Promise<void> => {
-      if (!clientFromRef.isInitialized()) {
-        await clientFromRef.getOrLoadUser().catch(e => {
-          clientFromRef.setError({
-            type: ClientError.INIT_ERROR,
-            message: e && e.toString()
-          });
-        });
-      }
-    };
-    const statusListenerDisposer = clientFromRef.addListener(
-      ClientEvent.STATUS_CHANGE,
-      status => {
-        setStatus(status as ClientStatusId);
-      }
-    );
-
-    initClient();
-    return (): void => {
-      statusListenerDisposer();
-    };
-  }, [clientFromRef]);
-  return clientFromRef;
-}
-
-export function useOidcErrorDetection(): ClientErrorObject {
-  const clientRef: React.Ref<Client> = useRef(getClient());
-  const clientFromRef: Client = clientRef.current as Client;
-  const [error, setError] = useState<ClientErrorObject>(undefined);
-  useEffect(() => {
-    let isAuthorized = false;
-    const statusListenerDisposer = clientFromRef.addListener(
-      ClientEvent.STATUS_CHANGE,
-      status => {
-        if (status === ClientStatus.AUTHORIZED) {
-          isAuthorized = true;
-        }
-        if (isAuthorized && status === ClientStatus.UNAUTHORIZED) {
-          setError({ type: ClientError.UNEXPECTED_AUTH_CHANGE, message: '' });
-          isAuthorized = false;
-        }
-      }
-    );
-
-    const errorListenerDisposer = clientFromRef.addListener(
-      ClientEvent.ERROR,
-      newError => {
-        setError(newError as ClientErrorObject);
-      }
-    );
-
-    return (): void => {
-      errorListenerDisposer();
-      statusListenerDisposer();
-    };
-  }, [clientFromRef]);
-  return error;
 }
 
 export const useOidcCallback = (): Client => {

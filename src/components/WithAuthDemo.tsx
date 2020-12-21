@@ -25,8 +25,7 @@ const UnAuthComponent = (
   ) : null;
 };
 
-const WithAuthDemo = (): React.ReactElement | null => {
-  return WithAuth(AuthComponent, UnAuthComponent);
-};
+const WithAuthDemo = (): React.ReactElement | null =>
+  WithAuth(AuthComponent, UnAuthComponent);
 
 export default WithAuthDemo;

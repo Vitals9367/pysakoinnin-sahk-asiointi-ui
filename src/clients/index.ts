@@ -234,21 +234,15 @@ export function createClient(): ClientFactory {
   const tokenStorage: JWTPayload = {};
   const { addListener, eventTrigger } = createEventHandling();
 
-  const getStoredUser = (): User | undefined => {
-    return user;
-  };
+  const getStoredUser = (): User | undefined => user;
 
   const setStoredUser = (newUser: User | undefined): void => {
     user = newUser;
   };
 
-  const getStatus: Client['getStatus'] = () => {
-    return status;
-  };
+  const getStatus: Client['getStatus'] = () => status;
 
-  const getError: Client['getError'] = () => {
-    return error;
-  };
+  const getError: Client['getError'] = () => error;
 
   const isAuthenticated: Client['isAuthenticated'] = () =>
     status === ClientStatus.AUTHORIZED;
@@ -378,4 +372,27 @@ export function getTokenUri(clientProps: ClientProps): string {
     return `${clientProps.url}${clientProps.tokenExchangePath}`;
   }
   return `${clientProps.url}/realms/${clientProps.realm}/protocol/openid-connect/token`;
+}
+
+export function createClientGetOrLoadUserFunction({
+  getUser,
+  isInitialized,
+  init
+}: Pick<Client, 'getUser' | 'isInitialized' | 'init'>): () => Promise<
+  User | undefined | null
+> {
+  return () => {
+    const currentUser = getUser();
+    if (currentUser) {
+      return Promise.resolve(currentUser);
+    }
+    if (isInitialized()) {
+      return Promise.resolve(undefined);
+    }
+    return new Promise((resolve, reject) => {
+      init()
+        .then(() => resolve(getUser()))
+        .catch(e => reject(e));
+    });
+  };
 }

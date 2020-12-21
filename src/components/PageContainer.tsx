@@ -5,13 +5,11 @@ import ErrorPrompt from './ErrorPrompt';
 
 const PageContainer = (
   props: React.PropsWithChildren<unknown>
-): React.ReactElement => {
-  return (
-    <div className={styles.wrapper}>
-      {props.children}
-      <ErrorPrompt />
-    </div>
-  );
-};
+): React.ReactElement => (
+  <div className={styles.wrapper}>
+    {props.children}
+    <ErrorPrompt />
+  </div>
+);
 
 export default PageContainer;

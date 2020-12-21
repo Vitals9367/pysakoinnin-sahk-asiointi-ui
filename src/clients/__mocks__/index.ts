@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactWrapper } from 'enzyme';
 import { UserManager } from 'oidc-client';
 import Keycloak from 'keycloak-js';
@@ -36,8 +35,8 @@ export type MockMutator = {
   initCalled: () => void;
   getCreationCount: () => number;
   clientCreated: () => void;
-  loginCalled: (props?: any) => void;
-  logoutCalled: (props?: any) => void;
+  loginCalled: (props?: unknown) => void;
+  logoutCalled: (props?: unknown) => void;
   resetMock: () => void;
   setLoadProfilePayload: (resolve: AnyValue, reject: AnyValue) => void;
   getLoginCallCount: () => number;
@@ -88,6 +87,8 @@ type Tokens = {
   refreshToken: Token;
 };
 
+export const promiseDefaultTimeout = 20;
+
 export const getClientDataFromComponent = (
   dom: ReactWrapper,
   selector: string
@@ -130,9 +131,7 @@ export const matchClientDataWithComponent = (
 
 export const configureClient = (
   overrides?: Partial<ClientProps>
-): ClientProps => {
-  return setClientConfig({ ...config.client, ...overrides });
-};
+): ClientProps => setClientConfig({ ...config.client, ...overrides });
 
 export const createEventListeners = (
   addEventListener: ListenerSetter
@@ -226,46 +225,34 @@ export const mockMutatorCreator = (): MockMutator => {
   const getTokenParsed: MockMutator['getTokenParsed'] = (): Record<
     string,
     unknown
-  > => {
-    return tokenParsed;
-  };
-  const createEmptyUser = (): AnyObject => {
-    return {
-      name: undefined,
-      given_name: undefined,
-      family_name: undefined,
-      email: undefined
-    };
-  };
+  > => tokenParsed;
+  const createEmptyUser = (): AnyObject => ({
+    name: undefined,
+    given_name: undefined,
+    family_name: undefined,
+    email: undefined
+  });
 
-  const setUser: MockMutator['setUser'] = (props?) => {
+  const setUser: MockMutator['setUser'] = props => {
     user = props || createEmptyUser();
     setTokenParsed(user);
   };
-  const getUser: MockMutator['getUser'] = () => {
-    return user;
-  };
-  const getInitCallCount: MockMutator['getInitCallCount'] = () => {
-    return initCallCount;
-  };
+  const getUser: MockMutator['getUser'] = () => user;
+  const getInitCallCount: MockMutator['getInitCallCount'] = () => initCallCount;
   const initCalled: MockMutator['initCalled'] = () => {
     initCallCount += 1;
   };
-  const getCreationCount: MockMutator['getCreationCount'] = () => {
-    return creationCount;
-  };
+  const getCreationCount: MockMutator['getCreationCount'] = () => creationCount;
   const clientCreated: MockMutator['clientCreated'] = () => {
     creationCount += 1;
   };
-  const getLoginCallCount: MockMutator['getLoginCallCount'] = () => {
-    return loginMock ? loginMock.mock.calls.length : -1;
-  };
+  const getLoginCallCount: MockMutator['getLoginCallCount'] = () =>
+    loginMock ? loginMock.mock.calls.length : -1;
   const loginCalled: MockMutator['loginCalled'] = () => {
     loginMock();
   };
-  const getLogoutCallCount: MockMutator['getLogoutCallCount'] = () => {
-    return logoutMock ? logoutMock.mock.calls.length : -1;
-  };
+  const getLogoutCallCount: MockMutator['getLogoutCallCount'] = () =>
+    logoutMock ? logoutMock.mock.calls.length : -1;
   const logoutCalled: MockMutator['logoutCalled'] = () => {
     logoutMock();
   };
@@ -273,24 +260,18 @@ export const mockMutatorCreator = (): MockMutator => {
     Object.assign(tokens, newTokens);
     return tokens;
   };
-  const getTokens: MockMutator['getTokens'] = () => {
-    return tokens;
-  };
-  const getInstance: MockMutator['getInstance'] = () => {
-    return clientInstance;
-  };
+  const getTokens: MockMutator['getTokens'] = () => tokens;
+  const getInstance: MockMutator['getInstance'] = () => clientInstance;
   const setInstance: MockMutator['setInstance'] = instance => {
     clientInstance = instance;
   };
-  const createValidUserData: MockMutator['createValidUserData'] = props => {
-    return {
-      name: 'valid user',
-      given_name: 'valid',
-      family_name: 'user',
-      email: 'valid@user.fi',
-      ...props
-    };
-  };
+  const createValidUserData: MockMutator['createValidUserData'] = props => ({
+    name: 'valid user',
+    given_name: 'valid',
+    family_name: 'user',
+    email: 'valid@user.fi',
+    ...props
+  });
   const resetMock: MockMutator['resetMock'] = () => {
     creationCount = 0;
     initCallCount = 0;
@@ -312,7 +293,7 @@ export const mockMutatorCreator = (): MockMutator => {
     tokenParsed.session_state = `session_state-${Date.now()}`;
   };
   return {
-    promiseTimeout: 20,
+    promiseTimeout: promiseDefaultTimeout,
     setClientInitPayload,
     getTokenParsed,
     setTokenParsed,
