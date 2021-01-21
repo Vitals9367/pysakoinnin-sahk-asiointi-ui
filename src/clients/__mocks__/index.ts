@@ -16,6 +16,7 @@ import {
   AnyNonNullishValue,
   AnyValue
 } from '../../common';
+import { getLocalStorageKey } from '../oidc-react';
 
 type ClientInstance = UserManager;
 
@@ -213,6 +214,14 @@ export const mockMutatorCreator = (): MockMutator => {
   const getLoadProfileRejectPayload: MockMutator['getLoadProfileRejectPayload'] = () =>
     loadProfileRejectPayload;
 
+  const setUserToLocalStorage = (data: AnyObject | string) => {
+    const key = getLocalStorageKey(config.client);
+    localStorage.setItem(
+      key,
+      typeof data === 'object' ? JSON.stringify(data) : data
+    );
+  };
+
   const setTokenParsed: MockMutator['setTokenParsed'] = (
     props: AnyObject
   ): void => {
@@ -220,6 +229,7 @@ export const mockMutatorCreator = (): MockMutator => {
       ...user,
       ...props
     });
+    setUserToLocalStorage({ profile: tokenParsed });
   };
   const getTokenParsed: MockMutator['getTokenParsed'] = (): Record<
     string,
@@ -290,6 +300,7 @@ export const mockMutatorCreator = (): MockMutator => {
       refreshToken: undefined
     });
     tokenParsed.session_state = `session_state-${Date.now()}`;
+    tokenParsed.amr = 'test';
   };
   return {
     promiseTimeout: promiseDefaultTimeout,
