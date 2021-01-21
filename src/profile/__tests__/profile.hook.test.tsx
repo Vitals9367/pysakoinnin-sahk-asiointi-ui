@@ -7,9 +7,9 @@ import { configureClient } from '../../clients/__mocks__/index';
 import {
   ApiAccessTokenActions,
   FetchStatus,
-  getClient,
   useClient
 } from '../../clients/client';
+import { getClient } from '../../clients/oidc-react';
 import { mockMutatorGetterOidc } from '../../clients/__mocks__/oidc-react-mock';
 import {
   setUpUser,
@@ -32,7 +32,7 @@ import {
 import { AnyObject, AnyFunction } from '../../common';
 
 describe('Profile.ts useProfile hook ', () => {
-  configureClient({ type: 'oidc', tokenExchangePath: '/token-exchange/' });
+  configureClient({ tokenExchangePath: '/token-exchange/' });
   const fetchMock: FetchMock = global.fetch;
   const mockMutator = mockMutatorGetterOidc();
   const client = getClient();

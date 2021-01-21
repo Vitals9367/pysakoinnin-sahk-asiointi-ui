@@ -1,13 +1,8 @@
 import Adapter from 'enzyme-adapter-react-16';
 import { configure } from 'enzyme';
-import Keycloak from 'keycloak-js';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { GlobalWithFetchMock } from 'jest-fetch-mock';
 import { UserManager, UserManagerSettings } from 'oidc-client';
-import {
-  mockMutatorGetter,
-  mockKeycloak
-} from './clients/__mocks__/keycloak-mock';
 import {
   mockMutatorGetterOidc,
   mockOidcUserManager
@@ -30,16 +25,6 @@ jest.mock('react-router', () => ({
     push: jest.fn()
   })
 }));
-
-jest.mock('keycloak-js', () => (): Keycloak.KeycloakInstance => {
-  const mockMutator = mockMutatorGetter();
-  const clientInstance = mockKeycloak(
-    jest.requireActual('keycloak-js')() as Keycloak.KeycloakInstance,
-    mockMutator
-  );
-  mockMutator.setInstance(clientInstance);
-  return clientInstance;
-});
 
 jest.mock('oidc-client', () => {
   class MockUserManagerClass {

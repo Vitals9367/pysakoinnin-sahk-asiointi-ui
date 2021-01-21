@@ -1,5 +1,5 @@
 import { StoreState } from '..';
-import { createKeycloakClient } from '../../keycloak';
+import { createOidcClient } from '../../oidc-react';
 import {
   Client,
   ClientError,
@@ -16,17 +16,17 @@ import {
   authorized,
   unauthorized
 } from '../actions';
-import { mockMutatorGetter } from '../../__mocks__/keycloak-mock';
+import { mockMutatorGetterOidc } from '../../__mocks__/oidc-react-mock';
 
 describe('Redux store ', () => {
   let state: StoreState;
   let client: Client;
   configureClient();
-  const mockMutator = mockMutatorGetter();
+  const mockMutator = mockMutatorGetterOidc();
   describe('actions', () => {
     beforeEach(() => {
       state = store.getState();
-      client = createKeycloakClient();
+      client = createOidcClient();
     });
     it('should return the initial state with unknown action', () => {
       expect(reducer(state, { type: 'FOO' })).toEqual(state);
@@ -85,7 +85,7 @@ describe('Redux store ', () => {
   describe('is connected to the client and ', () => {
     beforeAll(() => {
       mockMutator.resetMock();
-      client = createKeycloakClient();
+      client = createOidcClient();
       connectClient(client);
     });
     it('onAuthChange changes store', () => {

@@ -5,7 +5,8 @@ import to from 'await-handler';
 import { ApolloError } from '@apollo/client';
 import { loader } from 'graphql.macro';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { FetchStatus, getClient } from '../clients/client';
+import { FetchStatus } from '../clients/client';
+import { getClient } from '../clients/oidc-react';
 import {
   GraphQLClient,
   createGraphQLClient,

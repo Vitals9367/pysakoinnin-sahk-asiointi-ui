@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import { ReactWrapper } from 'enzyme';
 import { UserManager } from 'oidc-client';
-import Keycloak from 'keycloak-js';
 import {
   Client,
   ClientEvent,
@@ -18,7 +17,7 @@ import {
   AnyValue
 } from '../../common';
 
-type ClientInstance = Keycloak.KeycloakInstance | UserManager;
+type ClientInstance = UserManager;
 
 export type MockMutator = {
   setClientInitPayload: (resolve: AnyValue, reject: AnyValue) => void;

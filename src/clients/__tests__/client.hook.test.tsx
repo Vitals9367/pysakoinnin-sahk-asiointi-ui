@@ -2,8 +2,8 @@ import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { useSelector } from 'react-redux';
-import { getClient } from '../keycloak';
-import { useKeycloak, useKeycloakErrorDetection } from '../client';
+import { getClient } from '../oidc-react';
+import { useClient, useClientErrorDetection } from '../client';
 import { Client, ClientError, ClientStatus } from '..';
 import {
   InstanceIdentifier,
@@ -15,7 +15,7 @@ import {
 import { ClientProvider, ClientContext } from '../ClientProvider';
 import StoreProvider from '../redux/StoreProvider';
 import { StoreState } from '../redux';
-import { mockMutatorGetter } from '../__mocks__/keycloak-mock';
+import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
 import { AnyFunction } from '../../common';
 
 const ClientDataRenderer = ({
@@ -38,16 +38,16 @@ const ClientDataRenderer = ({
   );
 };
 
-const KeyCloakHookRenderer = ({
+const HookRenderer = ({
   callback,
   id
 }: InstanceIdentifier): React.ReactElement => {
-  const client = useKeycloak();
+  const client = useClient();
   callback({ id, client });
   return <ClientDataRenderer id={id} client={client} />;
 };
 
-const KeycloakConsumer = ({
+const ClientConsumer = ({
   callback,
   id
 }: InstanceIdentifier): React.ReactElement | null => (
@@ -60,7 +60,7 @@ const KeycloakConsumer = ({
   </ClientContext.Consumer>
 );
 
-const KeycloakReduxConsumer = ({ id }: { id: string }): React.ReactElement => {
+const ReduxConsumer = ({ id }: { id: string }): React.ReactElement => {
   const state: StoreState = useSelector((storeState: StoreState) => storeState);
   const { user } = state;
   const { error } = state;
@@ -75,8 +75,8 @@ const KeycloakReduxConsumer = ({ id }: { id: string }): React.ReactElement => {
   );
 };
 
-const KeyCloakErrorHookRenderer = (): React.ReactElement => {
-  const error = useKeycloakErrorDetection();
+const ErrorHookRenderer = (): React.ReactElement => {
+  const error = useClientErrorDetection();
   return (
     <div id="errorRenderer">
       <div className="error">{error ? error.message : ''}</div>
@@ -84,11 +84,11 @@ const KeyCloakErrorHookRenderer = (): React.ReactElement => {
   );
 };
 
-describe('Keycloak consumers ', () => {
+describe('Client consumers ', () => {
   let dom: ReactWrapper;
   configureClient();
   const nonHookClient = getClient();
-  const mockMutator = mockMutatorGetter();
+  const mockMutator = mockMutatorGetterOidc();
   const instance1Selector = '#instance_1';
   const instance2Selector = '#instance_2';
   const instance3Selector = '#instance_3';
@@ -138,12 +138,12 @@ describe('Keycloak consumers ', () => {
       <ClientProvider>
         <StoreProvider>
           <div>
-            <KeyCloakHookRenderer callback={callback} id="1" />
-            <KeyCloakHookRenderer callback={callback} id="2" />
-            <KeyCloakHookRenderer callback={callback} id="3" />
-            <KeyCloakErrorHookRenderer />
-            <KeycloakConsumer callback={callback} id="consumer" />
-            <KeycloakReduxConsumer id="redux" />
+            <HookRenderer callback={callback} id="1" />
+            <HookRenderer callback={callback} id="2" />
+            <HookRenderer callback={callback} id="3" />
+            <ErrorHookRenderer />
+            <ClientConsumer callback={callback} id="consumer" />
+            <ReduxConsumer id="redux" />
           </div>
         </StoreProvider>
       </ClientProvider>
@@ -180,7 +180,7 @@ describe('Keycloak consumers ', () => {
       expect(nonHookClient === instances.get('1')).toBe(true);
     });
   });
-  describe('Components and consumers using useKeycloak ', () => {
+  describe('Components and consumers using useClient ', () => {
     it('are rendered and updated', async () => {
       matchComponentWithClient(instance1Selector, instances.get('3') as Client);
       matchComponentWithClient(instance2Selector, instances.get('1') as Client);

@@ -7,7 +7,7 @@ import {
   ProfileData,
   ProfileQueryResult
 } from '../profile';
-import { getClient } from '../../clients/client';
+import { getClient } from '../../clients/oidc-react';
 import { mockMutatorGetterOidc } from '../../clients/__mocks__/oidc-react-mock';
 import {
   setUpUser,
@@ -26,7 +26,7 @@ import { FetchError } from '../../clients';
 import { AnyObject, AnyFunction } from '../../common';
 
 describe('Profile.ts', () => {
-  configureClient({ type: 'oidc' });
+  configureClient();
   const fetchMock: FetchMock = global.fetch;
   const mockMutator = mockMutatorGetterOidc();
   const client = getClient();

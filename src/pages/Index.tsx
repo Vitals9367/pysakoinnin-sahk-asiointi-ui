@@ -4,12 +4,10 @@ import LoginComponent from '../components/Login';
 import PageContent from '../components/PageContent';
 import ReduxConsumer from '../components/ReduxConsumer';
 import WithAuthDemo from '../components/WithAuthDemo';
-import KeycloakConsumer from '../components/ClientConsumer';
-import { getClientConfig } from '../clients';
+import ClientConsumer from '../components/ClientConsumer';
 
 const Index = (): React.ReactElement => {
   const clientContext = useContext(ClientContext);
-  const clientConfig = getClientConfig();
   return (
     <PageContent>
       {!!clientContext && clientContext.client ? (
@@ -25,16 +23,15 @@ const Index = (): React.ReactElement => {
           </p>
           <p>Voit myös kirjatua ulos toisessa ikkunassa.</p>
           <p>
-            Clientiksi on .env-filessä määritelty:
-            <strong>{clientConfig.type}</strong>
+            Client on: <strong>Oidc</strong>
           </p>
           <LoginComponent />
           <ReduxConsumer />
           <WithAuthDemo />
-          <KeycloakConsumer />
+          <ClientConsumer />
         </>
       ) : (
-        <div>Error:Keycloakia ei löydy</div>
+        <div>Error:Clientia ei löydy contextista</div>
       )}
     </PageContent>
   );
