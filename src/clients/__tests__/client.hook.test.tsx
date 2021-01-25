@@ -86,7 +86,7 @@ const ErrorHookRenderer = (): React.ReactElement => {
 
 describe('Client consumers ', () => {
   let dom: ReactWrapper;
-  configureClient();
+  configureClient({ autoSignIn: true });
   const nonHookClient = getClient();
   const mockMutator = mockMutatorGetterOidc();
   const instance1Selector = '#instance_1';

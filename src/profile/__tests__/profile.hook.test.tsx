@@ -32,7 +32,7 @@ import {
 import { AnyObject, AnyFunction } from '../../common';
 
 describe('Profile.ts useProfile hook ', () => {
-  configureClient({ tokenExchangePath: '/token-exchange/' });
+  configureClient({ tokenExchangePath: '/token-exchange/', autoSignIn: true });
   const fetchMock: FetchMock = global.fetch;
   const mockMutator = mockMutatorGetterOidc();
   const client = getClient();

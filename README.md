@@ -1,36 +1,16 @@
 # example-profile-ui
 
-Example UI application that interacts with Keycloak (and later also with Helsinki profile)
+Example UI application interacts with an OIDC (and later also with Helsinki profile).
 
-There are two clients that can be used for authentication: keycloak.js and oidc-react.js. The version of the oidc-react.js npm library is beta and keycloak is the official package released with keycloak server. Currently keycload client is used in this demo.
+App uses oidc-react.js for all calls to the OIDC provider. That library is wrapped with "client.ts" to support Tunnistamo and Keycloak servers which for example return different data formats.
 
 Included in this demo app:
 
-- two login clients
 - hooks for easy usage
 - redux store listening a client
 - HOC component listening a client and showing different content for authorized and unauthorized users.
 
 Clients dispatch events and trigger changes which then trigger re-rendering of the components using clients.
-
-## using oidc-client
-
-Used client type is defined in .env.
-Settings for keycloak
-
-```bash
-REACT_APP_OIDC_CLIENT_TYPE="keycloak"
-REACT_APP_OIDC_SILENT_AUTH_PATH="/silent-check-sso.html"
-REACT_APP_OIDC_CALLBACK_PATH="/"
-```
-
-Settings for oidc-react
-
-```bash
-REACT_APP_OIDC_CLIENT_TYPE="oidc"
-REACT_APP_OIDC_SILENT_AUTH_PATH="/silent_renew.html"
-REACT_APP_OIDC_CALLBACK_PATH="/callback"
-```
 
 ## Oidc and keyclock client differences
 
@@ -46,39 +26,26 @@ CLIENT_READY:
 
 ## Config
 
-use .env -files. Some values are client specific. Default client is keycloak and relevant settings are:
-
-```bash
-REACT_APP_OIDC_URL="https://tunnistus.hel.ninja/auth"
-REACT_APP_OIDC_REALM="helsinki-tunnistus"
-REACT_APP_OIDC_CLIENT_ID="https://api.hel.fi/auth/example-ui-profile"
-```
-
-other settings should not be changed
-
-Config can also be overridden for command line:
+use .env -files. Config can also be overridden for command line:
 
 ```bash
 REACT_APP_OIDC_URL=https://foo.bar yarn start
 ```
 
-### Config for Tunnistamo
+### Config for Keycloak OIDC provider
+
+Default OIDC-server is Tunnistamo and .env is set up for it.
+
+Settings when using keycloak server:
 
 ```bash
-REACT_APP_OIDC_URL="https://api.hel.fi/sso-test"
-REACT_APP_OIDC_CLIENT_ID="https://api.hel.fi/auth/helsinkiprofile-ui-dev"
-REACT_APP_OIDC_SILENT_AUTH_PATH="/callback"
-REACT_APP_OIDC_AUTO_SIGN_IN=false
-REACT_APP_OIDC_SCOPE="openid profile https://api.hel.fi/auth/helsinkiprofiledev"
-REACT_APP_OIDC_CLIENT_TYPE="oidc"
-REACT_APP_OIDC_REALM=""
-REACT_APP_OIDC_CALLBACK_PATH="/callback"
-REACT_APP_OIDC_TOKEN_EXCHANGE_PATH="/api-tokens/"
+REACT_APP_OIDC_URL="https://helsinki-profile-keycloak-dev.agw.arodevtest.hel.fi/auth"
+REACT_APP_OIDC_REALM="helsinki-tunnistus"
+REACT_APP_OIDC_SCOPE="profile"
+REACT_APP_OIDC_CLIENT_ID="exampleapp-ui"
 ```
 
 Tunnistamo does not support silent login checks (it uses only localstorage) so REACT_APP_OIDC_AUTO_SIGN_IN must be 'false'. It renews access tokens so REACT_APP_OIDC_SILENT_AUTH_PATH must be changed to '/' to prevent errors for unknown redirect url.
-
-REACT_APP_OIDC_CLIENT_TYPE can only be "oidc"
 
 ### Config for getting Profile data
 

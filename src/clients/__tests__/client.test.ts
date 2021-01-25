@@ -21,7 +21,7 @@ import { AnyObject } from '../../common';
 
 describe(`Client`, () => {
   let client: Client;
-  configureClient();
+  configureClient({ autoSignIn: true });
   const mockMutator = mockMutatorGetterOidc();
   let eventListeners: EventListeners;
   function createNewClient(): Client {
