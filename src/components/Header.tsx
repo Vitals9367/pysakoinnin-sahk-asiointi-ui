@@ -25,14 +25,13 @@ const Header = (): React.ReactElement => {
     <Navigation
       fixed={false}
       logoLanguage="fi"
-      menuCloseAriaLabel="Close menu"
-      menuOpenAriaLabel="Open menu"
-      theme="white"
+      menuToggleAriaLabel="Close menu"
+      theme="light"
       title={title}
       titleUrl="https://hel.fi"
       skipTo="#content"
       skipToContentLabel="Skip to main content">
-      <Navigation.Row display="inline">
+      <Navigation.Row variant="inline">
         <Navigation.Item
           active={active === 'frontpage'}
           label="Etusivu"
