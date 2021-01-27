@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FetchApiTokenOptions } from '../clients';
+import { FetchApiTokenOptions } from '../client';
 import styles from './styles.module.css';
 
 const AccessTokenForm = (props: {

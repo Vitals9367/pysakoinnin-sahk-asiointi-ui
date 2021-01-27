@@ -1,6 +1,6 @@
 import React from 'react';
 
-import WithAuth, { WithAuthChildProps } from '../clients/WithAuth';
+import WithAuth, { WithAuthChildProps } from '../client/WithAuth';
 import DemoWrapper from './DemoWrapper';
 
 const AuthComponent = (props: WithAuthChildProps): React.ReactElement => {

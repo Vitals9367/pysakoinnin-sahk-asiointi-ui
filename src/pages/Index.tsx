@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ClientContext } from '../clients/ClientProvider';
+import { ClientContext } from '../client/ClientProvider';
 import LoginComponent from '../components/Login';
 import PageContent from '../components/PageContent';
 import ReduxConsumer from '../components/ReduxConsumer';

@@ -5,13 +5,13 @@ import Index from './pages/Index';
 import ApiAccessTokens from './pages/ApiAccessTokens';
 import Tokens from './pages/Tokens';
 import ProfilePage from './pages/ProfilePage';
-import { ClientProvider } from './clients/ClientProvider';
-import OidcCallback from './clients/OidcCallback';
-import StoreProvider from './clients/redux/StoreProvider';
+import { ClientProvider } from './client/ClientProvider';
+import OidcCallback from './client/OidcCallback';
+import StoreProvider from './client/redux/StoreProvider';
 import Header from './components/Header';
 import PageContainer from './components/PageContainer';
 import config from './config';
-import { setClientConfig } from './clients/index';
+import { setClientConfig } from './client/index';
 
 setClientConfig(config.client);
 

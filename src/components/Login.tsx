@@ -3,7 +3,7 @@ import DemoWrapper from './DemoWrapper';
 import LoginInfo from './LoginInfo';
 import LogoutInfo from './LogoutInfo';
 import AuthenticatingInfo from './AuthenticatingInfo';
-import WithAuth from '../clients/WithAuth';
+import WithAuth from '../client/WithAuth';
 
 const Login = (): React.ReactElement => (
   <DemoWrapper title="Client-kuuntelija">

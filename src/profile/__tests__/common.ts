@@ -1,7 +1,7 @@
 import { FetchMock } from 'jest-fetch-mock';
 import { AnyFunction, AnyObject } from '../../common';
 import { ProfileData } from '../profile';
-import { promiseDefaultTimeout } from '../../clients/__mocks__';
+import { promiseDefaultTimeout } from '../../client/__mocks__';
 
 export const createValidProfileResponseData = (
   userData: AnyObject

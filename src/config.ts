@@ -1,4 +1,4 @@
-import { ClientProps } from './clients/index';
+import { ClientProps } from './client/index';
 
 function envValueToBoolean(
   value: string | undefined | boolean,

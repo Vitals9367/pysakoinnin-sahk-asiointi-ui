@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import jwtDecode from 'jwt-decode';
-import { getClientConfig, JWTPayload } from '../clients';
-import { useClient } from '../clients/client';
+import { getClientConfig, JWTPayload } from '../client';
+import { useClient } from '../client/client';
 import styles from './styles.module.css';
 
 const TokenBrowser = (): React.ReactElement => {

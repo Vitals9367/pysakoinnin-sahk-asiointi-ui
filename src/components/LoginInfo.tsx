@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'hds-react';
 import styles from './styles.module.css';
-import { useClient } from '../clients/client';
+import { useClient } from '../client/client';
 
 const LoginInfo = (): React.ReactElement => {
   const { login } = useClient();

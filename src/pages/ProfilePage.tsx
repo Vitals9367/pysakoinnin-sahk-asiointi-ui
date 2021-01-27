@@ -4,7 +4,7 @@ import Profile from '../components/Profile';
 import LoginInfo from '../components/LoginInfo';
 import AuthenticatingInfo from '../components/AuthenticatingInfo';
 import { ApiAccessTokenProvider } from '../components/ApiAccessTokenProvider';
-import WithAuth from '../clients/WithAuth';
+import WithAuth from '../client/WithAuth';
 
 const ProfilePage = (): React.ReactElement => (
   <PageContent>

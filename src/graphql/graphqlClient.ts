@@ -3,7 +3,7 @@ import {
   InMemoryCache,
   NormalizedCacheObject
 } from '@apollo/client';
-import { FetchError } from '../clients';
+import { FetchError } from '../client';
 
 export type GraphQLClient = ApolloClient<NormalizedCacheObject>;
 export type GraphQLClientError = Pick<FetchError, 'error' | 'message'>;

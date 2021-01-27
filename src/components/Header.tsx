@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Navigation } from 'hds-react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useClient } from '../clients/client';
+import { useClient } from '../client/client';
 
 type Page = 'frontpage' | 'apiAccessTokens' | 'userTokens' | 'profile';
 

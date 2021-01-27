@@ -6,7 +6,7 @@ import { UserManager, UserManagerSettings } from 'oidc-client';
 import {
   mockMutatorGetterOidc,
   mockOidcUserManager
-} from './clients/__mocks__/oidc-react-mock';
+} from './client/__mocks__/oidc-react-mock';
 import { AnyFunction } from './common';
 
 const customGlobal: GlobalWithFetchMock = global as GlobalWithFetchMock;

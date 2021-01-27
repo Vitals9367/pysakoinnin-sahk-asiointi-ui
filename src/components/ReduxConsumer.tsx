@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import styles from './styles.module.css';
-import { StoreState } from '../clients/redux/index';
+import { StoreState } from '../client/redux/index';
 import DemoWrapper from './DemoWrapper';
 
 const ReduxConsumer = (): React.ReactElement => {

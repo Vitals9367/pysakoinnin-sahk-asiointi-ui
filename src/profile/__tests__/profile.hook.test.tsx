@@ -3,14 +3,14 @@ import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { waitFor } from '@testing-library/react';
 import { FetchMock } from 'jest-fetch-mock';
-import { configureClient } from '../../clients/__mocks__/index';
+import { configureClient } from '../../client/__mocks__/index';
 import {
   ApiAccessTokenActions,
   FetchStatus,
   useClient
-} from '../../clients/client';
-import { getClient } from '../../clients/oidc-react';
-import { mockMutatorGetterOidc } from '../../clients/__mocks__/oidc-react-mock';
+} from '../../client/client';
+import { getClient } from '../../client/oidc-react';
+import { mockMutatorGetterOidc } from '../../client/__mocks__/oidc-react-mock';
 import {
   setUpUser,
   clearApiTokens,
@@ -18,7 +18,7 @@ import {
   createApiTokenFetchPayload,
   logoutUser,
   setEnv
-} from '../../clients/__tests__/common';
+} from '../../client/__tests__/common';
 import {
   ApiAccessTokenContext,
   ApiAccessTokenProvider
