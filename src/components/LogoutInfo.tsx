@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'hds-react';
 import styles from './styles.module.css';
-import { useClient } from '../client/client';
+import { useClient } from '../client/hooks';
 
 const LogoutInfo = (): React.ReactElement => {
   const { logout, getUser } = useClient();

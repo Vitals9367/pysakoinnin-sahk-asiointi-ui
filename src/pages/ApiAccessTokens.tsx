@@ -7,7 +7,7 @@ import { FetchApiTokenOptions } from '../client';
 import LoginInfo from '../components/LoginInfo';
 import AuthenticatingInfo from '../components/AuthenticatingInfo';
 import WithAuth from '../client/WithAuth';
-import { useApiAccessTokens } from '../client/client';
+import { useApiAccessTokens } from '../client/hooks';
 
 const AuthenticatedContent = (): React.ReactElement => {
   const { getStatus, getTokens, fetch } = useApiAccessTokens();

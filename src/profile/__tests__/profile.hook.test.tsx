@@ -8,7 +8,7 @@ import {
   ApiAccessTokenActions,
   FetchStatus,
   useClient
-} from '../../client/client';
+} from '../../client/hooks';
 import { getClient } from '../../client/oidc-react';
 import { mockMutatorGetterOidc } from '../../client/__mocks__/oidc-react-mock';
 import {

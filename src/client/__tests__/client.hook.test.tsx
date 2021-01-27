@@ -3,7 +3,7 @@ import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { useSelector } from 'react-redux';
 import { getClient } from '../oidc-react';
-import { useClient, useClientErrorDetection } from '../client';
+import { useClient, useClientErrorDetection } from '../hooks';
 import { Client, ClientError, ClientStatus } from '..';
 import {
   InstanceIdentifier,

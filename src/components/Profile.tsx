@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Button } from 'hds-react';
-import { ApiAccessTokenActions } from '../client/client';
+import { ApiAccessTokenActions } from '../client/hooks';
 import { ProfileDataType, useProfile } from '../profile/profile';
 import { ApiAccessTokenContext } from './ApiAccessTokenProvider';
 import styles from './styles.module.css';

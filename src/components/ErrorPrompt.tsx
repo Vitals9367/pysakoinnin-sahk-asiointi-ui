@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Notification } from 'hds-react';
 
-import { useClientErrorDetection } from '../client/client';
+import { useClientErrorDetection } from '../client/hooks';
 import { ClientErrorObject, ClientError } from '../client';
 import styles from './styles.module.css';
 
