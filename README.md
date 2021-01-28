@@ -1,40 +1,31 @@
 # example-profile-ui
 
-Example UI application interacts with an OIDC (and later also with Helsinki profile).
+Example UI application handles logins to OIDC provider and loads Helsinki Profile.
 
-App uses oidc-react.js for all calls to the OIDC provider. That library is wrapped with "client.ts" to support Tunnistamo and Keycloak servers which for example return different data formats.
+App uses [oidc-react.js](https://github.com/IdentityModel/oidc-client-js/wiki) for all calls to the OIDC provider. Library is wrapped with "client" (client/index.ts) to unify connections to Tunnistamo, Keycloak server and Helsinki Profiili.
 
 Included in this demo app:
 
-- hooks for easy usage
+- hooks for easy usage with React
 - redux store listening a client
 - HOC component listening a client and showing different content for authorized and unauthorized users.
+- getting API token and using it to get Profile.
 
-Clients dispatch events and trigger changes which then trigger re-rendering of the components using clients.
-
-## Oidc and keyclock client differences
-
-Client libraries trigger different events when client status changes or an error occurs.
-
-CLIENT_READY:
-
-- oidc does not trigger this event. Keycloak triggers this when onReady() is called. This is same as either AUTHORIZE or UNAUTHORIZED event.
-  TOKEN_EXPIRING:
-- triggered only by oidc
-  ERROR event with type AUTH_ERROR:
-- Oidc trigger the event if silent signin results in error, but not if error is 'login_required'. Keycloak triggers this error when onAuthError() is called
+Client dispatches events and trigger changes which then trigger re-rendering of the components using the client.
 
 ## Config
 
-use .env -files. Config can also be overridden for command line:
+Configs are in .env -files. Default OIDC-server is Tunnistamo.
+
+Tunnistamo does not support silent login checks (it uses only localstorage) so REACT_APP_OIDC_AUTO_SIGN_IN must be 'false'. It renews access tokens so REACT_APP_OIDC_SILENT_AUTH_PATH must be changed to '/' to prevent errors for unknown redirect url.
+
+Config can also be overridden for command line:
 
 ```bash
 REACT_APP_OIDC_URL=https://foo.bar yarn start
 ```
 
 ### Config for Keycloak OIDC provider
-
-Default OIDC-server is Tunnistamo and .env is set up for it.
 
 Settings when using keycloak server:
 
@@ -44,8 +35,6 @@ REACT_APP_OIDC_REALM="helsinki-tunnistus"
 REACT_APP_OIDC_SCOPE="profile"
 REACT_APP_OIDC_CLIENT_ID="exampleapp-ui"
 ```
-
-Tunnistamo does not support silent login checks (it uses only localstorage) so REACT_APP_OIDC_AUTO_SIGN_IN must be 'false'. It renews access tokens so REACT_APP_OIDC_SILENT_AUTH_PATH must be changed to '/' to prevent errors for unknown redirect url.
 
 ### Config for getting Profile data
 
