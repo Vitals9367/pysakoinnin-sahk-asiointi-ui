@@ -22,9 +22,6 @@ const Index = (): React.ReactElement => {
             headerista.
           </p>
           <p>Voit myös kirjatua ulos toisessa ikkunassa.</p>
-          <p>
-            Client on: <strong>Oidc</strong>
-          </p>
           <LoginComponent />
           <ReduxConsumer />
           <WithAuthDemo />

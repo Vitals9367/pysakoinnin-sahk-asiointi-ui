@@ -30,7 +30,7 @@ REACT_APP_OIDC_URL=https://foo.bar yarn start
 Settings when using keycloak server:
 
 ```bash
-REACT_APP_OIDC_URL="https://helsinki-profile-keycloak-dev.agw.arodevtest.hel.fi/auth"
+REACT_APP_OIDC_URL="<KEYCLOAK_SERVER_URL>/auth"
 REACT_APP_OIDC_REALM="helsinki-tunnistus"
 REACT_APP_OIDC_SCOPE="profile"
 REACT_APP_OIDC_CLIENT_ID="exampleapp-ui"
@@ -48,7 +48,7 @@ REACT_APP_OIDC_SCOPE="openid profile email https://api.hel.fi/auth/helsinkiprofi
 Profile BE url and audience are configured in main .env and there is no need to change them
 
 ```bash
-REACT_APP_PROFILE_BACKEND_URL="https://profiili-api.test.kuva.hel.ninja/graphql/"
+REACT_APP_PROFILE_BACKEND_URL="<PROFILE_API_SERVER_URL>/graphql/"
 REACT_APP_PROFILE_AUDIENCE="https://api.hel.fi/auth/helsinkiprofile"
 ```
 
