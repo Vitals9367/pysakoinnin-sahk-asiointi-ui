@@ -3,7 +3,7 @@ import PageContent from '../components/PageContent';
 import TokenBrowser from '../components/TokenBrowser';
 import LoginInfo from '../components/LoginInfo';
 import AuthenticatingInfo from '../components/AuthenticatingInfo';
-import WithAuth from '../clients/WithAuth';
+import WithAuth from '../client/WithAuth';
 
 const Tokens = (): React.ReactElement => (
   <PageContent>

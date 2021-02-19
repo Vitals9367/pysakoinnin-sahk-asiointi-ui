@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { useApiAccessTokens, ApiAccessTokenActions } from '../clients/client';
+import { useApiAccessTokens, ApiAccessTokenActions } from '../client/hooks';
 
 export interface ApiAccessTokenContextProps {
   readonly actions: ApiAccessTokenActions;

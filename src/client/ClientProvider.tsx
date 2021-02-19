@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
 import { Client, ClientProps } from '.';
-import { useClient } from './client';
+import { useClient } from './hooks';
 
 export interface ClientContextProps {
   readonly client: Client;

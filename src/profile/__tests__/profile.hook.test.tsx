@@ -3,14 +3,14 @@ import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { waitFor } from '@testing-library/react';
 import { FetchMock } from 'jest-fetch-mock';
-import { configureClient } from '../../clients/__mocks__/index';
+import { configureClient } from '../../client/__mocks__/index';
 import {
   ApiAccessTokenActions,
   FetchStatus,
-  getClient,
   useClient
-} from '../../clients/client';
-import { mockMutatorGetterOidc } from '../../clients/__mocks__/oidc-react-mock';
+} from '../../client/hooks';
+import { getClient } from '../../client/oidc-react';
+import { mockMutatorGetterOidc } from '../../client/__mocks__/oidc-react-mock';
 import {
   setUpUser,
   clearApiTokens,
@@ -18,7 +18,7 @@ import {
   createApiTokenFetchPayload,
   logoutUser,
   setEnv
-} from '../../clients/__tests__/common';
+} from '../../client/__tests__/common';
 import {
   ApiAccessTokenContext,
   ApiAccessTokenProvider
@@ -32,7 +32,7 @@ import {
 import { AnyObject, AnyFunction } from '../../common';
 
 describe('Profile.ts useProfile hook ', () => {
-  configureClient({ type: 'oidc', tokenExchangePath: '/token-exchange/' });
+  configureClient({ tokenExchangePath: '/token-exchange/', autoSignIn: true });
   const fetchMock: FetchMock = global.fetch;
   const mockMutator = mockMutatorGetterOidc();
   const client = getClient();

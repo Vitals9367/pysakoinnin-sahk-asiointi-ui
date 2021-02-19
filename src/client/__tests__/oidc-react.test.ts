@@ -46,7 +46,7 @@ describe('Oidc client ', () => {
     eventListeners = createEventListeners(
       (client.addListener as unknown) as ListenerSetter
     );
-    instance = mockMutator.getInstance() as UserManager;
+    instance = mockMutator.getInstance();
   }
 
   function clearTests(): void {
@@ -171,7 +171,7 @@ describe('Oidc client ', () => {
       );
       await to(client.init());
       // note: checking getInitCallCount() === 0 right after client.init() may be confusing
-      // getInitCallCount() shows if keycloak/oidc.manager initialisation has been done, not how many times client.init() was called
+      // getInitCallCount() shows if oidc.manager initialisation has been done, not how many times client.init() was called
       expect(mockMutator.getInitCallCount()).toBe(0);
       const user = client.getUserProfile();
       expect(user && user.email).toBe(email);

@@ -1,60 +1,23 @@
 # example-profile-ui
 
-Example UI application that interacts with Keycloak (and later also with Helsinki profile)
+Example UI application handles logins to OIDC provider and loads Helsinki Profile.
 
-There are two clients that can be used for authentication: keycloak.js and oidc-react.js. The version of the oidc-react.js npm library is beta and keycloak is the official package released with keycloak server. Currently keycload client is used in this demo.
+App uses [oidc-react.js](https://github.com/IdentityModel/oidc-client-js/wiki) for all calls to the OIDC provider. Library is wrapped with "client" (client/index.ts) to unify connections to Tunnistamo, Keycloak server and Helsinki Profiili.
 
 Included in this demo app:
 
-- two login clients
-- hooks for easy usage
+- hooks for easy usage with React
 - redux store listening a client
 - HOC component listening a client and showing different content for authorized and unauthorized users.
+- getting API token and using it to get Profile.
 
-Clients dispatch events and trigger changes which then trigger re-rendering of the components using clients.
-
-## using oidc-client
-
-Used client type is defined in .env.
-Settings for keycloak
-
-```bash
-REACT_APP_OIDC_CLIENT_TYPE="keycloak"
-REACT_APP_OIDC_SILENT_AUTH_PATH="/silent-check-sso.html"
-REACT_APP_OIDC_CALLBACK_PATH="/"
-```
-
-Settings for oidc-react
-
-```bash
-REACT_APP_OIDC_CLIENT_TYPE="oidc"
-REACT_APP_OIDC_SILENT_AUTH_PATH="/silent_renew.html"
-REACT_APP_OIDC_CALLBACK_PATH="/callback"
-```
-
-## Oidc and keyclock client differences
-
-Client libraries trigger different events when client status changes or an error occurs.
-
-CLIENT_READY:
-
-- oidc does not trigger this event. Keycloak triggers this when onReady() is called. This is same as either AUTHORIZE or UNAUTHORIZED event.
-  TOKEN_EXPIRING:
-- triggered only by oidc
-  ERROR event with type AUTH_ERROR:
-- Oidc trigger the event if silent signin results in error, but not if error is 'login_required'. Keycloak triggers this error when onAuthError() is called
+Client dispatches events and trigger changes which then trigger re-rendering of the components using the client.
 
 ## Config
 
-use .env -files. Some values are client specific. Default client is keycloak and relevant settings are:
+Configs are in .env -files. Default OIDC-server is Tunnistamo.
 
-```bash
-REACT_APP_OIDC_URL="https://tunnistus.hel.ninja/auth"
-REACT_APP_OIDC_REALM="helsinki-tunnistus"
-REACT_APP_OIDC_CLIENT_ID="https://api.hel.fi/auth/example-ui-profile"
-```
-
-other settings should not be changed
+Tunnistamo does not support silent login checks (it uses only localstorage) so REACT_APP_OIDC_AUTO_SIGN_IN must be 'false'. It renews access tokens so REACT_APP_OIDC_SILENT_AUTH_PATH must be changed to '/' to prevent errors for unknown redirect url.
 
 Config can also be overridden for command line:
 
@@ -62,23 +25,16 @@ Config can also be overridden for command line:
 REACT_APP_OIDC_URL=https://foo.bar yarn start
 ```
 
-### Config for Tunnistamo
+### Config for Keycloak OIDC provider
+
+Settings when using keycloak server:
 
 ```bash
-REACT_APP_OIDC_URL="https://api.hel.fi/sso-test"
-REACT_APP_OIDC_CLIENT_ID="https://api.hel.fi/auth/helsinkiprofile-ui-dev"
-REACT_APP_OIDC_SILENT_AUTH_PATH="/callback"
-REACT_APP_OIDC_AUTO_SIGN_IN=false
-REACT_APP_OIDC_SCOPE="openid profile https://api.hel.fi/auth/helsinkiprofiledev"
-REACT_APP_OIDC_CLIENT_TYPE="oidc"
-REACT_APP_OIDC_REALM=""
-REACT_APP_OIDC_CALLBACK_PATH="/callback"
-REACT_APP_OIDC_TOKEN_EXCHANGE_PATH="/api-tokens/"
+REACT_APP_OIDC_URL="<KEYCLOAK_SERVER_URL>/auth"
+REACT_APP_OIDC_REALM="helsinki-tunnistus"
+REACT_APP_OIDC_SCOPE="profile"
+REACT_APP_OIDC_CLIENT_ID="exampleapp-ui"
 ```
-
-Tunnistamo does not support silent login checks (it uses only localstorage) so REACT_APP_OIDC_AUTO_SIGN_IN must be 'false'. It renews access tokens so REACT_APP_OIDC_SILENT_AUTH_PATH must be changed to '/' to prevent errors for unknown redirect url.
-
-REACT_APP_OIDC_CLIENT_TYPE can only be "oidc"
 
 ### Config for getting Profile data
 
@@ -92,7 +48,7 @@ REACT_APP_OIDC_SCOPE="openid profile email https://api.hel.fi/auth/helsinkiprofi
 Profile BE url and audience are configured in main .env and there is no need to change them
 
 ```bash
-REACT_APP_PROFILE_BACKEND_URL="https://profiili-api.test.kuva.hel.ninja/graphql/"
+REACT_APP_PROFILE_BACKEND_URL="<PROFILE_API_SERVER_URL>/graphql/"
 REACT_APP_PROFILE_AUDIENCE="https://api.hel.fi/auth/helsinkiprofile"
 ```
 

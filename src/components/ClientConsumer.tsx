@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ClientContext } from '../clients/ClientProvider';
+import { ClientContext } from '../client/ClientProvider';
 import DemoWrapper from './DemoWrapper';
 
 const ClientConsumer = (): React.ReactElement | null => (

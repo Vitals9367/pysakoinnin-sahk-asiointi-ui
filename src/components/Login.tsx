@@ -3,10 +3,10 @@ import DemoWrapper from './DemoWrapper';
 import LoginInfo from './LoginInfo';
 import LogoutInfo from './LogoutInfo';
 import AuthenticatingInfo from './AuthenticatingInfo';
-import WithAuth from '../clients/WithAuth';
+import WithAuth from '../client/WithAuth';
 
 const Login = (): React.ReactElement => (
-  <DemoWrapper title="Keycloak-kuuntelija">
+  <DemoWrapper title="Client-kuuntelija">
     {WithAuth(LogoutInfo, LoginInfo, AuthenticatingInfo)}
   </DemoWrapper>
 );

@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 
 import { store, connectClient } from './store';
 import { connected } from './actions';
-import { useClient } from '../client';
+import { useClient } from '../hooks';
 
 const StoreProvider: FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const client = useClient();

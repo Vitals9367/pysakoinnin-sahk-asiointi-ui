@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Notification } from 'hds-react';
 
-import { useClientErrorDetection } from '../clients/client';
-import { ClientErrorObject, ClientError } from '../clients';
+import { useClientErrorDetection } from '../client/hooks';
+import { ClientErrorObject, ClientError } from '../client';
 import styles from './styles.module.css';
 
 const ErrorPrompt = (

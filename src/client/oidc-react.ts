@@ -19,8 +19,10 @@ import {
   getClientConfig,
   getLocationBasedUri,
   getTokenUri,
-  createClientGetOrLoadUserFunction
+  createClientGetOrLoadUserFunction,
+  ClientProps
 } from './index';
+import { AnyObject } from '../common';
 
 let client: Client | null = null;
 
@@ -57,6 +59,11 @@ function bindEvents(
   manager.events.addAccessTokenExpiring((): void =>
     eventTrigger(ClientEvent.TOKEN_EXPIRING)
   );
+}
+
+export function getLocalStorageKey(clientConfig?: ClientProps): string {
+  const config = clientConfig || getClientConfig();
+  return `oidc.user:${config.authority}:${config.clientId}`;
 }
 
 export function createOidcClient(): Client {
@@ -99,16 +106,41 @@ export function createOidcClient(): Client {
     Oidc.Log.level = Oidc.Log.INFO;
   }
 
+  const getLocalStorageData = (): AnyObject | undefined => {
+    const userKey = getLocalStorageKey(clientConfig);
+    const storedString = localStorage.getItem(userKey);
+    if (
+      !storedString ||
+      storedString.length < 2 ||
+      storedString.charAt(0) !== '{'
+    ) {
+      return undefined;
+    }
+    try {
+      return JSON.parse(storedString);
+    } catch (e) {
+      return undefined;
+    }
+  };
+
+  const getUserData = (): AnyObject | undefined =>
+    getStoredUser() || getLocalStorageData() || undefined;
+
   const getUser: Client['getUser'] = () => {
     if (isAuthenticated()) {
-      const user = (getStoredUser() as unknown) as User;
+      const user = (getUserData() as unknown) as User;
       const userData = user && user.profile;
       if (
         userData &&
         userData.name &&
         (userData.session_state || userData.amr)
       ) {
-        return userData;
+        return ({
+          name: userData.name,
+          given_name: userData.given_name,
+          family_name: userData.family_name,
+          email: userData.email
+        } as unknown) as ClientUser;
       }
     }
     return undefined;

@@ -5,7 +5,6 @@ import to from 'await-handler';
 
 export type User = Record<string, string | number | boolean>;
 export type Token = string | undefined;
-export type ClientType = 'keycloak' | 'oidc';
 export type JWTPayload = Record<string, string>;
 export type EventPayload =
   | User
@@ -77,7 +76,6 @@ export const ClientEvent = {
   STATUS_CHANGE: 'STATUS_CHANGE',
   AUTHORIZATION_TERMINATED: 'AUTHORIZATION_TERMINATED',
   LOGGING_OUT: 'LOGGING_OUT',
-  CLIENT_READY: 'CLIENT_READY',
   CLIENT_AUTH_SUCCESS: 'CLIENT_AUTH_SUCCESS',
   ...ClientStatus
 } as const;
@@ -114,7 +112,6 @@ export interface ClientProps {
   clientId: string;
   /**
    * The redirect URI of your client application to receive a response from the OIDC/OAuth2 provider.
-   * Not needed for keycloak client. Only for oidc-react. Use empty string with keycloak.
    */
   callbackPath: string;
   /**
@@ -123,7 +120,8 @@ export interface ClientProps {
    */
   logoutPath?: string;
   /**
-   * The path for silent authentication checks: silent renew (oidc-react) or silent sso check (keycloak)
+   * The path for silent authentication checks
+   * Default '/silent-renew.html'
    */
   silentAuthPath?: string;
   /**
@@ -146,21 +144,6 @@ export interface ClientProps {
    * Default: false
    */
   enableLogging?: boolean;
-  /**
-   * Specifies an action to do on load. Supported values are login-required or check-sso.
-   * Only for keycloak client.
-   */
-  loginType: 'check-sso' | 'login-required' | undefined;
-  /**
-   * Set the OpenID Connect flow. Valid values are standard, implicit or hybrid.
-   * Only for keycloak client.
-   * Default: 'standard'
-   */
-  flow: 'standard' | 'implicit' | 'hybrid' | undefined;
-  /**
-   * Type of the client
-   */
-  type: ClientType;
   /**
    * Path for exchanging tokens. Leave blank to use default keycloak path realms/<realm>/protocol/openid-connect/token
    */

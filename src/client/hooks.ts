@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, {
   useEffect,
   useState,
@@ -13,22 +12,14 @@ import {
   ClientStatus,
   ClientStatusId,
   ClientError,
-  ClientType,
   FetchApiTokenOptions,
   FetchError,
-  getClientConfig,
   JWTPayload
 } from '.';
-import { getClient as getKeycloakClient } from './keycloak';
-import { getClient as getOidcClient } from './oidc-react';
+import { getClient } from './oidc-react';
 
-export function getClient(clientType?: ClientType): Client {
-  const type = clientType || getClientConfig().type;
-  return type === 'keycloak' ? getKeycloakClient() : getOidcClient();
-}
-
-export function useClient(clientType?: ClientType): Client {
-  const clientRef: React.Ref<Client> = useRef(getClient(clientType));
+export function useClient(): Client {
+  const clientRef: React.Ref<Client> = useRef(getClient());
   const clientFromRef: Client = clientRef.current as Client;
   const [, setStatus] = useState<ClientStatusId>(clientFromRef.getStatus());
   useEffect(() => {
@@ -57,18 +48,8 @@ export function useClient(clientType?: ClientType): Client {
   return clientFromRef;
 }
 
-export function useKeycloak(): Client {
-  return useClient('keycloak');
-}
-
-export function useOidc(): Client {
-  return useClient('oidc');
-}
-
-export function useClientErrorDetection(
-  clientType?: ClientType
-): ClientErrorObject {
-  const clientRef: React.Ref<Client> = useRef(getClient(clientType));
+export function useClientErrorDetection(): ClientErrorObject {
+  const clientRef: React.Ref<Client> = useRef(getClient());
   const clientFromRef: Client = clientRef.current as Client;
   const [error, setError] = useState<ClientErrorObject>(undefined);
   useEffect(() => {
@@ -108,16 +89,8 @@ export function useClientErrorDetection(
   return error;
 }
 
-export function useKeycloakErrorDetection(): ClientErrorObject {
-  return useClientErrorDetection('keycloak');
-}
-
-export function useOidcErrorDetection(): ClientErrorObject {
-  return useClientErrorDetection('oidc');
-}
-
-export function useClientCallback(clientType?: ClientType): Client {
-  const clientRef: React.Ref<Client> = useRef(getClient(clientType));
+export function useClientCallback(): Client {
+  const clientRef: React.Ref<Client> = useRef(getClient());
   const clientFromRef: Client = clientRef.current as Client;
   const [, setStatus] = useState<ClientStatusId>(clientFromRef.getStatus());
   useEffect(() => {

@@ -3,11 +3,11 @@ import { Button } from 'hds-react';
 import PageContent from '../components/PageContent';
 import AccessTokenForm from '../components/AccessTokenForm';
 import AccessTokenOutput from '../components/AccessTokenOutput';
-import { FetchApiTokenOptions } from '../clients';
+import { FetchApiTokenOptions } from '../client';
 import LoginInfo from '../components/LoginInfo';
 import AuthenticatingInfo from '../components/AuthenticatingInfo';
-import WithAuth from '../clients/WithAuth';
-import { useApiAccessTokens } from '../clients/client';
+import WithAuth from '../client/WithAuth';
+import { useApiAccessTokens } from '../client/hooks';
 
 const AuthenticatedContent = (): React.ReactElement => {
   const { getStatus, getTokens, fetch } = useApiAccessTokens();

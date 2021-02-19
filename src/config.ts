@@ -1,4 +1,4 @@
-import { ClientProps } from './clients/index';
+import { ClientProps } from './client/index';
 
 function envValueToBoolean(
   value: string | undefined | boolean,
@@ -37,9 +37,6 @@ const clientConfig: ClientProps = {
     true
   ),
   enableLogging: envValueToBoolean(process.env.REACT_APP_OIDC_LOGGING, false),
-  loginType: process.env.REACT_APP_OIDC_LOGIN_TYPE as ClientProps['loginType'],
-  flow: process.env.REACT_APP_OIDC_FLOW as ClientProps['flow'],
-  type: process.env.REACT_APP_OIDC_CLIENT_TYPE as ClientProps['type'],
   tokenExchangePath: process.env.REACT_APP_OIDC_TOKEN_EXCHANGE_PATH
 };
 
