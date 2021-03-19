@@ -4,6 +4,26 @@ import { ApiAccessTokenActions } from '../client/hooks';
 import { ProfileDataType, useProfile } from '../profile/profile';
 import { ApiAccessTokenContext } from './ApiAccessTokenProvider';
 import styles from './styles.module.css';
+import { AnyObject } from '../common';
+
+const nodeToJSON = (node: AnyObject): AnyObject | AnyObject[] => {
+  if (Array.isArray(node.edges)) {
+    return node.edges.map(edge => nodeToJSON(edge.node) as AnyObject);
+  }
+  // eslint-disable-next-line no-underscore-dangle
+  if (node.__typename === 'VerifiedPersonalInformationNode') {
+    return node;
+  }
+  return {
+    id: String(node.id),
+    value: String(
+      node.address
+        ? `${node.address} ${node.postalCode} ${node.city} ${node.countryCode}`
+        : node.email || node.phone
+    ),
+    primary: String(node.primary)
+  };
+};
 
 const PropToComponent = ([prop, value]: [
   string,
@@ -11,7 +31,13 @@ const PropToComponent = ([prop, value]: [
 ]): React.ReactElement => (
   <li key={prop}>
     <strong>{prop}</strong>:{' '}
-    <span data-test-id={`profile-data-${prop}`}>{value}</span>
+    {value && typeof value === 'object' ? (
+      <pre data-test-id={`profile-data-${prop}`}>
+        {JSON.stringify(nodeToJSON(value), null, 2)}
+      </pre>
+    ) : (
+      <span data-test-id={`profile-data-${prop}`}>{value || '-'}</span>
+    )}
   </li>
 );
 

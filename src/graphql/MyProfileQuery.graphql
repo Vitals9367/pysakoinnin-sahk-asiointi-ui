@@ -1,63 +1,87 @@
 query MyProfileQuery {
-      myProfile {
-        id
-        firstName
-        lastName
-        nickname
-        language
-        primaryAddress {
-          id
+  myProfile {
+    id
+    firstName
+    lastName
+    nickname
+    language
+    primaryAddress {
+      id
+      primary
+      address
+      postalCode
+      city
+      countryCode
+      addressType
+    }
+    addresses {
+      edges {
+        node {
           primary
+          id
           address
           postalCode
           city
           countryCode
           addressType
         }
-        addresses {
-          edges {
-            node {
-              primary
-              id
-              address
-              postalCode
-              city
-              countryCode
-              addressType
-            }
-          }
-        }
-        primaryEmail {
+      }
+    }
+    primaryEmail {
+      id
+      email
+      primary
+      emailType
+    }
+    emails {
+      edges {
+        node {
+          primary
           id
           email
-          primary
           emailType
-        }
-        emails {
-          edges {
-            node {
-              primary
-              id
-              email
-              emailType
-            }
-          }
-        }
-        primaryPhone {
-          id
-          phone
-          primary
-          phoneType
-        }
-        phones {
-          edges {
-            node {
-              primary
-              id
-              phone
-              phoneType
-            }
-          }
         }
       }
     }
+    primaryPhone {
+      id
+      phone
+      primary
+      phoneType
+    }
+    phones {
+      edges {
+        node {
+          primary
+          id
+          phone
+          phoneType
+        }
+      }
+    }
+    verifiedPersonalInformation {
+      firstName
+      lastName
+      givenName
+      nationalIdentificationNumber
+      email
+      municipalityOfResidence
+      municipalityOfResidenceNumber
+      permanentAddress {
+        streetAddress
+        postalCode
+        postOffice
+      }
+      temporaryAddress {
+        streetAddress
+        postalCode
+        postOffice
+      }
+      permanentForeignAddress {
+        streetAddress
+        additionalAddress
+        countryCode
+      }
+    }
+  }
+}
