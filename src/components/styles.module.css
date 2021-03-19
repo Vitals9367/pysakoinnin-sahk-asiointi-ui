@@ -113,3 +113,9 @@
   overflow: hidden;
   word-break: break-all;
 }
+
+.navigationButton {
+  background: none;
+  border: 0;
+  width: 100%;
+}
