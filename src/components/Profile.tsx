@@ -22,11 +22,14 @@ const Profile = (): React.ReactElement => {
     getStatus: getProfileStatus,
     getProfile,
     fetch,
-    clear
+    clear,
+    getErrorMessage,
+    getResultErrorMessage
   } = useProfile();
   const apiAccessTokenStatus = getApiAccessTokenStatus();
   const profileStatus = getProfileStatus();
   const profileData = getProfile();
+  const resultErrorMessage = getResultErrorMessage();
   const reload = async (): Promise<void> => {
     await clear();
     await fetch();
@@ -35,7 +38,12 @@ const Profile = (): React.ReactElement => {
     return <div>Api access tokenin lataus epäonnistui</div>;
   }
   if (profileStatus === 'error') {
-    return <div>Profiilin lataus epäonnistui</div>;
+    return (
+      <div data-test-id="profile-load-error">
+        Profiilin lataus epäonnistui:
+        <pre>{getErrorMessage()}</pre>
+      </div>
+    );
   }
   if (profileStatus !== 'loaded') {
     return <div>Ladataan....</div>;
@@ -47,6 +55,9 @@ const Profile = (): React.ReactElement => {
         <ul className={styles['user-token-list']}>
           {Object.entries(profileData).map(arr => PropToComponent(arr))}
         </ul>
+      )}
+      {resultErrorMessage && (
+        <p data-test-id="profile-data-result-error">{resultErrorMessage}</p>
       )}
       <Button translate="" onClick={reload}>
         Hae

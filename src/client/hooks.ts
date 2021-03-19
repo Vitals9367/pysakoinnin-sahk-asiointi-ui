@@ -130,9 +130,12 @@ export type FetchStatus =
   | 'loaded'
   | 'waiting';
 
+type ApiFetchError = FetchError | string | undefined;
+
 export type ApiAccessTokenActions = {
   fetch: (options: FetchApiTokenOptions) => Promise<JWTPayload | FetchError>;
   getStatus: () => FetchStatus;
+  getErrorMessage: () => string | undefined;
   getTokens: () => JWTPayload | undefined;
 };
 
@@ -170,19 +173,25 @@ export function useApiAccessTokens(): ApiAccessTokenActions {
 
   const resolvedStatus = resolveStatus();
   const [status, setStatus] = useState<FetchStatus>(resolvedStatus);
+  const [error, setError] = useState<ApiFetchError>();
   const currentStatus = resolveCurrentStatus(resolvedStatus, status);
   if (resolvedStatus === 'unauthorized' && apiTokens) {
     setApiTokens(undefined);
     setStatus('unauthorized');
   }
-
   const fetchTokens: ApiAccessTokenActions['fetch'] = useCallback(
     async options => {
       setStatus('loading');
       const result = await client.getApiAccessToken(options);
       if (result.error) {
         setStatus('error');
+        setError(
+          result.message
+            ? new Error(`${result.message} ${result.status}`)
+            : result.error
+        );
       } else {
+        setError(undefined);
         setApiTokens(result as JWTPayload);
         setStatus('loaded');
       }
@@ -205,9 +214,20 @@ export function useApiAccessTokens(): ApiAccessTokenActions {
 
     autoFetch();
   }, [fetchTokens, currentStatus]);
-
   return {
     getStatus: () => status,
+    getErrorMessage: () => {
+      if (!error) {
+        return undefined;
+      }
+      if (typeof error === 'string') {
+        return error;
+      }
+      if (error.message) {
+        return error.message;
+      }
+      return undefined;
+    },
     fetch: options => fetchTokens(options),
     getTokens: () => apiTokens
   } as ApiAccessTokenActions;
