@@ -40,6 +40,11 @@ const clientConfig: ClientProps = {
   tokenExchangePath: process.env.REACT_APP_OIDC_TOKEN_EXCHANGE_PATH
 };
 
+const uiConfig: { profileUIUrl: string } = {
+  profileUIUrl: String(process.env.REACT_APP_PROFILE_UI_URL)
+};
+
 export default {
-  client: clientConfig
+  client: clientConfig,
+  ui: uiConfig
 };

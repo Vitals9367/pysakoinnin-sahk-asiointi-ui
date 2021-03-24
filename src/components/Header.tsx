@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Navigation } from 'hds-react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useClient } from '../client/hooks';
+import config from '../config';
 
 type Page = 'frontpage' | 'apiAccessTokens' | 'userTokens' | 'profile';
 
@@ -79,7 +80,7 @@ const Header = (): React.ReactElement => {
         {initialized && (
           <Navigation.User
             authenticated={authenticated}
-            label="Sign in"
+            label="Kirjaudu sisään"
             onSignIn={(): void => client.login()}
             userName={userName}>
             <Navigation.Item
@@ -89,11 +90,17 @@ const Header = (): React.ReactElement => {
               variant="primary"
             />
             <Navigation.Item
+              as="a"
+              href={`${config.ui.profileUIUrl}/loginsso`}
+              label="Helsinki-profiili"
+              target="_blank"
+            />
+            <Navigation.Item
               as="button"
               type="button"
               onClick={(): void => client.logout()}
               variant="secondary"
-              label="Sign out"
+              label="Kirjaudu ulos"
             />
           </Navigation.User>
         )}
