@@ -10,7 +10,6 @@ const nodeToJSON = (node: AnyObject): AnyObject | AnyObject[] => {
   if (Array.isArray(node.edges)) {
     return node.edges.map(edge => nodeToJSON(edge.node) as AnyObject);
   }
-  // eslint-disable-next-line no-underscore-dangle
   if (node.__typename === 'VerifiedPersonalInformationNode') {
     return node;
   }
