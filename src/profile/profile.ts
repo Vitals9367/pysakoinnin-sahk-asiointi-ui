@@ -192,6 +192,7 @@ export function useProfile(): ProfileActions {
       setError((result as GraphQLClientError).error);
       setProfileData(undefined);
       setResultErrorMessage(undefined);
+      setStatus('error');
     } else {
       setError(undefined);
       setResultErrorMessage(
