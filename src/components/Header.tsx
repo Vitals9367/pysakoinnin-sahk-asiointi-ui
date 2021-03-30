@@ -85,12 +85,6 @@ const Header = (): React.ReactElement => {
             onSignIn={(): void => client.login()}
             userName={userName}>
             <Navigation.Item
-              label={userName}
-              href="https://hel.fi"
-              target="_blank"
-              variant="primary"
-            />
-            <Navigation.Item
               as="a"
               href={`${config.ui.profileUIUrl}/loginsso`}
               label="Helsinki-profiili"
