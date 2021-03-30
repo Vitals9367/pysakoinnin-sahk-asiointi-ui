@@ -8,13 +8,13 @@
   flex: 1;
   flex-direction: column;
   max-width: 800px;
-  margin:0 auto;
+  margin: 0 auto;
   padding: 20px 0;
   width: 100%;
 }
 
 .content-element {
-  padding:20px 0;
+  padding: 20px 0;
   width: 100%;
 }
 
@@ -23,93 +23,93 @@
 }
 
 .error-prompt-container {
-  position:fixed;
-  top:0;
-  left:0;
-  height:100vh;
-  width:100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
   z-index: 999;
 }
 
 .error-prompt-overlay {
-  position:absolute;
-  top:0;
-  left:0;
-  height:100%;
-  width:100%;
-  background: rgba(0,0,0,0.6);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
   pointer-events: none;
   z-index: 1;
 }
 
 .error-prompt-content {
   position: absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 60%;
   max-width: 400px;
   z-index: 2;
 }
 
 .demo-box {
-  margin:40px 0 40px;
-  border:1px solid #333;
-  padding:10px;
-  position:relative;
+  margin: 40px 0 40px;
+  border: 1px solid #333;
+  padding: 10px;
+  position: relative;
   width: 100%;
 }
 
 .demo-box h4 {
-  position:absolute;
+  position: absolute;
   top: -32px;
   left: 0px;
-  font-size:12px;
-  color:#aaa;
+  font-size: 12px;
+  color: #aaa;
 }
 
-.access-token-form{
+.access-token-form {
   display: flex;
   flex-direction: column;
   padding-bottom: 30px;
 }
 
-.access-token-form > div{
-  padding:10px 0;
+.access-token-form > div {
+  padding: 10px 0;
 }
 
-.access-token-form label{
+.access-token-form label {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.access-token-form input{
-  padding:10px;
+.access-token-form input {
+  padding: 10px;
   margin-top: 10px;
 }
 
-.access-token-output{
+.access-token-output {
   display: flex;
   flex-direction: column;
   padding-top: 30px;
 }
 
-.access-token-output pre{
-  font-size:11px;
+.access-token-output pre {
+  font-size: 11px;
 }
 
-.user-token-list{
+.user-token-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.user-token-list li{
-  padding:5px 0;
+.user-token-list li {
+  padding: 5px 0;
 }
 
-.token{
+.token {
   overflow: hidden;
   word-break: break-all;
 }
