@@ -4,6 +4,25 @@ import { ApiAccessTokenActions } from '../client/hooks';
 import { ProfileDataType, useProfile } from '../profile/profile';
 import { ApiAccessTokenContext } from './ApiAccessTokenProvider';
 import styles from './styles.module.css';
+import { AnyObject } from '../common';
+
+const nodeToJSON = (node: AnyObject): AnyObject | AnyObject[] => {
+  if (Array.isArray(node.edges)) {
+    return node.edges.map(edge => nodeToJSON(edge.node) as AnyObject);
+  }
+  if (node.__typename === 'VerifiedPersonalInformationNode') {
+    return node;
+  }
+  return {
+    id: String(node.id),
+    value: String(
+      node.address
+        ? `${node.address} ${node.postalCode} ${node.city} ${node.countryCode}`
+        : node.email || node.phone
+    ),
+    primary: String(node.primary)
+  };
+};
 
 const PropToComponent = ([prop, value]: [
   string,
@@ -11,7 +30,13 @@ const PropToComponent = ([prop, value]: [
 ]): React.ReactElement => (
   <li key={prop}>
     <strong>{prop}</strong>:{' '}
-    <span data-test-id={`profile-data-${prop}`}>{value}</span>
+    {value && typeof value === 'object' ? (
+      <pre data-test-id={`profile-data-${prop}`}>
+        {JSON.stringify(nodeToJSON(value), null, 2)}
+      </pre>
+    ) : (
+      <span data-test-id={`profile-data-${prop}`}>{value || '-'}</span>
+    )}
   </li>
 );
 
@@ -22,11 +47,14 @@ const Profile = (): React.ReactElement => {
     getStatus: getProfileStatus,
     getProfile,
     fetch,
-    clear
+    clear,
+    getErrorMessage,
+    getResultErrorMessage
   } = useProfile();
   const apiAccessTokenStatus = getApiAccessTokenStatus();
   const profileStatus = getProfileStatus();
   const profileData = getProfile();
+  const resultErrorMessage = getResultErrorMessage();
   const reload = async (): Promise<void> => {
     await clear();
     await fetch();
@@ -35,7 +63,12 @@ const Profile = (): React.ReactElement => {
     return <div>Api access tokenin lataus epäonnistui</div>;
   }
   if (profileStatus === 'error') {
-    return <div>Profiilin lataus epäonnistui</div>;
+    return (
+      <div data-test-id="profile-load-error">
+        Profiilin lataus epäonnistui:
+        <pre>{getErrorMessage()}</pre>
+      </div>
+    );
   }
   if (profileStatus !== 'loaded') {
     return <div>Ladataan....</div>;
@@ -47,6 +80,9 @@ const Profile = (): React.ReactElement => {
         <ul className={styles['user-token-list']}>
           {Object.entries(profileData).map(arr => PropToComponent(arr))}
         </ul>
+      )}
+      {resultErrorMessage && (
+        <p data-test-id="profile-data-result-error">{resultErrorMessage}</p>
       )}
       <Button translate="" onClick={reload}>
         Hae

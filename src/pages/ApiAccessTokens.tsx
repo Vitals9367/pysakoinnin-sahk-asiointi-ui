@@ -10,7 +10,7 @@ import WithAuth from '../client/WithAuth';
 import { useApiAccessTokens } from '../client/hooks';
 
 const AuthenticatedContent = (): React.ReactElement => {
-  const { getStatus, getTokens, fetch } = useApiAccessTokens();
+  const { getStatus, getTokens, fetch, getErrorMessage } = useApiAccessTokens();
   const status = getStatus();
   const isLoading = status === 'loading';
   const canLoad = status === 'loaded' || status === 'ready';
@@ -42,6 +42,13 @@ const AuthenticatedContent = (): React.ReactElement => {
       <Button translate="" onClick={onSubmit} disabled={!canLoad}>
         Hae
       </Button>
+      {status === 'error' && (
+        <div>
+          <p data-test-id="api-access-token-error">
+            Api access tokenin haku epäonnistui {getErrorMessage()}
+          </p>
+        </div>
+      )}
       {isLoading && (
         <div>
           <span>Haetaan...</span>

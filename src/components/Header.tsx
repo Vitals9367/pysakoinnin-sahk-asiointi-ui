@@ -3,6 +3,7 @@ import { Navigation } from 'hds-react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useClient } from '../client/hooks';
 import config from '../config';
+import styles from './styles.module.css';
 
 type Page = 'frontpage' | 'apiAccessTokens' | 'userTokens' | 'profile';
 
@@ -101,6 +102,7 @@ const Header = (): React.ReactElement => {
               onClick={(): void => client.logout()}
               variant="secondary"
               label="Kirjaudu ulos"
+              className={styles.navigationButton}
             />
           </Navigation.User>
         )}

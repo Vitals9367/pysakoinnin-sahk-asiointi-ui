@@ -3,6 +3,7 @@
 // @ts-ignore
 import to from 'await-handler';
 import { ApolloError } from '@apollo/client';
+import { GraphQLError } from 'graphql';
 import { loader } from 'graphql.macro';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { FetchStatus } from '../client/hooks';
@@ -19,11 +20,13 @@ import { AnyObject } from '../common';
 let profileGqlClient: GraphQLClient;
 
 export type ProfileDataType = string | AnyObject | undefined;
+export type ProfileErrorType = Error | GraphQLClientError | string | undefined;
 export type ProfileData = Record<string, ProfileDataType>;
 export type ProfileQueryResult = {
   data: {
     myProfile: GraphQLProfile;
   };
+  errors?: GraphQLError[];
 };
 export type GraphQLProfile =
   | Record<string, { edges: { node: { email: string } }[] }>
@@ -33,6 +36,8 @@ export type ProfileActions = {
   fetch: () => Promise<ProfileData | GraphQLClientError>;
   getStatus: () => FetchStatus;
   clear: () => Promise<void>;
+  getErrorMessage: () => string | undefined;
+  getResultErrorMessage: () => string | undefined;
 };
 
 export function getProfileApiToken(): string | undefined {
@@ -79,8 +84,18 @@ export function convertQueryToData(
   };
 }
 
+function getResultGraphQLErrorMessage(
+  result: ProfileQueryResult
+): string | undefined {
+  const errorData = result.errors && result.errors[0];
+  if (errorData && errorData.message) {
+    return `${errorData.message} ${errorData.extensions?.code}`;
+  }
+  return undefined;
+}
+
 export async function getProfileData(): Promise<
-  ProfileData | GraphQLClientError
+  ProfileQueryResult | GraphQLClientError
 > {
   const client = getProfileGqlClient();
   if (!client) {
@@ -93,6 +108,7 @@ export async function getProfileData(): Promise<
   const MY_PROFILE_QUERY = loader('../graphql/MyProfileQuery.graphql');
   const [error, result]: [ApolloError, ProfileQueryResult] = await to(
     client.query({
+      errorPolicy: 'all',
       query: MY_PROFILE_QUERY
     })
   );
@@ -105,10 +121,12 @@ export async function getProfileData(): Promise<
   const data = convertQueryToData(result);
   if (!data) {
     return {
-      error: new Error('query result is missing data.myProfile')
+      error: result.errors
+        ? result.errors[0]
+        : new Error('Query result is missing data.myProfile')
     };
   }
-  return data;
+  return result;
 }
 
 export function useProfile(): ProfileActions {
@@ -120,6 +138,10 @@ export function useProfile(): ProfileActions {
   }
   const { getStatus } = actions;
   const [profileData, setProfileData] = useState<ProfileData | undefined>();
+  const [error, setError] = useState<ProfileErrorType>();
+  const [resultErrorMessage, setResultErrorMessage] = useState<
+    ProfileErrorType
+  >();
   const apiAccessTokenStatus = getStatus();
 
   const resolveStatus = (): FetchStatus => {
@@ -166,14 +188,22 @@ export function useProfile(): ProfileActions {
   const fetchProfile: ProfileActions['fetch'] = useCallback(async () => {
     setStatus('loading');
     const result = await getProfileData();
-    if (result.error) {
-      setStatus('error');
+    if ((result as GraphQLClientError).error) {
+      setError((result as GraphQLClientError).error);
       setProfileData(undefined);
+      setResultErrorMessage(undefined);
+      setStatus('error');
     } else {
-      setProfileData(result as ProfileData);
+      setError(undefined);
+      setResultErrorMessage(
+        getResultGraphQLErrorMessage(result as ProfileQueryResult)
+      );
+      setProfileData(
+        (result as ProfileQueryResult).data.myProfile as ProfileData
+      );
       setStatus('loaded');
     }
-    return result;
+    return (result as ProfileQueryResult).data;
   }, []);
 
   useEffect(() => {
@@ -187,19 +217,41 @@ export function useProfile(): ProfileActions {
     autoFetch();
   }, [fetchProfile, currentStatus]);
 
+  useEffect(() => {
+    if (apiAccessTokenStatus === 'error' && status !== apiAccessTokenStatus) {
+      setStatus(apiAccessTokenStatus);
+    }
+  }, [setStatus, apiAccessTokenStatus, status]);
+
   return {
     getStatus: () => status,
     getProfile: () => profileData,
+    getResultErrorMessage: () => resultErrorMessage,
+    getErrorMessage: () => {
+      if (!error) {
+        return undefined;
+      }
+      if (typeof error === 'string') {
+        return error;
+      }
+      if (error.message) {
+        return error.message;
+      }
+      if ((error as GraphQLClientError).error) {
+        return (error as GraphQLClientError).error?.message;
+      }
+      return undefined;
+    },
     fetch: () => fetchProfile(),
     clear: async () => {
       const client = getProfileGqlClient();
       if (client) {
         await resetClient(client);
       }
-      if (profileData) {
-        setProfileData(undefined);
-        setStatus(resolveStatus());
-      }
+      setError(undefined);
+      setProfileData(undefined);
+      setResultErrorMessage(undefined);
+      setStatus(resolveStatus());
     }
   } as ProfileActions;
 }

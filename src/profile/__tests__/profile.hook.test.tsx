@@ -151,6 +151,12 @@ describe('Profile.ts useProfile hook ', () => {
     return el && el.length ? (el.text() as FetchStatus) : undefined;
   };
 
+  const getApiAccessTokenStatus = (): FetchStatus | undefined => {
+    dom.update();
+    const el = dom.find('#api-token-status').at(0);
+    return el && el.length ? (el.text() as FetchStatus) : undefined;
+  };
+
   const getErrorMessage = (): string | undefined => {
     dom.update();
     const el = dom.find('#bound-error').at(0);
@@ -213,8 +219,10 @@ describe('Profile.ts useProfile hook ', () => {
         response: createInvalidProfileResponse()
       });
       mockApiTokenResponse({ returnError: true });
+
       apiTokenActions.fetch(createApiTokenFetchPayload());
       await waitFor(() => expect(apiTokenActions.getStatus()).toBe('error'));
+      await waitFor(() => expect(getApiAccessTokenStatus()).toBe('error'));
       await waitFor(() => expect(getProfileStatus()).toBe('error'));
       mockApiTokenResponse();
       mockProfileResponse({

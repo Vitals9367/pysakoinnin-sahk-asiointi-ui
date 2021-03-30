@@ -4,7 +4,6 @@ import {
   getProfileApiToken,
   getProfileData,
   getProfileGqlClient,
-  ProfileData,
   ProfileQueryResult
 } from '../profile';
 import { getClient } from '../../client/oidc-react';
@@ -24,6 +23,7 @@ import {
 import { configureClient } from '../../client/__mocks__';
 import { FetchError } from '../../client';
 import { AnyObject, AnyFunction } from '../../common';
+import { GraphQLClientError } from '../../graphql/graphqlClient';
 
 describe('Profile.ts', () => {
   configureClient();
@@ -106,14 +106,14 @@ describe('Profile.ts', () => {
   });
 
   it('getProfileData() returns FetchError or ProfileData', async () => {
-    const errorBecauseApiTokenNotSet: FetchError = await getProfileData();
+    const errorBecauseApiTokenNotSet: FetchError = (await getProfileData()) as GraphQLClientError;
     expect(errorBecauseApiTokenNotSet.error).toBeDefined();
     setValidApiToken();
     mockProfileResponse({
       response: createInvalidProfileResponse(),
       profileBackendUrl
     });
-    const serverErrorResponse: FetchError = await getProfileData();
+    const serverErrorResponse: FetchError = (await getProfileData()) as GraphQLClientError;
     expect(serverErrorResponse.error).toBeDefined();
     // must reset before new call to same url
     fetchMock.resetMocks();
@@ -124,8 +124,8 @@ describe('Profile.ts', () => {
       response: createValidProfileResponse(),
       profileBackendUrl
     });
-    const data: ProfileData = (await getProfileData()) as ProfileData;
-    expect(data.firstName as ProfileData).toBe('firstName');
+    const { data } = (await getProfileData()) as ProfileQueryResult;
+    expect(data.myProfile?.firstName).toBe('firstName');
     expect(isApiTokenInRequest(lastRequest)).toBe(true);
   });
 });
