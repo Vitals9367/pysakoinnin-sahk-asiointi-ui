@@ -308,6 +308,8 @@ export function createOidcClient(): Client {
     ...clientFunctions
   };
   bindEvents(manager, { onAuthChange, eventTrigger, setError });
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  addLocalStorageListener();
   return client;
 }
 
@@ -348,3 +350,19 @@ export const useOidcCallback = (): Client => {
   }, [clientFromRef]);
   return clientFromRef;
 };
+
+function storageEventListener(event: StorageEvent): void {
+  const listeningClient = getClient();
+  const oidcKey = getLocalStorageKey();
+  if (event.key === oidcKey && event.oldValue && !event.newValue) {
+    listeningClient.logout();
+  }
+  if (event.key === oidcKey && !event.oldValue && event.newValue) {
+    listeningClient.login();
+  }
+}
+
+function addLocalStorageListener() {
+  window.removeEventListener('storage', storageEventListener);
+  window.addEventListener('storage', storageEventListener);
+}

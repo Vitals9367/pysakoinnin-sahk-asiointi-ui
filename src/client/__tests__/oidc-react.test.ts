@@ -17,7 +17,7 @@ import {
   ClientErrorObject,
   setClientConfig
 } from '../index';
-import { createOidcClient } from '../oidc-react';
+import { createOidcClient, getLocalStorageKey } from '../oidc-react';
 import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
 import config from '../../config';
 import { AnyObject } from '../../common';
@@ -175,6 +175,59 @@ describe('Oidc client ', () => {
       expect(mockMutator.getInitCallCount()).toBe(0);
       const user = client.getUserProfile();
       expect(user && user.email).toBe(email);
+    });
+  });
+  describe('localstorage events trigger login or logout ', () => {
+    beforeEach(async () => {
+      initTests();
+      await to(client.init());
+    });
+    afterEach(() => {
+      clearTests();
+    });
+
+    const dispatchStorageEvent = (values: {
+      newValue: string | null;
+      oldValue: string | null;
+    }) => {
+      const key = getLocalStorageKey();
+      window.dispatchEvent(
+        new StorageEvent('storage', {
+          key,
+          ...values
+        })
+      );
+    };
+
+    it('login is triggered when there is a new token in storage and no old one.', async () => {
+      expect(mockMutator.getLoginCallCount()).toBe(0);
+      dispatchStorageEvent({
+        oldValue: null,
+        newValue: 'does_not_matter_what_is_here'
+      });
+      expect(mockMutator.getLoginCallCount()).toBe(1);
+    });
+    it('login is not triggered when there is an old and a new token.', async () => {
+      dispatchStorageEvent({
+        oldValue: 'does_not_matter_what_is_here_either',
+        newValue: 'does_not_matter_what_is_here'
+      });
+      expect(mockMutator.getLoginCallCount()).toBe(0);
+    });
+    it('logout is triggered when new token is null and old one exists', async () => {
+      expect(mockMutator.getLogoutCallCount()).toBe(0);
+      dispatchStorageEvent({
+        oldValue: 'does_not_matter_what_is_here',
+        newValue: null
+      });
+      expect(mockMutator.getLogoutCallCount()).toBe(1);
+    });
+    it('logout is not triggered when old and new values are empty', async () => {
+      dispatchStorageEvent({
+        oldValue: '',
+        newValue: ''
+      });
+      expect(mockMutator.getLogoutCallCount()).toBe(0);
     });
   });
 });
