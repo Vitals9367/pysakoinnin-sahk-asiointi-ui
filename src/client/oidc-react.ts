@@ -103,7 +103,7 @@ export function createOidcClient(): Client {
   } = clientFunctions;
   if (clientConfig.enableLogging) {
     Oidc.Log.logger = console;
-    Oidc.Log.level = Oidc.Log.INFO;
+    Oidc.Log.level = Oidc.Log.DEBUG;
   }
 
   const getLocalStorageData = (): AnyObject | undefined => {
