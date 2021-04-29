@@ -16,7 +16,7 @@ import {
   AnyNonNullishValue,
   AnyValue
 } from '../../common';
-import { getLocalStorageKey } from '../oidc-react';
+import { getSessionStorageKey } from '../oidc-react';
 
 type ClientInstance = UserManager;
 
@@ -214,9 +214,9 @@ export const mockMutatorCreator = (): MockMutator => {
   const getLoadProfileRejectPayload: MockMutator['getLoadProfileRejectPayload'] = () =>
     loadProfileRejectPayload;
 
-  const setUserToLocalStorage = (data: AnyObject | string) => {
-    const key = getLocalStorageKey(config.client);
-    localStorage.setItem(
+  const setUserToSessionStorage = (data: AnyObject | string) => {
+    const key = getSessionStorageKey(config.client);
+    sessionStorage.setItem(
       key,
       typeof data === 'object' ? JSON.stringify(data) : data
     );
@@ -229,7 +229,7 @@ export const mockMutatorCreator = (): MockMutator => {
       ...user,
       ...props
     });
-    setUserToLocalStorage({ profile: tokenParsed });
+    setUserToSessionStorage({ profile: tokenParsed });
   };
   const getTokenParsed: MockMutator['getTokenParsed'] = (): Record<
     string,

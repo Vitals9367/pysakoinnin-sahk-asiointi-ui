@@ -61,7 +61,7 @@ function bindEvents(
   );
 }
 
-export function getLocalStorageKey(clientConfig?: ClientProps): string {
+export function getSessionStorageKey(clientConfig?: ClientProps): string {
   const config = clientConfig || getClientConfig();
   return `oidc.user:${config.authority}:${config.clientId}`;
 }
@@ -75,7 +75,7 @@ export function createOidcClient(): Client {
   }
   const clientConfig = getClientConfig();
   const oidcConfig: UserManagerSettings = {
-    userStore: new WebStorageStateStore({ store: window.localStorage }),
+    userStore: new WebStorageStateStore({ store: window.sessionStorage }),
     authority: clientConfig.authority,
     automaticSilentRenew: clientConfig.automaticSilentRenew,
     client_id: clientConfig.clientId,
@@ -103,12 +103,12 @@ export function createOidcClient(): Client {
   } = clientFunctions;
   if (clientConfig.enableLogging) {
     Oidc.Log.logger = console;
-    Oidc.Log.level = Oidc.Log.INFO;
+    Oidc.Log.level = Oidc.Log.DEBUG;
   }
 
-  const getLocalStorageData = (): AnyObject | undefined => {
-    const userKey = getLocalStorageKey(clientConfig);
-    const storedString = localStorage.getItem(userKey);
+  const getSessionStorageData = (): AnyObject | undefined => {
+    const userKey = getSessionStorageKey(clientConfig);
+    const storedString = sessionStorage.getItem(userKey);
     if (
       !storedString ||
       storedString.length < 2 ||
@@ -124,7 +124,7 @@ export function createOidcClient(): Client {
   };
 
   const getUserData = (): AnyObject | undefined =>
-    getStoredUser() || getLocalStorageData() || undefined;
+    getStoredUser() || getSessionStorageData() || undefined;
 
   const getUser: Client['getUser'] = () => {
     if (isAuthenticated()) {
@@ -308,8 +308,6 @@ export function createOidcClient(): Client {
     ...clientFunctions
   };
   bindEvents(manager, { onAuthChange, eventTrigger, setError });
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  addLocalStorageListener();
   return client;
 }
 
@@ -350,19 +348,3 @@ export const useOidcCallback = (): Client => {
   }, [clientFromRef]);
   return clientFromRef;
 };
-
-function storageEventListener(event: StorageEvent): void {
-  const listeningClient = getClient();
-  const oidcKey = getLocalStorageKey();
-  if (event.key === oidcKey && event.oldValue && !event.newValue) {
-    listeningClient.logout();
-  }
-  if (event.key === oidcKey && !event.oldValue && event.newValue) {
-    listeningClient.login();
-  }
-}
-
-function addLocalStorageListener() {
-  window.removeEventListener('storage', storageEventListener);
-  window.addEventListener('storage', storageEventListener);
-}

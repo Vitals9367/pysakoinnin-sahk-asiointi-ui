@@ -17,7 +17,7 @@ Client dispatches events and trigger changes which then trigger re-rendering of 
 
 Configs are in .env -files. Default OIDC-server is Tunnistamo.
 
-Tunnistamo does not support silent login checks (it uses only localstorage) so REACT_APP_OIDC_AUTO_SIGN_IN must be 'false'. It renews access tokens so REACT_APP_OIDC_SILENT_AUTH_PATH must be changed to '/' to prevent errors for unknown redirect url.
+Tunnistamo does not support silent login checks (it uses only sessionStorage) so REACT_APP_OIDC_AUTO_SIGN_IN must be 'false'. It renews access tokens so REACT_APP_OIDC_SILENT_AUTH_PATH must be changed to '/' to prevent errors for unknown redirect url.
 
 Config can also be overridden for command line:
 

@@ -89,6 +89,8 @@ const mockUserManagerEvents = (): UserManagerEvents => {
     removeAccessTokenExpired: (): unknown => true,
     removeAccessTokenExpiring: (): unknown => true,
     removeUserSessionChanged: (): unknown => true,
+    addUserSignedIn: (): unknown => true,
+    removeUserSignedIn: (): unknown => true,
     trigger
   } as UserManagerEvents;
 };
