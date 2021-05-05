@@ -148,6 +148,18 @@ export interface ClientProps {
    * Path for exchanging tokens. Leave blank to use default keycloak path realms/<realm>/protocol/openid-connect/token
    */
   tokenExchangePath?: string;
+  /**
+   * path prefix for this config type
+   */
+  path: string;
+  /**
+   * does the server, this config is for, provide api tokens
+   */
+  hasApiTokenSupport: boolean;
+  /**
+   * label of this config shown in the UI
+   */
+  label: string;
 }
 
 type EventHandlers = {

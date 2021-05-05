@@ -13,7 +13,7 @@ import config from './config';
 import { setClientConfig } from './client/index';
 import HandleCallback from './components/HandleCallback';
 
-setClientConfig(config.client);
+setClientConfig(config.mvpConfig);
 
 function App(): React.ReactElement {
   return (

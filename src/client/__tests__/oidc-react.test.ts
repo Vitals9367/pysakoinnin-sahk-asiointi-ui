@@ -156,7 +156,7 @@ describe('Oidc client ', () => {
   });
   describe('setting autoSignIn=false ', () => {
     beforeEach(() => {
-      setClientConfig({ ...config.client, autoSignIn: false });
+      setClientConfig({ ...config.mvpConfig, autoSignIn: false });
       initTests();
     });
     afterEach(() => {

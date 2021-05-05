@@ -19,32 +19,73 @@ function envValueToBoolean(
   return defaultValue;
 }
 
-const clientConfig: ClientProps = {
-  realm: String(process.env.REACT_APP_OIDC_REALM),
-  url: String(process.env.REACT_APP_OIDC_URL),
-  authority: process.env.REACT_APP_OIDC_REALM
-    ? `${process.env.REACT_APP_OIDC_URL}/realms/${process.env.REACT_APP_OIDC_REALM}`
-    : String(process.env.REACT_APP_OIDC_URL),
-  clientId: String(process.env.REACT_APP_OIDC_CLIENT_ID),
-  callbackPath: String(process.env.REACT_APP_OIDC_CALLBACK_PATH),
-  logoutPath: process.env.REACT_APP_OIDC_LOGOUT_PATH || '/',
-  silentAuthPath: process.env.REACT_APP_OIDC_SILENT_AUTH_PATH,
-  responseType: process.env.REACT_APP_OIDC_RESPONSE_TYPE,
-  scope: process.env.REACT_APP_OIDC_SCOPE,
-  autoSignIn: envValueToBoolean(process.env.REACT_APP_OIDC_AUTO_SIGN_IN, true),
-  automaticSilentRenew: envValueToBoolean(
-    process.env.REACT_APP_OIDC_AUTO_SILENT_RENEW,
-    true
-  ),
-  enableLogging: envValueToBoolean(process.env.REACT_APP_OIDC_LOGGING, false),
-  tokenExchangePath: process.env.REACT_APP_OIDC_TOKEN_EXCHANGE_PATH
-};
+function createConfigFromEnv(
+  source: 'OIDC' | 'PLAIN_SUOMIFI'
+): Partial<ClientProps> {
+  const url = String(process.env[`REACT_APP_${source}_URL`]);
+  const realm = String(process.env[`REACT_APP_${source}_REALM`]);
+  const tokenExchangePath =
+    process.env[`REACT_APP_${source}_TOKEN_EXCHANGE_PATH`];
+  return {
+    realm,
+    url,
+    authority: realm ? `${url}/realms/${realm}` : url,
+    clientId: String(process.env[`REACT_APP_${source}_CLIENT_ID`]),
+    callbackPath: String(process.env[`REACT_APP_${source}_CALLBACK_PATH`]),
+    logoutPath: process.env[`REACT_APP_${source}_LOGOUT_PATH`] || '/',
+    silentAuthPath: process.env[`REACT_APP_${source}_SILENT_AUTH_PATH`],
+    responseType: process.env[`REACT_APP_${source}_RESPONSE_TYPE`],
+    scope: process.env[`REACT_APP_${source}_SCOPE`],
+    autoSignIn: envValueToBoolean(
+      process.env[`REACT_APP_${source}_AUTO_SIGN_IN`],
+      true
+    ),
+    automaticSilentRenew: envValueToBoolean(
+      process.env[`REACT_APP_${source}_AUTO_SILENT_RENEW`],
+      true
+    ),
+    enableLogging: envValueToBoolean(
+      process.env[`REACT_APP_${source}_LOGGING`],
+      false
+    ),
+    tokenExchangePath,
+    hasApiTokenSupport: Boolean(tokenExchangePath)
+  };
+}
+
+const mvpConfig = {
+  ...createConfigFromEnv('OIDC'),
+  path: '/helsinkimvp',
+  label: 'Helsinki-profiili MVP'
+} as ClientProps;
 
 const uiConfig: { profileUIUrl: string } = {
   profileUIUrl: String(process.env.REACT_APP_PROFILE_UI_URL)
 };
 
+const plainSuomiFiConfig = {
+  ...createConfigFromEnv('PLAIN_SUOMIFI'),
+  path: '/plainsuomifi',
+  label: 'pelkkä Suomi.fi autentikaatio'
+} as ClientProps;
+
+const isCallbackUrl = (route: string): boolean =>
+  route === mvpConfig.callbackPath || route === plainSuomiFiConfig.callbackPath;
+
+const getConfigFromRoute = (route: string): ClientProps | undefined => {
+  if (route.length < 2) {
+    return undefined;
+  }
+  if (route.includes(mvpConfig.path) || route === mvpConfig.callbackPath) {
+    return mvpConfig;
+  }
+  return plainSuomiFiConfig;
+};
+
 export default {
-  client: clientConfig,
-  ui: uiConfig
+  mvpConfig,
+  ui: uiConfig,
+  plainSuomiFiConfig,
+  isCallbackUrl,
+  getConfigFromRoute
 };
