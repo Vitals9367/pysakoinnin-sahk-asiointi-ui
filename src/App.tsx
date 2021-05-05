@@ -9,41 +9,40 @@ import { ClientProvider } from './client/ClientProvider';
 import StoreProvider from './client/redux/StoreProvider';
 import Header from './components/Header';
 import PageContainer from './components/PageContainer';
-import config from './config';
-import { setClientConfig } from './client/index';
 import HandleCallback from './components/HandleCallback';
-
-setClientConfig(config.mvpConfig);
+import ConfigChecker from './components/ConfigChecker';
 
 function App(): React.ReactElement {
   return (
-    <HandleCallback>
-      <ClientProvider>
-        <StoreProvider>
-          <PageContainer>
-            <Header />
-            <Switch>
-              <Route path={['/']} exact>
-                <Index />
-              </Route>
-              <Route path={['/apiAccessTokens']} exact>
-                <ApiAccessTokens />
-              </Route>
-              <Route path={['/userTokens']} exact>
-                <Tokens />
-              </Route>
-              <Route path={['/profile']} exact>
-                <ProfilePage />
-              </Route>
-              <Route path={['/authError']} exact>
-                <div>Autentikaatio epäonnistui</div>
-              </Route>
-              <Route path="*">404 - not found</Route>
-            </Switch>
-          </PageContainer>
-        </StoreProvider>
-      </ClientProvider>
-    </HandleCallback>
+    <ConfigChecker>
+      <HandleCallback>
+        <ClientProvider>
+          <StoreProvider>
+            <PageContainer>
+              <Header />
+              <Switch>
+                <Route path={['/']} exact>
+                  <Index />
+                </Route>
+                <Route path={['/apiAccessTokens']} exact>
+                  <ApiAccessTokens />
+                </Route>
+                <Route path={['/userTokens']} exact>
+                  <Tokens />
+                </Route>
+                <Route path={['/profile']} exact>
+                  <ProfilePage />
+                </Route>
+                <Route path={['/authError']} exact>
+                  <div>Autentikaatio epäonnistui</div>
+                </Route>
+                <Route path="*">404 - not found</Route>
+              </Switch>
+            </PageContainer>
+          </StoreProvider>
+        </ClientProvider>
+      </HandleCallback>
+    </ConfigChecker>
   );
 }
 export default App;
