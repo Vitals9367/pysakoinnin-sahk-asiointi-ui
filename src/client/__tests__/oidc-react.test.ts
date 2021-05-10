@@ -1,7 +1,4 @@
-// following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import to from 'await-handler';
+import to from 'await-to-js';
 import { UserManager } from 'oidc-client';
 import {
   EventListeners,

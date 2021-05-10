@@ -1,7 +1,4 @@
-// following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import to from 'await-handler';
+import to from 'await-to-js';
 
 export type User = Record<string, string | number | boolean>;
 export type Token = string | undefined;
@@ -291,10 +288,11 @@ export function createClient(): ClientFactory {
       body: urlencoded
     };
 
-    const [fetchError, fetchResponse] = await to(
-      fetch(options.uri, requestOptions)
-    );
-    if (fetchError) {
+    const [fetchError, fetchResponse]: [
+      Error | null,
+      Response | undefined
+    ] = await to(fetch(options.uri, requestOptions));
+    if (fetchError || !fetchResponse) {
       return {
         error: fetchError,
         message: 'Network or CORS error occured'
@@ -304,7 +302,7 @@ export function createClient(): ClientFactory {
       return {
         status: fetchResponse.status,
         message: fetchResponse.statusText,
-        error: new Error(fetchResponse.body)
+        error: new Error(await fetchResponse.text())
       } as FetchError;
     }
     const [parseError, json] = await to(fetchResponse.json());
