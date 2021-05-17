@@ -4,7 +4,7 @@ import { useLocation } from 'react-router';
 import config from '../config';
 import OidcCallback from '../client/OidcCallback';
 import { getClient } from '../client/oidc-react';
-import { ClientProps } from '../client';
+import { ClientConfig } from '../client';
 
 const HandleCallback = (
   props: React.PropsWithChildren<unknown>
@@ -16,7 +16,7 @@ const HandleCallback = (
   if (!client.isAuthenticated() && isCallbackUrl) {
     const configFromRoute = config.getConfigFromRoute(
       location.pathname
-    ) as ClientProps;
+    ) as ClientConfig;
     return (
       <OidcCallback
         successRedirect={configFromRoute.path}

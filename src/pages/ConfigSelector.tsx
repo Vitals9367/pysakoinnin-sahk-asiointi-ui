@@ -5,11 +5,11 @@ import { Button } from 'hds-react';
 import PageContent from '../components/PageContent';
 import config from '../config';
 import styles from '../components/styles.module.css';
-import { ClientProps } from '../client';
+import { ClientConfig } from '../client';
 
 const ConfigSelector = (): React.ReactElement => {
   const history = useHistory();
-  const changeConfig = (newConfig: ClientProps): void => {
+  const changeConfig = (newConfig: ClientConfig): void => {
     history.push(newConfig.path);
   };
   const capitalize = (str: string) =>

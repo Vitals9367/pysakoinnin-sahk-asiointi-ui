@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { Client, ClientProps } from '.';
+import { Client, ClientConfig } from '.';
 import { useClient } from './hooks';
 
 export interface ClientContextProps {
@@ -11,7 +11,7 @@ export const ClientContext = React.createContext<ClientContextProps | null>(
   null
 );
 
-export const ClientProvider: FC<Partial<ClientProps>> = ({ children }) => {
+export const ClientProvider: FC<Partial<ClientConfig>> = ({ children }) => {
   const client = useClient();
   return (
     <ClientContext.Provider

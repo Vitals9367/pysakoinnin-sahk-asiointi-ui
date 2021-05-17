@@ -5,7 +5,7 @@ import {
   Client,
   ClientEvent,
   ClientEventId,
-  ClientProps,
+  ClientConfig,
   setClientConfig,
   Token
 } from '..';
@@ -130,8 +130,8 @@ export const matchClientDataWithComponent = (
 };
 
 export const configureClient = (
-  overrides?: Partial<ClientProps>
-): ClientProps => setClientConfig({ ...config.mvpConfig, ...overrides });
+  overrides?: Partial<ClientConfig>
+): ClientConfig => setClientConfig({ ...config.mvpConfig, ...overrides });
 
 export const createEventListeners = (
   addEventListener: ListenerSetter

@@ -90,7 +90,7 @@ export const ClientError = {
 
 export type ClientErrorObject = { type: string; message: string } | undefined;
 
-export interface ClientProps {
+export interface ClientConfig {
   /**
    * realm for the OIDC/OAuth2 endpoint
    */
@@ -335,14 +335,14 @@ export function createClient(): ClientFactory {
   };
 }
 
-let config: ClientProps;
+let config: ClientConfig;
 
-export function setClientConfig(newConfig: ClientProps): ClientProps {
+export function setClientConfig(newConfig: ClientConfig): ClientConfig {
   config = newConfig;
   return config;
 }
 
-export function getClientConfig(): ClientProps {
+export function getClientConfig(): ClientConfig {
   return config;
 }
 
@@ -360,11 +360,11 @@ export function getLocationBasedUri(
   return `${location}${property}`;
 }
 
-export function getTokenUri(clientProps: ClientProps): string {
-  if (clientProps.tokenExchangePath) {
-    return `${clientProps.url}${clientProps.tokenExchangePath}`;
+export function getTokenUri(clientConfig: ClientConfig): string {
+  if (clientConfig.tokenExchangePath) {
+    return `${clientConfig.url}${clientConfig.tokenExchangePath}`;
   }
-  return `${clientProps.url}/realms/${clientProps.realm}/protocol/openid-connect/token`;
+  return `${clientConfig.url}/realms/${clientConfig.realm}/protocol/openid-connect/token`;
 }
 
 export function createClientGetOrLoadUserFunction({

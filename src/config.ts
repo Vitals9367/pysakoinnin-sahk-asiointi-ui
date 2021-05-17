@@ -1,4 +1,4 @@
-import { ClientProps } from './client/index';
+import { ClientConfig } from './client/index';
 
 function envValueToBoolean(
   value: string | undefined | boolean,
@@ -21,7 +21,7 @@ function envValueToBoolean(
 
 function createConfigFromEnv(
   source: 'OIDC' | 'PLAIN_SUOMIFI'
-): Partial<ClientProps> {
+): Partial<ClientConfig> {
   const url = String(process.env[`REACT_APP_${source}_URL`]);
   const realm = String(process.env[`REACT_APP_${source}_REALM`]);
   const tokenExchangePath =
@@ -57,7 +57,7 @@ const mvpConfig = {
   ...createConfigFromEnv('OIDC'),
   path: '/helsinkimvp',
   label: 'Helsinki-profiili MVP'
-} as ClientProps;
+} as ClientConfig;
 
 const uiConfig: { profileUIUrl: string } = {
   profileUIUrl: String(process.env.REACT_APP_PROFILE_UI_URL)
@@ -67,12 +67,12 @@ const plainSuomiFiConfig = {
   ...createConfigFromEnv('PLAIN_SUOMIFI'),
   path: '/plainsuomifi',
   label: 'pelkkä Suomi.fi autentikaatio'
-} as ClientProps;
+} as ClientConfig;
 
 const isCallbackUrl = (route: string): boolean =>
   route === mvpConfig.callbackPath || route === plainSuomiFiConfig.callbackPath;
 
-const getConfigFromRoute = (route: string): ClientProps | undefined => {
+const getConfigFromRoute = (route: string): ClientConfig | undefined => {
   if (route.length < 2) {
     return undefined;
   }

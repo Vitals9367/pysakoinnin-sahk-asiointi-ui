@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from 'hds-react';
 import { Link, useLocation } from 'react-router-dom';
 import config from '../config';
-import { getClientConfig, setClientConfig, ClientProps } from '../client';
+import { getClientConfig, setClientConfig, ClientConfig } from '../client';
 import ConfigSelection from '../pages/ConfigSelector';
 import PageContent from './PageContent';
 import { getClient } from '../client/oidc-react';
@@ -25,7 +25,7 @@ const ConfigChecker = (
       ? setClientConfig(configFromRoute)
       : undefined;
   const activeConfig = configSetFromRoute || currentConfig;
-  const switchConfig = (newConfig: ClientProps) => {
+  const switchConfig = (newConfig: ClientConfig) => {
     document.location.href = newConfig.path;
   };
   const isLoggedIn = (): boolean => {
