@@ -1,7 +1,4 @@
-// following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import to from 'await-handler';
+import to from 'await-to-js';
 
 export type User = Record<string, string | number | boolean>;
 export type Token = string | undefined;
@@ -93,7 +90,7 @@ export const ClientError = {
 
 export type ClientErrorObject = { type: string; message: string } | undefined;
 
-export interface ClientProps {
+export interface ClientConfig {
   /**
    * realm for the OIDC/OAuth2 endpoint
    */
@@ -148,6 +145,18 @@ export interface ClientProps {
    * Path for exchanging tokens. Leave blank to use default keycloak path realms/<realm>/protocol/openid-connect/token
    */
   tokenExchangePath?: string;
+  /**
+   * path prefix for this config type
+   */
+  path: string;
+  /**
+   * does the server, this config is for, provide api tokens
+   */
+  hasApiTokenSupport: boolean;
+  /**
+   * label of this config shown in the UI
+   */
+  label: string;
 }
 
 type EventHandlers = {
@@ -279,10 +288,11 @@ export function createClient(): ClientFactory {
       body: urlencoded
     };
 
-    const [fetchError, fetchResponse] = await to(
-      fetch(options.uri, requestOptions)
-    );
-    if (fetchError) {
+    const [fetchError, fetchResponse]: [
+      Error | null,
+      Response | undefined
+    ] = await to(fetch(options.uri, requestOptions));
+    if (fetchError || !fetchResponse) {
       return {
         error: fetchError,
         message: 'Network or CORS error occured'
@@ -292,7 +302,7 @@ export function createClient(): ClientFactory {
       return {
         status: fetchResponse.status,
         message: fetchResponse.statusText,
-        error: new Error(fetchResponse.body)
+        error: new Error(await fetchResponse.text())
       } as FetchError;
     }
     const [parseError, json] = await to(fetchResponse.json());
@@ -325,14 +335,14 @@ export function createClient(): ClientFactory {
   };
 }
 
-let config: ClientProps;
+let config: ClientConfig;
 
-export function setClientConfig(newConfig: ClientProps): ClientProps {
+export function setClientConfig(newConfig: ClientConfig): ClientConfig {
   config = newConfig;
   return config;
 }
 
-export function getClientConfig(): ClientProps {
+export function getClientConfig(): ClientConfig {
   return config;
 }
 
@@ -350,11 +360,11 @@ export function getLocationBasedUri(
   return `${location}${property}`;
 }
 
-export function getTokenUri(clientProps: ClientProps): string {
-  if (clientProps.tokenExchangePath) {
-    return `${clientProps.url}${clientProps.tokenExchangePath}`;
+export function getTokenUri(clientConfig: ClientConfig): string {
+  if (clientConfig.tokenExchangePath) {
+    return `${clientConfig.url}${clientConfig.tokenExchangePath}`;
   }
-  return `${clientProps.url}/realms/${clientProps.realm}/protocol/openid-connect/token`;
+  return `${clientConfig.url}/realms/${clientConfig.realm}/protocol/openid-connect/token`;
 }
 
 export function createClientGetOrLoadUserFunction({

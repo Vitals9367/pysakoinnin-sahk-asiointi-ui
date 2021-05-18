@@ -20,7 +20,7 @@ import {
   getLocationBasedUri,
   getTokenUri,
   createClientGetOrLoadUserFunction,
-  ClientProps
+  ClientConfig
 } from './index';
 import { AnyObject } from '../common';
 
@@ -61,7 +61,7 @@ function bindEvents(
   );
 }
 
-export function getSessionStorageKey(clientConfig?: ClientProps): string {
+export function getSessionStorageKey(clientConfig?: ClientConfig): string {
   const config = clientConfig || getClientConfig();
   return `oidc.user:${config.authority}:${config.clientId}`;
 }

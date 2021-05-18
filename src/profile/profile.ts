@@ -1,11 +1,8 @@
-// following ts-ignore + eslint-disable fixes "Could not find declaration file for module" error for await-handler
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import to from 'await-handler';
-import { ApolloError } from '@apollo/client';
+import to from 'await-to-js';
 import { GraphQLError } from 'graphql';
 import { loader } from 'graphql.macro';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { ApolloError } from '@apollo/client';
 import { FetchStatus } from '../client/hooks';
 import { getClient } from '../client/oidc-react';
 import {
@@ -26,7 +23,7 @@ export type ProfileQueryResult = {
   data: {
     myProfile: GraphQLProfile;
   };
-  errors?: GraphQLError[];
+  errors?: readonly GraphQLError[];
 };
 export type GraphQLProfile =
   | Record<string, { edges: { node: { email: string } }[] }>
@@ -106,15 +103,18 @@ export async function getProfileData(): Promise<
     });
   }
   const MY_PROFILE_QUERY = loader('../graphql/MyProfileQuery.graphql');
-  const [error, result]: [ApolloError, ProfileQueryResult] = await to(
+  const [error, result]: [
+    Error | ApolloError | null,
+    ProfileQueryResult | undefined
+  ] = await to(
     client.query({
       errorPolicy: 'all',
       query: MY_PROFILE_QUERY
     })
   );
-  if (error) {
+  if (error || !result) {
     return {
-      error,
+      error: error || undefined,
       message: 'Query error'
     };
   }

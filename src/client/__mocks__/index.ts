@@ -5,7 +5,7 @@ import {
   Client,
   ClientEvent,
   ClientEventId,
-  ClientProps,
+  ClientConfig,
   setClientConfig,
   Token
 } from '..';
@@ -130,8 +130,8 @@ export const matchClientDataWithComponent = (
 };
 
 export const configureClient = (
-  overrides?: Partial<ClientProps>
-): ClientProps => setClientConfig({ ...config.client, ...overrides });
+  overrides?: Partial<ClientConfig>
+): ClientConfig => setClientConfig({ ...config.mvpConfig, ...overrides });
 
 export const createEventListeners = (
   addEventListener: ListenerSetter
@@ -215,7 +215,7 @@ export const mockMutatorCreator = (): MockMutator => {
     loadProfileRejectPayload;
 
   const setUserToSessionStorage = (data: AnyObject | string) => {
-    const key = getSessionStorageKey(config.client);
+    const key = getSessionStorageKey(config.mvpConfig);
     sessionStorage.setItem(
       key,
       typeof data === 'object' ? JSON.stringify(data) : data
