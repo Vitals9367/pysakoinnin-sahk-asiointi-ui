@@ -64,7 +64,6 @@ query MyProfileQuery {
       lastName
       givenName
       nationalIdentificationNumber
-      email
       municipalityOfResidence
       municipalityOfResidenceNumber
       permanentAddress {
