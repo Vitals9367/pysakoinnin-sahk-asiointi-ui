@@ -106,11 +106,11 @@ const TokenBrowser = (): React.ReactElement => {
       {decodedPayload && (
         <>
           <h3>Header:</h3>
-          <pre>
+          <pre data-test-id="decoded-token-header">
             {decodedHeader ? JSON.stringify(decodedHeader, null, 2) : ''}
           </pre>
           <h3>Payload:</h3>
-          <pre>
+          <pre data-test-id="decoded-token-payload">
             {decodedPayload ? JSON.stringify(decodedPayload, null, 2) : ''}
           </pre>
           {decodedPayload && (
