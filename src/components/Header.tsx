@@ -70,6 +70,7 @@ const Header = (): React.ReactElement => {
         setActive('userTokens');
         history.push(`${pathPrefix}/userTokens`);
       }}
+      data-test-id="header-link-userTokens"
     />
   );
 
