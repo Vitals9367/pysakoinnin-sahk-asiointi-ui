@@ -78,7 +78,7 @@ describe(`http-poller`, () => {
   };
   afterEach(() => {
     poller.stop();
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
     jest.useRealTimers();
   });
   beforeEach(() => {
