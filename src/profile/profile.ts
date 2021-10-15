@@ -3,7 +3,6 @@ import { GraphQLError } from 'graphql';
 import { loader } from 'graphql.macro';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { ApolloError } from '@apollo/client';
-import { FetchStatus } from '../client/hooks';
 import { getClient } from '../client/oidc-react';
 import {
   GraphQLClient,
@@ -13,6 +12,7 @@ import {
 } from '../graphql/graphqlClient';
 import { ApiAccessTokenContext } from '../components/ApiAccessTokenProvider';
 import { AnyObject } from '../common';
+import { FetchStatus } from '../apiAccessTokens/useApiAccessTokens';
 
 let profileGqlClient: GraphQLClient;
 

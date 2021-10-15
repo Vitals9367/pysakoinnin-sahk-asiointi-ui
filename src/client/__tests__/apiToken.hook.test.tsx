@@ -4,11 +4,6 @@ import { act } from 'react-dom/test-utils';
 import { waitFor } from '@testing-library/react';
 import { FetchMock } from 'jest-fetch-mock';
 import { configureClient } from '../__mocks__/index';
-import {
-  ApiAccessTokenActions,
-  FetchStatus,
-  useApiAccessTokens
-} from '../hooks';
 import { getClient } from '../oidc-react';
 import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
 import {
@@ -20,6 +15,11 @@ import {
   setEnv
 } from './common';
 import { AnyFunction, AnyObject } from '../../common';
+import {
+  useApiAccessTokens,
+  ApiAccessTokenActions,
+  FetchStatus
+} from '../../apiAccessTokens/useApiAccessTokens';
 
 describe('Client.ts useApiAccessTokens hook ', () => {
   configureClient({ tokenExchangePath: '/token-exchange/' });

@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { Button } from 'hds-react';
-import { ApiAccessTokenActions } from '../client/hooks';
 import { ProfileDataType, useProfile } from '../profile/profile';
 import { ApiAccessTokenContext } from './ApiAccessTokenProvider';
 import styles from './styles.module.css';
 import { AnyObject } from '../common';
+import { ApiAccessTokenActions } from '../apiAccessTokens/useApiAccessTokens';
 
 const nodeToJSON = (node: AnyObject): AnyObject | AnyObject[] => {
   if (Array.isArray(node.edges)) {

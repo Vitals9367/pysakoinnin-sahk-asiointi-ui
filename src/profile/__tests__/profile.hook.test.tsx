@@ -4,11 +4,7 @@ import { act } from 'react-dom/test-utils';
 import { waitFor } from '@testing-library/react';
 import { FetchMock } from 'jest-fetch-mock';
 import { configureClient } from '../../client/__mocks__/index';
-import {
-  ApiAccessTokenActions,
-  FetchStatus,
-  useClient
-} from '../../client/hooks';
+import { useClient } from '../../client/hooks';
 import { getClient } from '../../client/oidc-react';
 import { mockMutatorGetterOidc } from '../../client/__mocks__/oidc-react-mock';
 import {
@@ -23,13 +19,17 @@ import {
   ApiAccessTokenContext,
   ApiAccessTokenProvider
 } from '../../components/ApiAccessTokenProvider';
-import { ProfileActions, ProfileData, useProfile } from '../profile';
+import { ProfileData, useProfile, ProfileActions } from '../profile';
 import {
   createValidProfileResponse,
   createInvalidProfileResponse,
   mockProfileResponse
 } from './common';
 import { AnyObject, AnyFunction } from '../../common';
+import {
+  FetchStatus,
+  ApiAccessTokenActions
+} from '../../apiAccessTokens/useApiAccessTokens';
 
 describe('Profile.ts useProfile hook ', () => {
   configureClient({ tokenExchangePath: '/token-exchange/', autoSignIn: true });
@@ -207,7 +207,7 @@ describe('Profile.ts useProfile hook ', () => {
       await profileActions.fetch();
       expect(profileActions.getStatus()).toBe('loaded');
       expect(profileActions.getProfile()).toBeDefined();
-      await profileActions.clear();
+      // await profileActions.clear();
       expect(profileActions.getProfile()).toBeUndefined();
       expect(profileActions.getStatus()).toBe('ready');
     });
