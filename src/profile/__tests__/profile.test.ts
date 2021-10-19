@@ -13,7 +13,7 @@ import {
   clearApiTokens,
   logoutUser,
   setEnv
-} from '../../client/__tests__/common';
+} from '../../tests/client.test.helper';
 import {
   createInvalidProfileResponse,
   createValidProfileResponse,

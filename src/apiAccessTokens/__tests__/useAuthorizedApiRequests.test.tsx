@@ -20,7 +20,7 @@ import {
   resetAndSetMockApiAccessTokensHookData
 } from '../__mocks__/useApiAccessTokens';
 import { getFetchMockLastCallAuthenticationHeader } from '../../tests/common.test.helper';
-import { setEnv, mockApiTokenResponse } from '../../client/__tests__/common';
+import { setEnv, mockApiTokenResponse } from '../../tests/client.test.helper';
 
 type TestProps = {
   autoFetchProp: boolean;

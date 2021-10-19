@@ -12,7 +12,7 @@ import {
   mockApiTokenResponse,
   setEnv,
   logoutUser
-} from '../../client/__tests__/common';
+} from '../../tests/client.test.helper';
 import {
   ApiAccessTokenContext,
   ApiAccessTokenProvider

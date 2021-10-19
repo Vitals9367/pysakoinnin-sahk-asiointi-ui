@@ -13,7 +13,7 @@ import {
   clearApiTokens,
   createApiTokenFetchPayload,
   setEnv
-} from '../../client/__tests__/common';
+} from '../../tests/client.test.helper';
 import { AnyFunction, AnyObject } from '../../common';
 import {
   useApiAccessTokens,

@@ -3,7 +3,7 @@ import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { waitFor } from '@testing-library/react';
 import { FetchMock } from 'jest-fetch-mock';
-import { setEnv } from '../../client/__tests__/common';
+import { setEnv } from '../../tests/client.test.helper';
 import { ApiAccessTokenProvider } from '../../components/ApiAccessTokenProvider';
 import { useBackendWithApiTokens, BackendActions } from '../backend';
 

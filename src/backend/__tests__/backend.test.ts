@@ -1,5 +1,5 @@
 import { FetchMock } from 'jest-fetch-mock';
-import { setEnv } from '../../client/__tests__/common';
+import { setEnv } from '../../tests/client.test.helper';
 import { AnyFunction } from '../../common';
 import { getBackendApiToken, executeAPIAction } from '../backend';
 import {
