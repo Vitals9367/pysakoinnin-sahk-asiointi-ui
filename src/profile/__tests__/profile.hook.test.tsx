@@ -26,7 +26,7 @@ import {
   createValidProfileResponse,
   createInvalidProfileResponse,
   mockProfileResponse
-} from './common';
+} from '../../tests/profile.test.helper';
 import { AnyObject, AnyFunction } from '../../common';
 import {
   FetchStatus,

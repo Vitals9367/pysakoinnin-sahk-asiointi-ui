@@ -19,7 +19,7 @@ import {
   createValidProfileResponse,
   createValidProfileResponseData,
   mockProfileResponse
-} from './common';
+} from '../../tests/profile.test.helper';
 import { configureClient } from '../../client/__mocks__';
 import { FetchError } from '../../client';
 import { AnyObject, AnyFunction } from '../../common';

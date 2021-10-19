@@ -1,7 +1,7 @@
 import { FetchMock } from 'jest-fetch-mock';
-import { AnyFunction, AnyObject } from '../../common';
-import { ProfileData } from '../profile';
-import { promiseDefaultTimeout } from '../../client/__mocks__';
+import { AnyFunction, AnyObject } from '../common';
+import { ProfileData } from '../profile/profile';
+import { promiseDefaultTimeout } from '../client/__mocks__';
 
 export const createValidProfileResponseData = (
   userData: AnyObject
@@ -51,9 +51,3 @@ export const createInvalidProfileResponse = (
     body: JSON.stringify(responseBody)
   };
 };
-
-describe('createValidProfileResponse', () => {
-  it('returns an object', () => {
-    expect(createInvalidProfileResponse()).toBeDefined();
-  });
-});
