@@ -11,7 +11,8 @@ type Page =
   | 'apiAccessTokens'
   | 'userTokens'
   | 'profile'
-  | 'userinfo';
+  | 'userinfo'
+  | 'backend';
 
 const Header = (): React.ReactElement => {
   const currentConfig = getClientConfig();
@@ -102,11 +103,25 @@ const Header = (): React.ReactElement => {
       data-test-id="header-link-user-info"
     />
   );
+  const backendLink = (
+    <Navigation.Item
+      active={active === 'backend'}
+      as="button"
+      label="Backend data"
+      key="backend"
+      type="button"
+      onClick={(): void => {
+        setActive('backend');
+        history.push(`${pathPrefix}/backend`);
+      }}
+      data-test-id="header-link-backend"
+    />
+  );
 
   // <Navigation.Row> cannot not handle null/undefined as children.
   // That is why if..else cannot be used in <Navigation.Row>
   const links = currentConfig.hasApiTokenSupport
-    ? [frontPageLink, accessTokenLink, userTokenLink, profileLink]
+    ? [frontPageLink, accessTokenLink, userTokenLink, profileLink, backendLink]
     : [frontPageLink, userTokenLink, userInfoLink];
 
   return (

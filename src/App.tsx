@@ -13,6 +13,7 @@ import Header from './components/Header';
 import PlainSuomiFiUserInfo from './pages/PlainSuomiFiUserInfo';
 import ApiAccessTokens from './pages/ApiAccessTokens';
 import ProfilePage from './pages/ProfilePage';
+import BackendData from './pages/BackendData';
 
 function App(): React.ReactElement {
   const plainSuomiFiPath = config.plainSuomiFiConfig.path;
@@ -36,6 +37,9 @@ function App(): React.ReactElement {
                 </Route>
                 <Route path={[`${mvpPath}/apiAccessTokens`]} exact>
                   <ApiAccessTokens />
+                </Route>
+                <Route path={[`${mvpPath}/backend`]} exact>
+                  <BackendData />
                 </Route>
                 <Route path={[`${mvpPath}/profile`]} exact>
                   <ProfilePage />
