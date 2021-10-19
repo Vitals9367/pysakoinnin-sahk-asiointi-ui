@@ -123,3 +123,16 @@
 .button-container button {
   margin: 0 20px 20px 0;
 }
+
+.pet-name-form > * {
+  margin-bottom: 20px;
+}
+
+.pet-name-form label {
+  display: flex;
+  flex-direction: column;
+}
+.pet-name-form input {
+  display: flex;
+  flex-direction: column;
+}
