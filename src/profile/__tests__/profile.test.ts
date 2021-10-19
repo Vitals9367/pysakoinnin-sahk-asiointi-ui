@@ -35,20 +35,20 @@ describe('Profile.ts', () => {
   const profileBackendUrl = 'https://localhost/profileGraphql/';
   let lastRequest: Request;
 
+  const validAPiToken = { [testAudience]: 'valid-api-token' };
+
   const setUser = async (user: AnyObject): Promise<void> =>
     setUpUser(user, mockMutator, client);
 
   const setValidApiToken = (): string => {
-    const value = 'valid-api-token';
-    const addedToken = { [testAudience]: value };
-    client.addApiTokens(addedToken);
-    return value;
+    client.addApiTokens(validAPiToken);
+    return getProfileApiToken(validAPiToken) as string;
   };
 
   const isApiTokenInRequest = (req: Request): boolean => {
     const { headers } = req;
     const authHeader = headers.get('Authorization');
-    const profileToken = getProfileApiToken();
+    const profileToken = getProfileApiToken(validAPiToken);
     return !!(authHeader && authHeader.includes(`Bearer ${profileToken}`));
   };
 
@@ -78,10 +78,10 @@ describe('Profile.ts', () => {
 
   it('getProfileApiToken() returns api token or undefined if api token is not set', async () => {
     await setUser({});
-    const token = getProfileApiToken();
+    const token = getProfileApiToken({});
     expect(token).toBeUndefined();
     const tokenValue = setValidApiToken();
-    expect(getProfileApiToken()).toEqual(tokenValue);
+    expect(getProfileApiToken(validAPiToken)).toEqual(tokenValue);
   });
 
   it('convertQueryToData() extracts actual profile data from graphql response or return undefined', async () => {
@@ -100,20 +100,22 @@ describe('Profile.ts', () => {
   it('getProfileGqlClient() returns client or undefined if api token is not set', () => {
     const undefinedBeforeApiTokenIsSet = getProfileGqlClient();
     expect(undefinedBeforeApiTokenIsSet).toBeUndefined();
-    setValidApiToken();
-    const gqlclient = getProfileGqlClient();
+    const token = setValidApiToken();
+    const gqlclient = getProfileGqlClient(token);
     expect(gqlclient).toBeDefined();
   });
 
   it('getProfileData() returns FetchError or ProfileData', async () => {
     const errorBecauseApiTokenNotSet: FetchError = (await getProfileData()) as GraphQLClientError;
     expect(errorBecauseApiTokenNotSet.error).toBeDefined();
-    setValidApiToken();
+    const token = setValidApiToken();
     mockProfileResponse({
       response: createInvalidProfileResponse(),
       profileBackendUrl
     });
-    const serverErrorResponse: FetchError = (await getProfileData()) as GraphQLClientError;
+    const serverErrorResponse: FetchError = (await getProfileData(
+      token
+    )) as GraphQLClientError;
     expect(serverErrorResponse.error).toBeDefined();
     // must reset before new call to same url
     fetchMock.resetMocks();
@@ -124,8 +126,8 @@ describe('Profile.ts', () => {
       response: createValidProfileResponse(),
       profileBackendUrl
     });
-    const { data } = (await getProfileData()) as ProfileQueryResult;
-    expect(data.myProfile?.firstName).toBe('firstName');
+    const res = (await getProfileData(token)) as ProfileQueryResult;
+    expect(res.data.myProfile?.firstName).toBe('firstName');
     expect(isApiTokenInRequest(lastRequest)).toBe(true);
   });
 });

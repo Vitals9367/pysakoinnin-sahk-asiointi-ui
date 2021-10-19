@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button } from 'hds-react';
-import { ProfileDataType, useProfile } from '../profile/profile';
-import { ApiAccessTokenContext } from './ApiAccessTokenProvider';
+import {
+  ProfileDataType,
+  useProfileWithApiTokens,
+  clearGraphQlClient
+} from '../profile/profile';
+
 import styles from './styles.module.css';
 import { AnyObject } from '../common';
-import { ApiAccessTokenActions } from '../apiAccessTokens/useApiAccessTokens';
 
 const nodeToJSON = (node: AnyObject): AnyObject | AnyObject[] => {
   if (Array.isArray(node.edges)) {
@@ -41,32 +44,36 @@ const PropToComponent = ([prop, value]: [
 );
 
 const Profile = (): React.ReactElement => {
-  const actions = useContext(ApiAccessTokenContext) as ApiAccessTokenActions;
-  const { getStatus: getApiAccessTokenStatus } = actions;
   const {
-    getStatus: getProfileStatus,
-    getProfile,
-    fetch,
-    clear,
-    getErrorMessage,
-    getResultErrorMessage
-  } = useProfile();
-  const apiAccessTokenStatus = getApiAccessTokenStatus();
-  const profileStatus = getProfileStatus();
-  const profileData = getProfile();
-  const resultErrorMessage = getResultErrorMessage();
+    getApiTokenError,
+    getApiTokenStatus,
+    getData,
+    getRequestStatus,
+    getRequestError,
+    request
+  } = useProfileWithApiTokens();
+
+  const apiAccessTokenStatus = getApiTokenStatus();
+  const profileStatus = getRequestStatus();
+  const profileData = getData();
+  const resultErrorMessage = getRequestError();
   const reload = async (): Promise<void> => {
-    await clear();
-    await fetch();
+    await clearGraphQlClient();
+    await request({});
   };
   if (apiAccessTokenStatus === 'error') {
-    return <div>Api access tokenin lataus epäonnistui</div>;
+    return (
+      <div>
+        Api access tokenin lataus epäonnistui
+        <pre>{getApiTokenError()}</pre>
+      </div>
+    );
   }
   if (profileStatus === 'error') {
     return (
       <div data-test-id="profile-load-error">
         Profiilin lataus epäonnistui:
-        <pre>{getErrorMessage()}</pre>
+        <pre>{resultErrorMessage}</pre>
       </div>
     );
   }
