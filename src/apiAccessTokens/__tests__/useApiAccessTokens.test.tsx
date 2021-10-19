@@ -3,9 +3,9 @@ import { mount, ReactWrapper } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { waitFor } from '@testing-library/react';
 import { FetchMock } from 'jest-fetch-mock';
-import { configureClient } from '../__mocks__/index';
-import { getClient } from '../oidc-react';
-import { mockMutatorGetterOidc } from '../__mocks__/oidc-react-mock';
+import { configureClient } from '../../client/__mocks__/index';
+import { getClient } from '../../client/oidc-react';
+import { mockMutatorGetterOidc } from '../../client/__mocks__/oidc-react-mock';
 import {
   setUpUser,
   mockApiTokenResponse,
@@ -13,15 +13,15 @@ import {
   clearApiTokens,
   createApiTokenFetchPayload,
   setEnv
-} from './common';
+} from '../../client/__tests__/common';
 import { AnyFunction, AnyObject } from '../../common';
 import {
   useApiAccessTokens,
   ApiAccessTokenActions,
   FetchStatus
-} from '../../apiAccessTokens/useApiAccessTokens';
+} from '../useApiAccessTokens';
 
-describe('Client.ts useApiAccessTokens hook ', () => {
+describe('useApiAccessTokens hook ', () => {
   configureClient({ tokenExchangePath: '/token-exchange/' });
   const fetchMock: FetchMock = global.fetch;
   const mockMutator = mockMutatorGetterOidc();
@@ -124,6 +124,17 @@ describe('Client.ts useApiAccessTokens hook ', () => {
       await waitFor(() => expect(getApiTokenStatus()).toBe('loading'));
       await waitFor(() => expect(getApiTokenStatus()).toBe('loaded'));
       expect(apiTokenActions.getTokens()).toEqual(tokens);
+    });
+  });
+  it('api tokens are cleared when user logs out', async () => {
+    await act(async () => {
+      await setUpTest({
+        user: {}
+      });
+      mockApiTokenResponse({ delay: 100 });
+      await waitFor(() => expect(getApiTokenStatus()).toBe('loaded'));
+      logoutUser(client);
+      await waitFor(() => expect(getApiTokenStatus()).toBe('unauthorized'));
     });
   });
 });
