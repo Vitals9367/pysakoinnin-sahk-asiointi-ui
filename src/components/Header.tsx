@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigation } from 'hds-react';
+import { IconSignout, Navigation } from 'hds-react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useClient } from '../client/hooks';
 import styles from './styles.module.css';
@@ -145,18 +145,18 @@ const Header = (): React.ReactElement => {
             onSignIn={(): void => client.login()}
             userName={userName}>
             <Navigation.Item
-              as="a"
               href={`${config.ui.profileUIUrl}/loginsso`}
               label="Helsinki-profiili"
               target="_blank"
+              className={styles['link-to-profile']}
             />
             <Navigation.Item
-              as="button"
-              type="button"
               onClick={(): void => client.logout()}
-              variant="secondary"
+              variant="supplementary"
               label="Kirjaudu ulos"
+              href="/logout"
               className={styles.navigationButton}
+              icon={<IconSignout aria-hidden />}
             />
           </Navigation.User>
         )}
