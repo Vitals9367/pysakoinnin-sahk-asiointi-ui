@@ -88,6 +88,9 @@ type Tokens = {
 };
 
 export const promiseDefaultTimeout = 20;
+// default interval of "waitFor" is 50ms. That + 20ms should be enough
+// provide a detectable gap between "loading" and "loaded" state changes
+export const requestDelayForStatusChangeDetectionInMs = 70;
 
 export const getClientDataFromComponent = (
   dom: ReactWrapper,

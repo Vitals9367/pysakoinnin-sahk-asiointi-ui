@@ -40,7 +40,6 @@ describe('Profile.ts useProfileWithApiTokens hook ', () => {
   const client = getClient();
   const testAudience = 'api-audience';
   const profileBackendUrl = 'https://localhost/profileGraphql/';
-  const requestTimeout = 70;
   let profileActions: ProfileActions;
   let apiTokenActions: ApiAccessTokenActions;
   let dom: ReactWrapper;
@@ -110,14 +109,12 @@ describe('Profile.ts useProfileWithApiTokens hook ', () => {
     returnError?: boolean;
   }): Promise<void> => {
     mockApiTokenResponse({
-      returnError: returnApiTokenError,
-      delay: requestTimeout
+      returnError: returnApiTokenError
     });
 
     mockProfileResponse({
       response,
-      profileBackendUrl,
-      delay: requestTimeout
+      profileBackendUrl
     });
 
     dom = mount(<TestWrapper />);
@@ -195,15 +192,13 @@ describe('Profile.ts useProfileWithApiTokens hook ', () => {
       await waitFor(() => expect(getProfileStatus()).toBe('loaded'));
       mockProfileResponse({
         response: createInvalidProfileResponse(),
-        profileBackendUrl,
-        delay: requestTimeout
+        profileBackendUrl
       });
       profileActions.request({});
       await waitFor(() => expect(getProfileStatus()).toBe('error'));
       mockProfileResponse({
         response: createValidProfileResponse(),
-        profileBackendUrl,
-        delay: requestTimeout
+        profileBackendUrl
       });
       profileActions.request({});
       await waitFor(() => expect(getProfileStatus()).toBe('loaded'));

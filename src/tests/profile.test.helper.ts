@@ -1,7 +1,7 @@
 import { FetchMock } from 'jest-fetch-mock';
 import { AnyFunction, AnyObject } from '../common';
 import { ProfileData } from '../profile/profile';
-import { promiseDefaultTimeout } from '../client/__mocks__';
+import { requestDelayForStatusChangeDetectionInMs } from '../client/__mocks__';
 
 export const createValidProfileResponseData = (
   userData: AnyObject
@@ -22,7 +22,7 @@ export const mockProfileResponse = (options: {
     return new Promise(resolve =>
       setTimeout(() => {
         resolve(response);
-      }, delay || promiseDefaultTimeout)
+      }, delay || requestDelayForStatusChangeDetectionInMs)
     );
   });
 };

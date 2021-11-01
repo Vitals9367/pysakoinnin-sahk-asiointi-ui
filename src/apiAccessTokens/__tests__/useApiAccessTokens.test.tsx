@@ -87,7 +87,7 @@ describe('useApiAccessTokens hook ', () => {
       await waitFor(() => expect(getApiTokenStatus()).toBe('unauthorized'));
       expect(apiTokenActions.getTokens()).toBeUndefined();
       expect(apiTokenActions.getStatus() === 'unauthorized');
-      const tokens = mockApiTokenResponse({ delay: 100 });
+      const tokens = mockApiTokenResponse();
       await setUser({});
       await waitFor(() => expect(getApiTokenStatus()).toBe('loading'));
       await waitFor(() => expect(getApiTokenStatus()).toBe('loaded'));
@@ -120,7 +120,7 @@ describe('useApiAccessTokens hook ', () => {
       await setUpTest({
         user: {}
       });
-      const tokens = mockApiTokenResponse({ delay: 100 });
+      const tokens = mockApiTokenResponse();
       await waitFor(() => expect(getApiTokenStatus()).toBe('loading'));
       await waitFor(() => expect(getApiTokenStatus()).toBe('loaded'));
       expect(apiTokenActions.getTokens()).toEqual(tokens);
@@ -131,7 +131,7 @@ describe('useApiAccessTokens hook ', () => {
       await setUpTest({
         user: {}
       });
-      mockApiTokenResponse({ delay: 100 });
+      mockApiTokenResponse();
       await waitFor(() => expect(getApiTokenStatus()).toBe('loaded'));
       logoutUser(client);
       await waitFor(() => expect(getApiTokenStatus()).toBe('unauthorized'));

@@ -6,7 +6,10 @@ import {
   getClientConfig,
   getTokenUri
 } from '../client';
-import { MockMutator, promiseDefaultTimeout } from '../client/__mocks__/index';
+import {
+  MockMutator,
+  requestDelayForStatusChangeDetectionInMs
+} from '../client/__mocks__/index';
 import { AnyFunction, AnyObject } from '../common';
 
 type NodeJS = AnyObject;
@@ -43,7 +46,7 @@ export const mockApiTokenResponse = (
     return new Promise(resolve =>
       setTimeout(() => {
         resolve(responseData);
-      }, delay || promiseDefaultTimeout)
+      }, delay || requestDelayForStatusChangeDetectionInMs)
     );
   });
   return tokens;
