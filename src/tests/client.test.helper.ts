@@ -1,8 +1,16 @@
 import { FetchMock } from 'jest-fetch-mock';
 import mockedEnv, { RestoreFn } from 'mocked-env';
-import { Client, FetchApiTokenOptions, getClientConfig, getTokenUri } from '..';
-import { MockMutator, promiseDefaultTimeout } from '../__mocks__/index';
-import { AnyFunction, AnyObject } from '../../common';
+import {
+  Client,
+  FetchApiTokenOptions,
+  getClientConfig,
+  getTokenUri
+} from '../client';
+import {
+  MockMutator,
+  requestDelayForStatusChangeDetectionInMs
+} from '../client/__mocks__/index';
+import { AnyFunction, AnyObject } from '../common';
 
 type NodeJS = AnyObject;
 
@@ -38,7 +46,7 @@ export const mockApiTokenResponse = (
     return new Promise(resolve =>
       setTimeout(() => {
         resolve(responseData);
-      }, delay || promiseDefaultTimeout)
+      }, delay || requestDelayForStatusChangeDetectionInMs)
     );
   });
   return tokens;
@@ -83,9 +91,3 @@ export const createApiTokenFetchPayload = (
 
 export const setEnv = (overrides: Partial<NodeJS.ProcessEnv>): RestoreFn =>
   mockedEnv(overrides, { restore: true });
-
-describe('createApiTokenFetchPayload', () => {
-  it('returns an object', () => {
-    expect(createApiTokenFetchPayload()).toBeDefined();
-  });
-});

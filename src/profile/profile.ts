@@ -1,18 +1,21 @@
 import to from 'await-to-js';
 import { GraphQLError } from 'graphql';
 import { loader } from 'graphql.macro';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { ApolloError } from '@apollo/client';
-import { FetchStatus } from '../client/hooks';
-import { getClient } from '../client/oidc-react';
 import {
   GraphQLClient,
   createGraphQLClient,
   GraphQLClientError,
   resetClient
 } from '../graphql/graphqlClient';
-import { ApiAccessTokenContext } from '../components/ApiAccessTokenProvider';
 import { AnyObject } from '../common';
+
+import useAuthorizedApiRequests, {
+  AuthorizedRequest,
+  AuthorizedApiActions
+} from '../apiAccessTokens/useAuthorizedApiRequests';
+import { JWTPayload } from '../client';
 
 let profileGqlClient: GraphQLClient;
 
@@ -28,28 +31,14 @@ export type ProfileQueryResult = {
 export type GraphQLProfile =
   | Record<string, { edges: { node: { email: string } }[] }>
   | undefined;
-export type ProfileActions = {
-  getProfile: () => ProfileData | GraphQLClientError;
-  fetch: () => Promise<ProfileData | GraphQLClientError>;
-  getStatus: () => FetchStatus;
-  clear: () => Promise<void>;
-  getErrorMessage: () => string | undefined;
-  getResultErrorMessage: () => string | undefined;
-};
 
-export function getProfileApiToken(): string | undefined {
-  const client = getClient();
-  const tokenKey = process.env.REACT_APP_PROFILE_AUDIENCE;
-  if (!tokenKey) {
-    return undefined;
-  }
-  const apiTokens = client.getApiTokens();
-  return apiTokens[tokenKey];
-}
+type ReturnData = ProfileData;
+type FetchProps = { autoFetch: boolean } | undefined;
+type Request = AuthorizedRequest<ReturnData, FetchProps>;
+export type ProfileActions = AuthorizedApiActions<ReturnData, FetchProps>;
 
-export function getProfileGqlClient(): GraphQLClient | undefined {
+export function getProfileGqlClient(token?: string): GraphQLClient | undefined {
   if (!profileGqlClient) {
-    const token = getProfileApiToken();
     const uri = process.env.REACT_APP_PROFILE_BACKEND_URL;
     if (!token || !uri) {
       return undefined;
@@ -81,26 +70,16 @@ export function convertQueryToData(
   };
 }
 
-function getResultGraphQLErrorMessage(
-  result: ProfileQueryResult
-): string | undefined {
-  const errorData = result.errors && result.errors[0];
-  if (errorData && errorData.message) {
-    return `${errorData.message} ${errorData.extensions?.code}`;
-  }
-  return undefined;
-}
-
-export async function getProfileData(): Promise<
-  ProfileQueryResult | GraphQLClientError
-> {
-  const client = getProfileGqlClient();
+export async function getProfileData(
+  token?: string
+): Promise<ProfileQueryResult | GraphQLClientError> {
+  const client = getProfileGqlClient(token);
   if (!client) {
-    return Promise.resolve({
+    return {
       error: new Error(
         'getProfileGqlClient returned undefined. Missing ApiToken for env.REACT_APP_PROFILE_AUDIENCE or missing env.REACT_APP_PROFILE_BACKEND_URL '
       )
-    });
+    };
   }
   const MY_PROFILE_QUERY = loader('../graphql/MyProfileQuery.graphql');
   const [error, result]: [
@@ -109,7 +88,8 @@ export async function getProfileData(): Promise<
   ] = await to(
     client.query({
       errorPolicy: 'all',
-      query: MY_PROFILE_QUERY
+      query: MY_PROFILE_QUERY,
+      fetchPolicy: 'no-cache'
     })
   );
   if (error || !result) {
@@ -129,129 +109,34 @@ export async function getProfileData(): Promise<
   return result;
 }
 
-export function useProfile(): ProfileActions {
-  const actions = useContext(ApiAccessTokenContext);
-  if (!actions) {
-    throw new Error(
-      'ApiAccessTokenActions not provided from ApiAccessTokenContext. Provide context in React Components with ApiAccessTokenProvider.'
-    );
+export function getProfileApiToken(apiTokens: JWTPayload): string | undefined {
+  const tokenKey = process.env.REACT_APP_PROFILE_AUDIENCE;
+  if (!tokenKey) {
+    return undefined;
   }
-  const { getStatus } = actions;
-  const [profileData, setProfileData] = useState<ProfileData | undefined>();
-  const [error, setError] = useState<ProfileErrorType>();
-  const [resultErrorMessage, setResultErrorMessage] = useState<
-    ProfileErrorType
-  >();
-  const apiAccessTokenStatus = getStatus();
+  return apiTokens && apiTokens[tokenKey];
+}
 
-  const resolveStatus = (): FetchStatus => {
-    if (apiAccessTokenStatus === 'loaded') {
-      return 'ready';
-    }
-    if (
-      apiAccessTokenStatus === 'error' ||
-      apiAccessTokenStatus === 'unauthorized'
-    ) {
-      return apiAccessTokenStatus;
-    }
-    return 'waiting';
-  };
-
-  const resolveCurrentStatus = (
-    baseStatus: FetchStatus,
-    stateStatus: FetchStatus
-  ): FetchStatus => {
-    if (stateStatus === 'loading' || stateStatus === 'loaded') {
-      return stateStatus;
-    }
-    if (profileData) {
-      return 'loaded';
-    }
-    if (stateStatus === 'waiting') {
-      return baseStatus;
-    }
-    if (baseStatus === 'unauthorized') {
-      return 'unauthorized';
-    }
-    return stateStatus;
-  };
-
-  const resolvedStatus = resolveStatus();
-  const [status, setStatus] = useState<FetchStatus>(resolvedStatus);
-  if (status === 'unauthorized') {
-    throw new Error(
-      'useProfile hook should not be rendered if client is not authorized.'
-    );
+export async function clearGraphQlClient(): Promise<void> {
+  const client = getProfileGqlClient();
+  if (client) {
+    await resetClient(client);
   }
-  const currentStatus = resolveCurrentStatus(resolvedStatus, status);
+  return Promise.resolve();
+}
 
-  const fetchProfile: ProfileActions['fetch'] = useCallback(async () => {
-    setStatus('loading');
-    const result = await getProfileData();
-    if ((result as GraphQLClientError).error) {
-      setError((result as GraphQLClientError).error);
-      setProfileData(undefined);
-      setResultErrorMessage(undefined);
-      setStatus('error');
-    } else {
-      setError(undefined);
-      setResultErrorMessage(
-        getResultGraphQLErrorMessage(result as ProfileQueryResult)
-      );
-      setProfileData(
-        (result as ProfileQueryResult).data.myProfile as ProfileData
-      );
-      setStatus('loaded');
-    }
-    return (result as ProfileQueryResult).data;
-  }, []);
+const executeAPIAction: Request = async options => {
+  const result = await getProfileData(getProfileApiToken(options.apiTokens));
+  const resultAsError = result as GraphQLClientError;
+  if (resultAsError.error) {
+    throw resultAsError.error;
+  } else if (resultAsError.message) {
+    throw new Error(resultAsError.message);
+  }
+  return (result as ProfileQueryResult).data.myProfile as ProfileData;
+};
 
-  useEffect(() => {
-    const autoFetch = async (): Promise<void> => {
-      if (currentStatus !== 'ready') {
-        return;
-      }
-      fetchProfile();
-    };
-
-    autoFetch();
-  }, [fetchProfile, currentStatus]);
-
-  useEffect(() => {
-    if (apiAccessTokenStatus === 'error' && status !== apiAccessTokenStatus) {
-      setStatus(apiAccessTokenStatus);
-    }
-  }, [setStatus, apiAccessTokenStatus, status]);
-
-  return {
-    getStatus: () => status,
-    getProfile: () => profileData,
-    getResultErrorMessage: () => resultErrorMessage,
-    getErrorMessage: () => {
-      if (!error) {
-        return undefined;
-      }
-      if (typeof error === 'string') {
-        return error;
-      }
-      if (error.message) {
-        return error.message;
-      }
-      if ((error as GraphQLClientError).error) {
-        return (error as GraphQLClientError).error?.message;
-      }
-      return undefined;
-    },
-    fetch: () => fetchProfile(),
-    clear: async () => {
-      const client = getProfileGqlClient();
-      if (client) {
-        await resetClient(client);
-      }
-      setError(undefined);
-      setProfileData(undefined);
-      setResultErrorMessage(undefined);
-      setStatus(resolveStatus());
-    }
-  } as ProfileActions;
+export function useProfileWithApiTokens(): ProfileActions {
+  const req: Request = useCallback(async props => executeAPIAction(props), []);
+  return useAuthorizedApiRequests(req, {});
 }

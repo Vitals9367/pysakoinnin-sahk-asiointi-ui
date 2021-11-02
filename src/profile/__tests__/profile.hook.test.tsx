@@ -4,34 +4,36 @@ import { act } from 'react-dom/test-utils';
 import { waitFor } from '@testing-library/react';
 import { FetchMock } from 'jest-fetch-mock';
 import { configureClient } from '../../client/__mocks__/index';
-import {
-  ApiAccessTokenActions,
-  FetchStatus,
-  useClient
-} from '../../client/hooks';
 import { getClient } from '../../client/oidc-react';
 import { mockMutatorGetterOidc } from '../../client/__mocks__/oidc-react-mock';
 import {
   setUpUser,
   clearApiTokens,
   mockApiTokenResponse,
-  createApiTokenFetchPayload,
-  logoutUser,
-  setEnv
-} from '../../client/__tests__/common';
+  setEnv,
+  logoutUser
+} from '../../tests/client.test.helper';
 import {
   ApiAccessTokenContext,
   ApiAccessTokenProvider
 } from '../../components/ApiAccessTokenProvider';
-import { ProfileActions, ProfileData, useProfile } from '../profile';
+import {
+  ProfileData,
+  ProfileActions,
+  useProfileWithApiTokens
+} from '../profile';
 import {
   createValidProfileResponse,
   createInvalidProfileResponse,
   mockProfileResponse
-} from './common';
+} from '../../tests/profile.test.helper';
 import { AnyObject, AnyFunction } from '../../common';
+import {
+  FetchStatus,
+  ApiAccessTokenActions
+} from '../../apiAccessTokens/useApiAccessTokens';
 
-describe('Profile.ts useProfile hook ', () => {
+describe('Profile.ts useProfileWithApiTokens hook ', () => {
   configureClient({ tokenExchangePath: '/token-exchange/', autoSignIn: true });
   const fetchMock: FetchMock = global.fetch;
   const mockMutator = mockMutatorGetterOidc();
@@ -44,8 +46,8 @@ describe('Profile.ts useProfile hook ', () => {
   let restoreEnv: AnyFunction;
 
   const ProfileHookTester = (): React.ReactElement => {
-    profileActions = useProfile();
-    return <div id="profile-status">{profileActions.getStatus()}</div>;
+    profileActions = useProfileWithApiTokens();
+    return <div id="request-status">{profileActions.getRequestStatus()}</div>;
   };
 
   const ApiTokenHookTester = (): React.ReactElement => {
@@ -55,15 +57,12 @@ describe('Profile.ts useProfile hook ', () => {
     return <div id="api-token-status">{apiTokenActions.getStatus()}</div>;
   };
 
-  const TestWrapper = (): React.ReactElement => {
-    const userClient = useClient();
-    return (
-      <ApiAccessTokenProvider>
-        <ApiTokenHookTester />
-        {userClient.isAuthenticated() && <ProfileHookTester />}
-      </ApiAccessTokenProvider>
-    );
-  };
+  const TestWrapper = (): React.ReactElement => (
+    <ApiAccessTokenProvider>
+      <ApiTokenHookTester />
+      <ProfileHookTester />
+    </ApiAccessTokenProvider>
+  );
 
   type ErrorCatcherProps = React.PropsWithChildren<{
     callback: (err: Error) => void;
@@ -109,7 +108,9 @@ describe('Profile.ts useProfile hook ', () => {
     returnApiTokenError?: boolean;
     returnError?: boolean;
   }): Promise<void> => {
-    mockApiTokenResponse({ returnError: returnApiTokenError });
+    mockApiTokenResponse({
+      returnError: returnApiTokenError
+    });
 
     mockProfileResponse({
       response,
@@ -142,12 +143,13 @@ describe('Profile.ts useProfile hook ', () => {
     if (dom && dom.length) {
       dom.unmount();
     }
+    logoutUser(client);
     clearApiTokens(client);
   });
 
   const getProfileStatus = (): FetchStatus | undefined => {
     dom.update();
-    const el = dom.find('#profile-status').at(0);
+    const el = dom.find('#request-status').at(0);
     return el && el.length ? (el.text() as FetchStatus) : undefined;
   };
 
@@ -169,70 +171,68 @@ describe('Profile.ts useProfile hook ', () => {
         response: createValidProfileResponse()
       });
       await waitFor(() =>
-        expect(apiTokenActions.getStatus()).toBe('unauthorized')
+        expect(getApiAccessTokenStatus()).toBe('unauthorized')
       );
       await setUser({});
-      await waitFor(() => expect(apiTokenActions.getStatus()).toBe('loaded'));
+      await waitFor(() => expect(getApiAccessTokenStatus()).toBe('loaded'));
       await waitFor(() => expect(getProfileStatus()).toBe('loading'));
-      expect(profileActions.getProfile()).toBeUndefined();
       await waitFor(() => expect(getProfileStatus()).toBe('loaded'));
-      expect((profileActions.getProfile() as ProfileData).firstName).toEqual(
+      expect((profileActions.getData() as ProfileData).firstName).toEqual(
         'firstName'
       );
     });
   });
 
-  it('provides actions that are callable', async () => {
+  it('provides a "fetch"-action that requests data', async () => {
     await act(async () => {
-      const validProfileResponseSettings = {
+      await setUpTest({
+        response: createValidProfileResponse()
+      });
+      await setUser({});
+      await waitFor(() => expect(getProfileStatus()).toBe('loaded'));
+      mockProfileResponse({
+        response: createInvalidProfileResponse(),
+        profileBackendUrl
+      });
+      profileActions.request({});
+      await waitFor(() => expect(getProfileStatus()).toBe('error'));
+      mockProfileResponse({
         response: createValidProfileResponse(),
         profileBackendUrl
-      };
-      mockApiTokenResponse();
-      mockProfileResponse(validProfileResponseSettings);
+      });
+      profileActions.request({});
+      await waitFor(() => expect(getProfileStatus()).toBe('loaded'));
+    });
+  });
+
+  it('provides a "clear"-action that clears stored profile data and sets status back to "ready"', async () => {
+    await act(async () => {
       await setUser({});
       await setUpTest({
-        response: createInvalidProfileResponse()
+        response: createValidProfileResponse()
       });
-      await waitFor(() => expect(apiTokenActions.getStatus()).toBe('loaded'));
+
+      await waitFor(() => expect(getApiAccessTokenStatus()).toBe('loaded'));
       await waitFor(() => expect(getProfileStatus()).toBe('loaded'));
-      // must reset before new call to same url
-      fetchMock.resetMocks();
-      mockProfileResponse({
-        ...validProfileResponseSettings,
-        requestCallback: () => {
-          expect(profileActions.getStatus()).toBe('loading');
-        }
-      });
-      await profileActions.fetch();
-      expect(profileActions.getStatus()).toBe('loaded');
-      expect(profileActions.getProfile()).toBeDefined();
-      await profileActions.clear();
-      expect(profileActions.getProfile()).toBeUndefined();
+      expect(profileActions.getData()).toBeDefined();
+      profileActions.clear();
+      expect(profileActions.getData()).toBeUndefined();
       expect(profileActions.getStatus()).toBe('ready');
     });
   });
 
-  it('profile can be manually fetched after initial status was error', async () => {
+  it('profile data is cleared, when user logs out and status is set to "error", because user is unauthorized', async () => {
     await act(async () => {
+      await setUser({});
       await setUpTest({
-        response: createInvalidProfileResponse()
+        response: createValidProfileResponse()
       });
-      mockApiTokenResponse({ returnError: true });
 
-      apiTokenActions.fetch(createApiTokenFetchPayload());
-      await waitFor(() => expect(apiTokenActions.getStatus()).toBe('error'));
-      await waitFor(() => expect(getApiAccessTokenStatus()).toBe('error'));
-      await waitFor(() => expect(getProfileStatus()).toBe('error'));
-      mockApiTokenResponse();
-      mockProfileResponse({
-        response: createValidProfileResponse(),
-        profileBackendUrl
-      });
-      apiTokenActions.fetch(createApiTokenFetchPayload());
-      await waitFor(() => expect(apiTokenActions.getStatus()).toBe('loaded'));
-      profileActions.fetch();
+      await waitFor(() => expect(getApiAccessTokenStatus()).toBe('loaded'));
       await waitFor(() => expect(getProfileStatus()).toBe('loaded'));
+      logoutUser(client);
+      await waitFor(() => expect(getProfileStatus()).toBe('error'));
+      expect(profileActions.getData()).toBeUndefined();
     });
   });
 
@@ -247,25 +247,6 @@ describe('Profile.ts useProfile hook ', () => {
           errorCatched = err;
         }}>
         <ProfileHookTester />
-      </ErrorCatcher>
-    );
-    expect(errorCatched).toBeDefined();
-    expect(getErrorMessage()).toBeDefined();
-  });
-
-  it('throws an error when rendered without authorization', async () => {
-    let errorCatched: Error | undefined;
-    logoutUser(client);
-    // eslint-disable-next-line no-console
-    console.log('Note: Error will be thrown...');
-    dom = mount(
-      <ErrorCatcher
-        callback={(err: Error): void => {
-          errorCatched = err;
-        }}>
-        <ApiAccessTokenProvider>
-          <ProfileHookTester />
-        </ApiAccessTokenProvider>
       </ErrorCatcher>
     );
     expect(errorCatched).toBeDefined();
