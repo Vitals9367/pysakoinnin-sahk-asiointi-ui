@@ -136,7 +136,9 @@ const TokenBrowser = (): React.ReactElement => {
       {selectedId && (
         <>
           <h3>Token:</h3>
-          <span className={styles.token}>{selectedToken}</span>
+          <span className={styles.token} data-test-id="encoded-token">
+            {selectedToken}
+          </span>
         </>
       )}
     </div>
