@@ -31,6 +31,7 @@ USER root
 RUN bash /tools/apt-install.sh build-essential
 
 USER appuser
+RUN yarn config set network-timeout 300000
 RUN yarn && yarn cache clean --force
 
 USER root
