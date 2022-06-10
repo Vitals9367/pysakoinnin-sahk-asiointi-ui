@@ -96,3 +96,11 @@ Runs tests with coverage outputted to console. Results are saved to /coverage No
 
 Runs tests with coverage and its results are saved as an xml file by jest-sonar-reporter.
 This file can be sent to Sonar with Sonar Scanner (CLI). Report is /reports
+
+### yarn update-runtime-env
+
+Generates variable object used when app is running. Generated object is stored at `public/env-config.js` and available
+as `window._env_` object.
+
+Generation uses `react-scripts` internals, so values come from either environment variables or files (according
+[react-scripts documentation](https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used)).

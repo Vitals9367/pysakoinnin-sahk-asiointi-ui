@@ -52,7 +52,8 @@
     "test-coverage": "CI=true yarn test --coverage",
     "test-coverage-for-sonar": "yarn test-coverage --testResultsProcessor jest-sonar-reporter",
     "ci": "CI=true yarn test --coverage",
-    "lint": "eslint --ext js,ts,tsx src"
+    "lint": "eslint --ext js,ts,tsx src",
+    "update-runtime-env": "ts-node -P ./scripts/tsconfig.json --files scripts/update-runtime-env.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
