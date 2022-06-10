@@ -39,7 +39,7 @@ export type ProfileActions = AuthorizedApiActions<ReturnData, FetchProps>;
 
 export function getProfileGqlClient(token?: string): GraphQLClient | undefined {
   if (!profileGqlClient) {
-    const uri = process.env.REACT_APP_PROFILE_BACKEND_URL;
+    const uri = window._env_.REACT_APP_PROFILE_BACKEND_URL;
     if (!token || !uri) {
       return undefined;
     }
@@ -110,7 +110,7 @@ export async function getProfileData(
 }
 
 export function getProfileApiToken(apiTokens: JWTPayload): string | undefined {
-  const tokenKey = process.env.REACT_APP_PROFILE_AUDIENCE;
+  const tokenKey = window._env_.REACT_APP_PROFILE_AUDIENCE;
   if (!tokenKey) {
     return undefined;
   }

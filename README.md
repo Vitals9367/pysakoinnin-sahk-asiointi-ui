@@ -26,6 +26,15 @@ Config can also be overridden for command line:
 REACT_APP_OIDC_URL=https://foo.bar yarn start
 ```
 
+### Environment variables
+
+Scripts generates first environment variables to `public/env-config.js` with `scripts/update-runtime-env.ts`, which contains the
+actual used variables when running the app. App is not using CRA's default `process.env` way to refer of variables but
+`window._env_` object.
+
+Note that running built application locally you need to generate also `public/env-config.js` file. It can be done with
+`yarn update-runtime-env`. By default it's generated for development environment if no `NODE_ENV` is set.
+
 ### Config for Helsinki-Profiili MVP
 
 Settings when using Helsinki-Profiili MVP authentication:
@@ -86,7 +95,11 @@ services:
 
 ### yarn test
 
-Runs tests in watch mode
+Runs tests in watch mode.
+
+Scripts generates first environment variables to `public/test-env-config.js` with `scripts/update-runtime-env.ts`, which contains the
+actual used variables when running the app. App is not using CRA's default `process.env` way to refer of variables but
+`window._env_` object.
 
 ### yarn test-coverage
 

@@ -22,30 +22,30 @@ function envValueToBoolean(
 function createConfigFromEnv(
   source: 'OIDC' | 'PLAIN_SUOMIFI'
 ): Partial<ClientConfig> {
-  const url = String(process.env[`REACT_APP_${source}_URL`]);
-  const realm = String(process.env[`REACT_APP_${source}_REALM`]);
+  const url = String(window._env_[`REACT_APP_${source}_URL`]);
+  const realm = String(window._env_[`REACT_APP_${source}_REALM`]);
   const tokenExchangePath =
-    process.env[`REACT_APP_${source}_TOKEN_EXCHANGE_PATH`];
+    window._env_[`REACT_APP_${source}_TOKEN_EXCHANGE_PATH`];
   return {
     realm,
     url,
     authority: realm ? `${url}/realms/${realm}` : url,
-    clientId: String(process.env[`REACT_APP_${source}_CLIENT_ID`]),
-    callbackPath: String(process.env[`REACT_APP_${source}_CALLBACK_PATH`]),
-    logoutPath: process.env[`REACT_APP_${source}_LOGOUT_PATH`] || '/',
-    silentAuthPath: process.env[`REACT_APP_${source}_SILENT_AUTH_PATH`],
-    responseType: process.env[`REACT_APP_${source}_RESPONSE_TYPE`],
-    scope: process.env[`REACT_APP_${source}_SCOPE`],
+    clientId: String(window._env_[`REACT_APP_${source}_CLIENT_ID`]),
+    callbackPath: String(window._env_[`REACT_APP_${source}_CALLBACK_PATH`]),
+    logoutPath: window._env_[`REACT_APP_${source}_LOGOUT_PATH`] || '/',
+    silentAuthPath: window._env_[`REACT_APP_${source}_SILENT_AUTH_PATH`],
+    responseType: window._env_[`REACT_APP_${source}_RESPONSE_TYPE`],
+    scope: window._env_[`REACT_APP_${source}_SCOPE`],
     autoSignIn: envValueToBoolean(
-      process.env[`REACT_APP_${source}_AUTO_SIGN_IN`],
+      window._env_[`REACT_APP_${source}_AUTO_SIGN_IN`],
       true
     ),
     automaticSilentRenew: envValueToBoolean(
-      process.env[`REACT_APP_${source}_AUTO_SILENT_RENEW`],
+      window._env_[`REACT_APP_${source}_AUTO_SILENT_RENEW`],
       true
     ),
     enableLogging: envValueToBoolean(
-      process.env[`REACT_APP_${source}_LOGGING`],
+      window._env_[`REACT_APP_${source}_LOGGING`],
       false
     ),
     tokenExchangePath,
@@ -60,7 +60,7 @@ const mvpConfig = {
 } as ClientConfig;
 
 const uiConfig: { profileUIUrl: string } = {
-  profileUIUrl: String(process.env.REACT_APP_PROFILE_UI_URL)
+  profileUIUrl: String(window._env_.REACT_APP_PROFILE_UI_URL)
 };
 
 const plainSuomiFiConfig = {
