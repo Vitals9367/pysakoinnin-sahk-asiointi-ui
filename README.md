@@ -77,10 +77,27 @@ REACT_APP_PROFILE_AUDIENCE="https://api.hel.fi/auth/helsinkiprofile"
 
 ## Docker
 
-Run `docker-compose up`
+Docker image has ".env"-file baked in, so it uses production environment variables by default. To make the image work in other environments, env vars must be overridden.
 
-Starting docker with temporary environment variables:
-Open docker-compose.yml and add new 'environment' under services/app.
+You can pass new env vars easily with '--env-file' argument. Of course '-e' works too.
+
+### Docker run
+
+```
+docker run --env-file=.env.development -p 3000:8080 helsinki/example-ui-profile
+```
+
+### Docker compose
+
+Note that the composed build will stop to the 'development' stage in Dockerfile and uses 'react-scripts start' command and not nginx.
+
+The env-file is fixed to '.env.development" in the 'docker-compose.yml'.
+
+```
+docker compose up
+```
+
+Env vars can be overridden in the yaml-file.
 
 Example:
 
