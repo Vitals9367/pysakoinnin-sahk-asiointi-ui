@@ -26,6 +26,11 @@ jest.mock('react-router', () => ({
   })
 }));
 
+jest.mock('./config', () => {
+  jest.requireActual('../public/test-env-config');
+  return jest.requireActual('./config');
+});
+
 jest.mock('oidc-client', () => {
   class MockUserManagerClass {
     constructor(settings: UserManagerSettings) {

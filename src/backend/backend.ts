@@ -14,7 +14,7 @@ type Request = AuthorizedRequest<ReturnData, FetchProps>;
 export type BackendActions = AuthorizedApiActions<ReturnData, FetchProps>;
 
 export function getBackendApiToken(apiTokens: JWTPayload): string | undefined {
-  const tokenKey = process.env.REACT_APP_BACKEND_AUDIENCE;
+  const tokenKey = window._env_.REACT_APP_BACKEND_AUDIENCE;
   if (!tokenKey) {
     return undefined;
   }
@@ -40,7 +40,7 @@ export const executeAPIAction: Request = async options => {
     Error | null,
     Response | undefined
   ] = await to(
-    fetch(process.env.REACT_APP_BACKEND_URL as string, requestOptions)
+    fetch(window._env_.REACT_APP_BACKEND_URL as string, requestOptions)
   );
   if (fetchError || !fetchResponse) {
     throw new Error('Network or CORS error occured');

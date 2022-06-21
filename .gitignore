@@ -24,3 +24,6 @@ yarn-debug.log*
 yarn-error.log*
 .vscode
 .eslintcache
+
+public/env-config.js
+public/test-env-config.js

@@ -19,9 +19,9 @@ const AuthenticatedContent = (): React.ReactElement => {
     FetchApiTokenOptions,
     (newOptions: FetchApiTokenOptions) => void
   ] = useState({
-    audience: process.env.REACT_APP_API_BACKEND_AUDIENCE || '',
-    permission: process.env.REACT_APP_API_BACKEND_PERMISSION || '',
-    grantType: process.env.REACT_APP_API_BACKEND_GRANT_TYPE || ''
+    audience: window._env_.REACT_APP_API_BACKEND_AUDIENCE || '',
+    permission: window._env_.REACT_APP_API_BACKEND_PERMISSION || '',
+    grantType: window._env_.REACT_APP_API_BACKEND_GRANT_TYPE || ''
   });
   const onSubmit = async (): Promise<void> => {
     if (isLoading) {

@@ -1,5 +1,4 @@
 import { FetchMock } from 'jest-fetch-mock';
-import mockedEnv, { RestoreFn } from 'mocked-env';
 import {
   Client,
   FetchApiTokenOptions,
@@ -26,7 +25,7 @@ export const mockApiTokenResponse = (
   const { audience, uri, delay, requestCallback, returnError } = options;
   const fetchMock: FetchMock = global.fetch;
   const tokenKey =
-    audience || process.env.REACT_APP_PROFILE_AUDIENCE || 'unknown';
+    audience || window._env_.REACT_APP_PROFILE_AUDIENCE || 'unknown';
   const tokens = { [tokenKey]: 'apiToken' };
   const responseData = returnError
     ? { status: 401, body: JSON.stringify({ error: true }) }
@@ -89,5 +88,21 @@ export const createApiTokenFetchPayload = (
   ...overrides
 });
 
-export const setEnv = (overrides: Partial<NodeJS.ProcessEnv>): RestoreFn =>
-  mockedEnv(overrides, { restore: true });
+export const setEnv = (overrides: Partial<NodeJS.ProcessEnv>): (() => void) => {
+  const source = window._env_;
+  const oldValues = Object.keys(overrides).reduce((currentObj, currentKey) => {
+    // eslint-disable-next-line no-param-reassign
+    currentObj[currentKey] = source[currentKey];
+    return currentObj;
+  }, {} as AnyObject);
+  window._env_ = {
+    ...window._env_,
+    ...overrides
+  };
+  return () => {
+    window._env_ = {
+      ...window._env_,
+      ...oldValues
+    };
+  };
+};

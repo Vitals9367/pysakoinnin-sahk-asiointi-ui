@@ -86,9 +86,9 @@ export function useApiAccessTokens(): ApiAccessTokenActions {
         return;
       }
       fetchTokens({
-        audience: String(process.env.REACT_APP_API_BACKEND_AUDIENCE),
-        permission: String(process.env.REACT_APP_API_BACKEND_PERMISSION),
-        grantType: String(process.env.REACT_APP_API_BACKEND_GRANT_TYPE)
+        audience: String(window._env_.REACT_APP_API_BACKEND_AUDIENCE),
+        permission: String(window._env_.REACT_APP_API_BACKEND_PERMISSION),
+        grantType: String(window._env_.REACT_APP_API_BACKEND_GRANT_TYPE)
       });
     };
 

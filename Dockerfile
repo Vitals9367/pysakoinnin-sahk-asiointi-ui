@@ -55,25 +55,31 @@ CMD ["react-scripts", "start"]
 FROM appbase as staticbuilder
 # ===================================
 
-ARG REACT_APP_PROFILE_GRAPHQL
-ARG REACT_APP_OIDC_AUTHORITY
-ARG REACT_APP_ENVIRONMENT
-
-
 COPY . /app
 RUN yarn build
 
 # =============================
-FROM nginx:1.17 as production
+FROM registry.access.redhat.com/ubi8/nginx-118 as production
 # =============================
 
-# Nginx runs with user "nginx" by default
-COPY --from=staticbuilder --chown=nginx:nginx /app/build /usr/share/nginx/html
+USER root
+
+RUN chgrp -R 0 /usr/share/nginx/html && \
+    chmod -R g=u /usr/share/nginx/html
+
+COPY --from=staticbuilder /app/build /usr/share/nginx/html
 
 # Copy nginx config
-COPY .prod/nginx.conf /etc/nginx/conf.d/default.conf
+COPY .prod/nginx.conf /etc/nginx/
 
-#for running as non-root
-RUN sed -i 's/\/var\/run\/nginx.pid/\/tmp\/nginx.pid/g' /etc/nginx/nginx.conf
+# Copy default environment config and setup script
+# Copy package.json so env.sh can read it
+COPY ./scripts/env.sh /opt/env.sh
+COPY .env /opt/.env
+COPY package.json /opt/package.json
+RUN chmod +x /opt/env.sh
 
 EXPOSE 8080
+
+CMD ["/bin/bash", "-c", "/opt/env.sh /opt /usr/share/nginx/html && nginx -g \"daemon off;\""]
+

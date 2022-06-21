@@ -26,6 +26,15 @@ Config can also be overridden for command line:
 REACT_APP_OIDC_URL=https://foo.bar yarn start
 ```
 
+### Environment variables
+
+Scripts generates first environment variables to `public/env-config.js` with `scripts/update-runtime-env.ts`, which contains the
+actual used variables when running the app. App is not using CRA's default `process.env` way to refer of variables but
+`window._env_` object.
+
+Note that running built application locally you need to generate also `public/env-config.js` file. It can be done with
+`yarn update-runtime-env`. By default it's generated for development environment if no `NODE_ENV` is set.
+
 ### Config for Helsinki-Profiili MVP
 
 Settings when using Helsinki-Profiili MVP authentication:
@@ -68,10 +77,27 @@ REACT_APP_PROFILE_AUDIENCE="https://api.hel.fi/auth/helsinkiprofile"
 
 ## Docker
 
-Run `docker-compose up`
+Docker image has ".env"-file baked in, so it uses production environment variables by default. To make the image work in other environments, env vars must be overridden.
 
-Starting docker with temporary environment variables:
-Open docker-compose.yml and add new 'environment' under services/app.
+You can pass new env vars easily with '--env-file' argument. Of course '-e' works too.
+
+### Docker run
+
+```
+docker run --env-file=.env.development -p 3000:8080 helsinki/example-ui-profile
+```
+
+### Docker compose
+
+Note that the composed build will stop to the 'development' stage in Dockerfile and uses 'react-scripts start' command and not nginx.
+
+The env-file is fixed to '.env.development" in the 'docker-compose.yml'.
+
+```
+docker compose up
+```
+
+Env vars can be overridden in the yaml-file.
 
 Example:
 
@@ -86,7 +112,11 @@ services:
 
 ### yarn test
 
-Runs tests in watch mode
+Runs tests in watch mode.
+
+Scripts generates first environment variables to `public/test-env-config.js` with `scripts/update-runtime-env.ts`, which contains the
+actual used variables when running the app. App is not using CRA's default `process.env` way to refer of variables but
+`window._env_` object.
 
 ### yarn test-coverage
 
@@ -96,3 +126,11 @@ Runs tests with coverage outputted to console. Results are saved to /coverage No
 
 Runs tests with coverage and its results are saved as an xml file by jest-sonar-reporter.
 This file can be sent to Sonar with Sonar Scanner (CLI). Report is /reports
+
+### yarn update-runtime-env
+
+Generates variable object used when app is running. Generated object is stored at `public/env-config.js` and available
+as `window._env_` object.
+
+Generation uses `react-scripts` internals, so values come from either environment variables or files (according
+[react-scripts documentation](https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used)).
