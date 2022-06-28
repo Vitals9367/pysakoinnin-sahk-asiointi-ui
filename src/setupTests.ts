@@ -1,4 +1,4 @@
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { configure } from 'enzyme';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { GlobalWithFetchMock } from 'jest-fetch-mock';
