@@ -1,14 +1,29 @@
 {
   "extends": [
-    "airbnb-typescript-prettier",
     "eslint:recommended",
-    "plugin:react/recommended"
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:jest/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:jsx-a11y/recommended",
+    "plugin:prettier/recommended" // this should always be the last item on this array
   ],
-  "env": {
-    "browser": true,
-    "jest": true
-  },
-  "plugins": ["sonarjs", "import"],
+  "plugins": [
+    "react",
+    "@typescript-eslint",
+    "prettier",
+    "jest",
+    "import",
+    "sonarjs",
+    "jsx-a11y"
+  ],
   "rules": {
     "react/prop-types": 0,
     "react/destructuring-assignment": 0,
@@ -30,9 +45,32 @@
     "sonarjs/prefer-immediate-return": "error",
     "sonarjs/no-duplicate-string": "error",
     "import/no-namespace": "error",
-    "no-underscore-dangle": ["error", { "allow": ["__typename", "_env_"] }]
+    "no-underscore-dangle": ["error", { "allow": ["__typename", "_env_"] }],
+    "jest/expect-expect": "off",
+    "jest/valid-expect": "off",
+    "jest/no-standalone-expect": "off",
+    "jest/no-mocks-import": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/valid-title": "off",
+    "import/no-named-as-default": "off"
   },
-  "globals": {
-    "cy": true
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "paths": ["src"]
+      }
+    }
+  },
+  "env": {
+    "browser": true,
+    "jest": true,
+    "node": true
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
   }
 }

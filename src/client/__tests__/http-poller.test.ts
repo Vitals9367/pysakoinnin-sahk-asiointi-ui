@@ -12,6 +12,9 @@ type TestProps = {
 
 jest.unmock('../http-poller');
 
+const originalSetTimeout = global.setTimeout;
+const setImmediate = (f: (value?: unknown) => void) => originalSetTimeout(f, 0);
+
 describe(`http-poller`, () => {
   const pollFunctionMockCallback = jest.fn();
   const onErrorMockCallback = jest.fn();
