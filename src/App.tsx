@@ -14,6 +14,7 @@ import PlainSuomiFiUserInfo from './pages/PlainSuomiFiUserInfo';
 import ApiAccessTokens from './pages/ApiAccessTokens';
 import ProfilePage from './pages/ProfilePage';
 import BackendData from './pages/BackendData';
+import LogOut from './pages/LogOut';
 
 function App(): React.ReactElement {
   const plainSuomiFiPath = config.plainSuomiFiConfig.path;
@@ -46,6 +47,9 @@ function App(): React.ReactElement {
                 </Route>
                 <Route path={['/authError']} exact>
                   <div>Autentikaatio epäonnistui</div>
+                </Route>
+                <Route path={['/logout']} exact>
+                  <LogOut />
                 </Route>
                 <Route path="*">404 - not found</Route>
               </Switch>
