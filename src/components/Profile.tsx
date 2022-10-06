@@ -8,40 +8,51 @@ import {
 
 import styles from './styles.module.css';
 import { AnyObject } from '../common';
+const typeNameProp = '__typename';
+
+const sanitizeNode = (node: AnyObject): AnyObject => {
+  const objectEntries = Object.entries(node);
+
+  return Object.fromEntries(
+    objectEntries
+      .filter(
+        ([key, value]) =>
+          value !== null && value !== undefined && key !== typeNameProp
+      )
+      .map(([key, value]) => [
+        key,
+        typeof value === 'object' ? sanitizeNode(value as AnyObject) : value
+      ])
+  );
+};
 
 const nodeToJSON = (node: AnyObject): AnyObject | AnyObject[] => {
   if (Array.isArray(node.edges)) {
     return node.edges.map(edge => nodeToJSON(edge.node) as AnyObject);
   }
-  if (node.__typename === 'VerifiedPersonalInformationNode') {
-    return node;
-  }
-  return {
-    id: String(node.id),
-    value: String(
-      node.address
-        ? `${node.address} ${node.postalCode} ${node.city} ${node.countryCode}`
-        : node.email || node.phone
-    ),
-    primary: String(node.primary)
-  };
+  return sanitizeNode(node);
 };
 
 const PropToComponent = ([prop, value]: [
   string,
   ProfileDataType
-]): React.ReactElement => (
-  <li key={prop}>
-    <strong>{prop}</strong>:{' '}
-    {value && typeof value === 'object' ? (
-      <pre data-test-id={`profile-data-${prop}`}>
-        {JSON.stringify(nodeToJSON(value), null, 2)}
-      </pre>
-    ) : (
-      <span data-test-id={`profile-data-${prop}`}>{value || '-'}</span>
-    )}
-  </li>
-);
+]): React.ReactElement | null => {
+  if (prop === typeNameProp) {
+    return null;
+  }
+  return (
+    <li key={prop}>
+      <strong>{prop}</strong>:{' '}
+      {value && typeof value === 'object' ? (
+        <pre data-test-id={`profile-data-${prop}`}>
+          {JSON.stringify(nodeToJSON(value), null, 2)}
+        </pre>
+      ) : (
+        <span data-test-id={`profile-data-${prop}`}>{value || '-'}</span>
+      )}
+    </li>
+  );
+};
 
 const Profile = (): React.ReactElement => {
   const {
