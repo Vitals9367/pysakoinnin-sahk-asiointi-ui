@@ -1,18 +1,4 @@
-# Example-profile-ui
-
-Example UI application handles logins to OIDC provider and loads Helsinki Profile. There are two types of logins: Helsinki-Profiili MVP and plain Suomi.fi. User chooses one on the index page.
-
-App uses [oidc-react.js](https://github.com/IdentityModel/oidc-client-js/wiki) for all calls to the OIDC provider. Library is wrapped with "client" (client/index.ts) to unify connections to Tunnistamo, Keycloak server and Profiili API.
-
-Included in this demo app:
-
-- two login types
-- hooks for easy usage with React
-- redux store listening a client
-- HOC component listening a client and showing different content for authorized and unauthorized users.
-- getting API token and using it to get Profile (only when using Helsinki-Profiili MVP ).
-
-Client dispatches events and trigger changes which then trigger re-rendering of the components using the client.
+# Pysäköinnin sähköinen asiointi React UI
 
 ## Config
 

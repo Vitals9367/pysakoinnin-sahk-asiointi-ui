@@ -12,22 +12,13 @@ const ConfigSelector = (): React.ReactElement => {
   const changeConfig = (newConfig: ClientConfig): void => {
     history.push(newConfig.path);
   };
-  const capitalize = (str: string) =>
-    `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
+
   return (
     <PageContent>
-      <h1>Valitse kirjautumistapa</h1>
-      <p>
-        Voit kirjautua Helsinki-profiili MVP:n tai pelkän Suomi.fi:n kautta.
-        Valitse ensin kumpaa käytät ja voit sen jälkeen kirjautua sisään.
-      </p>
-      <p>Kirjautumistapaa voi vaihtaa myöhemmin palaamalla tähän näkymään.</p>
+      <h1>Kirjaudu sisään</h1>
       <div className={styles['button-container']}>
         <Button onClick={() => changeConfig(config.mvpConfig)}>
           {config.mvpConfig.label}
-        </Button>
-        <Button onClick={() => changeConfig(config.plainSuomiFiConfig)}>
-          {capitalize(config.plainSuomiFiConfig.label)}
         </Button>
       </div>
     </PageContent>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router';
+import { Route, Switch } from 'react-router';
 
 import { ClientProvider } from './client/ClientProvider';
 import StoreProvider from './client/redux/StoreProvider';
@@ -10,14 +10,12 @@ import config from './config';
 import Index from './pages/Index';
 import Tokens from './pages/Tokens';
 import Header from './components/Header';
-import PlainSuomiFiUserInfo from './pages/PlainSuomiFiUserInfo';
 import ApiAccessTokens from './pages/ApiAccessTokens';
 import ProfilePage from './pages/ProfilePage';
 import BackendData from './pages/BackendData';
 import LogOut from './pages/LogOut';
 
 function App(): React.ReactElement {
-  const plainSuomiFiPath = config.plainSuomiFiConfig.path;
   const mvpPath = config.mvpConfig.path;
   return (
     <ConfigChecker>
@@ -27,14 +25,11 @@ function App(): React.ReactElement {
             <PageContainer>
               <Header />
               <Switch>
-                <Route path={[plainSuomiFiPath, mvpPath]} exact>
+                <Route path={[mvpPath]} exact>
                   <Index />
                 </Route>
                 <Route path={['/:anyPath/userTokens']} exact>
                   <Tokens />
-                </Route>
-                <Route path={[`${plainSuomiFiPath}/userinfo`]} exact>
-                  <PlainSuomiFiUserInfo />
                 </Route>
                 <Route path={[`${mvpPath}/apiAccessTokens`]} exact>
                   <ApiAccessTokens />
@@ -60,4 +55,5 @@ function App(): React.ReactElement {
     </ConfigChecker>
   );
 }
+
 export default App;
